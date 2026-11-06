@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Game Title - Nathan Everett</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+<!-- data-root points back to the site root so the shared header links work from this folder -->
+<body data-root="../../">
+
+  <!-- Banner image: put it in this folder as banner.jpg (16:9). The gradient shows until then. -->
+  <section class="page-hero" style="--c1:#2d6a4f; --c2:#0e1a15;">
+    <img class="hero-img" src="banner.jpg" alt="" onerror="this.remove()">
+    <div class="wrap">
+      <p class="role">Board Game Prototype &middot; In Development</p>
+      <h1>Game Title</h1>
+    </div>
+  </section>
+
+  <main class="detail">
+    <div class="wrap detail-grid">
+      <article>
+        <h2>Overview</h2>
+        <p>
+          <!-- TODO: the pitch. Theme, who it's for, and the core mechanic in a few sentences. -->
+          A short pitch for the game: the theme, who it's for, and the core mechanic.
+        </p>
+
+        <h2>Gameplay Video</h2>
+        <!--
+          Swap the placeholder below for a YouTube embed. Use the /embed/ link, not the watch link:
+          <iframe class="video" src="https://www.youtube.com/embed/VIDEO_ID" title="Game Title gameplay video"
+                  allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>
+        -->
+        <div class="media-placeholder">Gameplay or how-to-play video goes here</div>
+
+        <h2>Sell Sheet</h2>
+        <!--
+          Export the sell sheet as an image (sell-sheet.jpg) for this preview and as a PDF (sell-sheet.pdf)
+          for the download button in the sidebar. Then swap the placeholder for:
+          <figure class="figure">
+            <a href="sell-sheet.pdf" target="_blank"><img src="sell-sheet.jpg" alt="Game Title sell sheet" loading="lazy"></a>
+            <figcaption>Click to open the full sell sheet (PDF).</figcaption>
+          </figure>
+        -->
+        <div class="media-placeholder">Sell sheet preview goes here</div>
+
+        <h2>How It Plays</h2>
+        <ul>
+          <li>Setup&hellip;</li>
+          <li>On your turn&hellip;</li>
+          <li>The game ends when&hellip;</li>
+        </ul>
+
+        <h2>Design Notes</h2>
+        <p><!-- TODO: what you were going for, what changed in playtesting, where it's at now. --></p>
+        <!--
+          Prototype photos:
+          <div class="gallery">
+            <img src="photo-1.jpg" alt="..." loading="lazy">
+            <img src="photo-2.jpg" alt="..." loading="lazy">
+          </div>
+        -->
+
+        <a class="back-link" href="../../prototypes.html">&larr; Back to current prototypes</a>
+      </article>
+
+      <aside class="facts">
+        <!-- Optional box art or cover: <img class="box-cover" src="cover.jpg" alt="..."> -->
+        <dl>
+          <dt>Players</dt><dd>2&ndash;4</dd>
+          <dt>Play Time</dt><dd>30&ndash;45 min</dd>
+          <dt>Ages</dt><dd>10+</dd>
+          <dt>Status</dt><dd>Playtesting</dd>
+        </dl>
+        <!-- Delete any button that doesn't apply (e.g. no Play button if there's no browser version) -->
+        <div class="btn-row stack">
+          <a class="btn" href="play.html">Play in Browser</a>
+          <a class="btn ghost" href="sell-sheet.pdf" target="_blank">Sell Sheet (PDF)</a>
+          <a class="btn ghost" href="rules.pdf" target="_blank">Rules (PDF)</a>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script src="../../assets/js/site.js"></script>
+</body>
+</html>

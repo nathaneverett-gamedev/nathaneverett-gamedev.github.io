@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Current Prototypes - Nathan Everett</title>
+  <meta name="description" content="Board and card game prototypes in development by Nathan Everett, with sell sheets, videos and versions you can play in your browser.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-root="">
+
+  <section class="hero">
+    <div class="wrap">
+      <h1>Current Prototypes</h1>
+      <p>
+        Board and card games I'm currently designing, in various stages of development. Click a game to find out more.
+      </p>
+    </div>
+  </section>
+
+  <main>
+    <!--
+      To add a game to Pitching or Play:
+        1. Copy prototypes/template/ to prototypes/<your-game>/
+        2. Copy an example card below, then change the href, image, title, role and description
+    -->
+
+    <!-- ================= PITCHING ================= -->
+    <section class="section" id="pitching">
+      <div class="wrap">
+        <div class="section-banner"><h2>Games Currently Pitching</h2></div>
+
+        <div class="grid">
+          <a class="card" href="prototypes/scribe/index.html">
+            <div class="card-media" style="--c1:#b7832f; --c2:#2a1d0e;">
+              <img src="assets/img/scribe.jpg" alt="" loading="lazy" onerror="this.remove()">
+              <span class="badge">Pitching</span>
+              <span class="card-title">Scribe</span>
+            </div>
+            <p class="card-meta">
+              The Pharaoh requires a new Royal Bureaucrat! Write hieroglyphs onto your sacred text. Carefully balance
+              your grid to fulfil objectives and positional scoring, while performing your unique ritual puzzle.
+            </p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PLAYABLE ================= -->
+    <section class="section" id="play">
+      <div class="wrap">
+        <div class="section-banner"><h2>Games You Can Play</h2></div>
+
+        <div class="grid">
+          <a class="card" href="prototypes/template/index.html">
+            <div class="card-media" style="--c1:#2d6a4f; --c2:#0e1a15;">
+              <img src="assets/img/game-template.jpg" alt="" loading="lazy" onerror="this.remove()">
+              <span class="badge">Play Online</span>
+              <span class="card-title">Game Title</span>
+            </div>
+            <p class="card-meta">A one or two sentence pitch: the theme, player count and what makes it fun.</p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= EARLY DEVELOPMENT ================= -->
+    <!-- No pages for these yet. Copy an older-item block to add one. -->
+    <section class="section" id="early-development">
+      <div class="wrap">
+        <div class="section-banner"><h2>Early Development</h2></div>
+
+        <div class="older-list">
+          <div class="older-item">
+            <h3>Game Title</h3>
+            <p>A short description of the idea: the theme, the core mechanic and what you're exploring with it.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/js/site.js"></script>
+</body>
+</html>

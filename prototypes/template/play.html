@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Game Title - Play - Nathan Everett</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <style>
+    /* Styles specific to this game go here */
+    #game {
+      min-height: 480px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      text-align: center;
+      padding: 16px;
+    }
+  </style>
+</head>
+<!-- data-root points back to the site root so the shared header links work from this folder -->
+<body data-root="../../">
+
+  <main class="detail">
+    <div class="wrap">
+      <p class="card-role" style="color:var(--accent);border:0;">Board Game Prototype</p>
+      <h1 style="text-transform:uppercase;">Game Title</h1>
+      <p class="section-intro">
+        A one-line pitch: theme, player count, play time.
+      </p>
+
+      <!-- ============ GAME GOES HERE ============ -->
+      <div id="game">This prototype isn't playable yet. Check back soon!</div>
+      <!-- ======================================== -->
+
+      <h2>How to Play</h2>
+      <ol>
+        <li>Setup&hellip;</li>
+        <li>On your turn&hellip;</li>
+        <li>The game ends when&hellip;</li>
+      </ol>
+
+      <a class="back-link" href="index.html">&larr; Back to game details</a>
+    </div>
+  </main>
+
+  <script src="../../assets/js/site.js"></script>
+  <script>
+    // Game logic goes here, or in a separate game.js file in this folder
+  </script>
+</body>
+</html>
