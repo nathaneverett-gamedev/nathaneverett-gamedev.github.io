@@ -41,6 +41,7 @@
         }
       ]
     },
+    { label: "Uni Work", href: "uni-work.html" },
     { label: "About & Resume", href: "about.html" }
   ];
 
@@ -105,4 +106,21 @@
       "<p>All trademarks and game titles are the property of their respective owners.</p>" +
     "</div>";
   document.body.appendChild(footer);
+
+  // YouTube thumbnails: swap in the player on click. Pages opened from disk (file://)
+  // can't embed YouTube, so there the link just opens the video on YouTube.
+  document.querySelectorAll("a.yt[data-yt]").forEach(function (a) {
+    a.addEventListener("click", function (e) {
+      if (!/^https?:$/.test(location.protocol)) return;
+      e.preventDefault();
+      var frame = document.createElement("iframe");
+      frame.className = "video";
+      frame.src = "https://www.youtube.com/embed/" + a.getAttribute("data-yt") + "?autoplay=1";
+      frame.title = a.getAttribute("aria-label") || "YouTube video";
+      frame.allow = "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen";
+      frame.allowFullscreen = true;
+      frame.referrerPolicy = "strict-origin-when-cross-origin";
+      a.replaceWith(frame);
+    });
+  });
 })();

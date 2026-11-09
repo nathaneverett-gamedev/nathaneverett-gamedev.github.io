@@ -1,0 +1,2536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Don't Get Splat — Playtest</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#181820; --panel:#22222c; --panel2:#2b2b38; --ink:#f2f1f6; --sub:#a9a8b8;
+    --red:#e6484a; --blue:#4d8fd6; --green:#3fb87f; --yellow:#e7c027;
+    --purple:#9b6bd6;
+    --mud:#8a5a2e; --accent:#ffd166;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Nunito',sans-serif;}
+  h1,h2,h3,.brand{font-family:'Fredoka',sans-serif;}
+  #app{max-width:1200px;margin:0 auto;padding:18px 18px 140px;}
+
+  .hero{text-align:center;padding:60px 20px;}
+  .hero h1{font-size:2.6rem;margin:0 0 6px;letter-spacing:.5px;}
+  .hero p{color:var(--sub);max-width:560px;margin:0 auto 28px;line-height:1.5;}
+  .opt-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+  .opt-btn{background:var(--panel2);border:2px solid transparent;color:var(--ink);padding:16px 22px;
+    border-radius:14px;font-family:'Fredoka';font-size:1.1rem;cursor:pointer;transition:.15s;}
+  .opt-btn:hover{border-color:var(--accent);transform:translateY(-2px);}
+  .opt-btn small{display:block;color:var(--sub);font-family:'Nunito';font-weight:400;font-size:.75rem;margin-top:4px;}
+  .ai-setup-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:24px;}
+  .ai-setup-slot{background:var(--panel2);border-radius:14px;padding:14px 16px;min-width:150px;text-align:left;}
+  .ai-setup-label{font-family:'Fredoka';font-weight:600;font-size:.95rem;margin-bottom:8px;}
+  .ai-setup-select{width:100%;background:var(--panel);color:var(--ink);border:2px solid transparent;border-radius:8px;
+    padding:8px 10px;font-family:'Nunito';font-weight:700;font-size:.9rem;cursor:pointer;}
+  .ai-setup-select:hover,.ai-setup-select:focus{border-color:var(--accent);outline:none;}
+
+  .topbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;
+    background:var(--panel);border-radius:14px;padding:14px 18px;margin-bottom:14px;}
+  .roundpill{background:var(--panel2);padding:6px 14px;border-radius:999px;font-weight:800;}
+  .scorecard{flex:1;min-width:220px;background:linear-gradient(135deg,#33334a,#26263a);
+    border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;}
+  .scorecard img{width:44px;border-radius:5px;box-shadow:0 1px 4px rgba(0,0,0,.5);}
+  .scorecard .label{font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--sub);}
+  .scorecard .text{font-weight:700;}
+  .status{font-style:italic;color:var(--accent);font-weight:600;}
+
+  .board-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;margin-bottom:20px;}
+  @media (max-width:680px){ .board-grid{grid-template-columns:1fr;} }
+  .player{background:var(--panel);border-radius:14px;padding:16px;border:2px solid transparent;}
+  .player.human{border-color:var(--accent);}
+  .player .phead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+  .player .pname{font-family:'Fredoka';font-weight:600;}
+  .player .ptotal{font-weight:800;color:var(--accent);}
+  .stacks{display:flex;gap:10px;}
+  .stack{flex:1;min-width:0;background:var(--panel2);border-radius:8px;padding:5px;display:flex;flex-direction:column;align-items:center;}
+  .stack .shead{font-size:.62rem;font-weight:800;text-transform:uppercase;color:var(--sub);margin-bottom:3px;}
+  .pile{position:relative;}
+  .pilecard{position:absolute;left:0;border-radius:5px;box-shadow:0 2px 5px rgba(0,0,0,.5);display:block;}
+  .pilecard.top{outline:2px solid var(--accent);}
+  .cardwrap{position:relative;display:inline-block;flex-shrink:0;}
+  .artcard{position:relative;display:inline-block;}
+  .simplecard{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.5);border:2px dashed rgba(255,255,255,.55);}
+  .simplecard-num{font-family:'Fredoka';font-weight:700;font-size:1.3rem;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5);}
+  .simplecard-tag{font-size:.55rem;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.85);margin-top:2px;}
+  .valbadge{position:absolute;top:-6px;left:-6px;background:#111;color:var(--accent);border:1.5px solid var(--accent);
+    border-radius:999px;min-width:20px;height:20px;padding:0 4px;font-size:.68rem;font-weight:800;
+    display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.6);z-index:5;}
+  .pick-badge{position:absolute;bottom:-6px;right:-6px;background:var(--accent);color:#222;border-radius:999px;
+    width:20px;height:20px;font-size:.68rem;font-weight:800;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 1px 4px rgba(0,0,0,.6);z-index:5;}
+  .pile-empty{display:flex;align-items:center;justify-content:center;font-size:.58rem;color:var(--sub);
+    border:1px dashed rgba(255,255,255,.15);border-radius:6px;}
+  .mudrow{margin-top:8px;font-size:.7rem;color:var(--sub);display:flex;align-items:center;flex-wrap:wrap;gap:4px;}
+  .mudthumb{width:34px;border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.5);}
+  .mudchip{display:inline-block;background:var(--mud);color:#fff;border-radius:5px;padding:2px 6px;margin:2px 3px 0 0;font-size:.65rem;}
+
+  .log{background:var(--panel);border-radius:14px;padding:12px 16px;margin-bottom:14px;max-height:180px;overflow-y:auto;}
+  .log h3{margin:0 0 6px;font-size:.85rem;color:var(--sub);text-transform:uppercase;letter-spacing:1px;}
+  .log .entry{font-size:.82rem;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05);}
+
+  .handbar{position:fixed;left:0;right:0;bottom:0;background:var(--panel);border-top:2px solid var(--panel2);
+    padding:10px 18px;display:flex;gap:10px;overflow-x:auto;align-items:center;}
+  .handbar .tag{color:var(--sub);font-size:.8rem;white-space:nowrap;}
+  .handcard{width:76px;border-radius:8px;cursor:pointer;transition:.12s;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.5);}
+  .handcard:hover{transform:translateY(-4px);}
+  .handcard.disabled{cursor:default;opacity:.55;}
+  .handcard.selected{outline:3px solid var(--accent);}
+
+  .overlay{position:fixed;inset:0;background:rgba(10,10,14,.72);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px;}
+  .modal{background:var(--panel2);border-radius:16px;padding:22px;max-width:420px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.5);}
+  .modal h3{margin:0 0 14px;font-size:1.05rem;}
+  .modal .opt{display:block;width:100%;text-align:left;background:var(--panel);color:var(--ink);border:none;
+    border-radius:10px;padding:11px 14px;margin-bottom:8px;cursor:pointer;font-family:'Nunito';font-weight:700;}
+  .modal .opt:hover{background:var(--accent);color:#222;}
+
+  .summary{background:var(--panel);border-radius:14px;padding:16px;margin-bottom:14px;}
+  .summary table{width:100%;border-collapse:collapse;font-size:.85rem;}
+  .summary th,.summary td{text-align:left;padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.08);}
+  .continue-btn,.restart-btn{background:var(--accent);color:#222;border:none;border-radius:10px;
+    padding:12px 20px;font-family:'Fredoka';font-weight:600;font-size:1rem;cursor:pointer;margin-top:10px;}
+
+  .final{text-align:center;padding:40px 10px;}
+  .final .rank{display:inline-block;background:var(--panel);border-radius:14px;padding:14px 26px;margin:8px;min-width:160px;}
+  .final .rank.win{border:2px solid var(--accent);}
+  .final .rank .n{font-family:'Fredoka';font-size:1.3rem;}
+  .final .rank .t{color:var(--accent);font-weight:800;font-size:1.4rem;}
+
+  .sim-panel{margin:36px auto 0;max-width:560px;background:var(--panel2);border-radius:14px;padding:16px 18px;text-align:left;}
+  .sim-panel p{margin:0 0 12px;font-size:.85rem;}
+  .sim-panel label{font-size:.85rem;color:var(--sub);margin-right:12px;}
+  .sim-panel input{width:80px;background:var(--panel);color:var(--ink);border:2px solid transparent;border-radius:8px;padding:6px 8px;font-weight:700;}
+  .sim-panel .opt-btn{padding:10px 16px;font-size:.95rem;}
+  .sim-panel .opt-btn[disabled]{opacity:.5;cursor:default;}
+  .sim-panel .status{margin-top:8px;}
+  .sim-scroll{overflow-x:auto;}
+  .sim-results td,.sim-results th{white-space:nowrap;}
+  .sim-results th{font-size:.72rem;white-space:normal;vertical-align:bottom;}
+
+  .pile img,.pile .simplecard{cursor:pointer;}
+  .zoom-modal{text-align:center;max-width:360px;}
+  .zoom-modal .zoom-card{display:flex;justify-content:center;margin:0 auto 12px;}
+  .zoom-modal .zoom-text{font-size:.95rem;margin:0 0 14px;}
+  .zoom-modal .zoom-btns{display:flex;gap:10px;}
+  .zoom-modal .zoom-btns button{flex:1;margin:0;text-align:center;padding:14px 10px;font-size:1rem;}
+  .zoom-modal .zoom-btns .confirm{background:var(--accent);color:#222;}
+  #card-preview{position:fixed;pointer-events:none;z-index:999;display:none;
+    filter:drop-shadow(0 14px 30px rgba(0,0,0,.65));}
+  #card-preview img{display:block;width:190px;border-radius:12px;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="card-preview"><img id="card-preview-img" src=""/></div>
+
+<script>
+/* ============================= DATA ============================= */
+const COLORS = ['red','blue','green','yellow'];
+const COLOR_NAMES = {red:'Red',blue:'Blue',green:'Green',yellow:'Yellow',purple:'Purple'};
+const COLOR_HEX = {red:'var(--red)',blue:'var(--blue)',green:'var(--green)',yellow:'var(--yellow)',purple:'var(--purple)'};
+const COLOR_LETTER = {red:'R', blue:'B', green:'G', yellow:'Y'};
+function pokerSrc(name){ return 'cards/poker/' + name + '.jpg'; }
+function cardBackSrc(name){ return 'cards/cardBacks/' + name + '.jpg'; }
+const CARD_IMAGES = (function(){
+  const card = {}, starter = {}, bigSplat = {};
+  Object.keys(COLOR_LETTER).forEach(function(color){
+    const L = COLOR_LETTER[color];
+    card[color] = {};
+    for(let v=-5; v<=10; v++) card[color][String(v)] = pokerSrc(L+v);
+    starter[color] = {};
+    for(let v=1; v<=3; v++) starter[color][String(v)] = pokerSrc(L+'S'+v);
+    bigSplat[color] = {};
+    // Splat prints as 1/2/3, Big Splat as 4/5 — a clean split with no
+    // value overlap between the two decks (Big Splat is always worth more
+    // than any Splat card).
+    for(let v=4; v<=5; v++) bigSplat[color][String(v)] = pokerSrc(L+'S'+v);
+  });
+  card.purple = {'2':pokerSrc('P2'), '3':pokerSrc('P3'), '4':pokerSrc('P4')};
+  return {
+    card: card, starter: starter, bigSplat: bigSplat,
+    mud: {
+      play_any: pokerSrc('Mud1'),
+      use_under: pokerSrc('Mud2'),
+      facedown_instead: pokerSrc('Mud3'),
+      move2: pokerSrc('Mud4'),
+      rearrange: pokerSrc('Mud5')
+    },
+    majority: {
+      yellow: pokerSrc('ObjMaj2'),
+      red: pokerSrc('ObjMaj3'),
+      green: pokerSrc('ObjMaj4'),
+      blue: pokerSrc('ObjMaj5'),
+      single_colour: pokerSrc('ObjMaj6'),
+      splat_facedown: pokerSrc('ObjMaj7'),
+      big_stacks: pokerSrc('ObjMaj9')
+    },
+    back: cardBackSrc('backMain')
+  };
+})();
+
+
+const VALUE_DEFS = [
+  {v:-5, a:'gain_starter_2',            t:'Gain 2 Splat cards'},
+  {v:-4, a:'gain_big_splat',            t:'Gain a Big Splat card'},
+  {v:-3, a:'gift_mud',                  t:'Give your neighbour a Mud card'},
+  {v:-2, a:'gain_starter',              t:'Gain a Splat card'},
+  {v:-1, a:'gain_starter',              t:'Gain a Splat card'},
+  {v:0,  a:'move_top',                  t:'Move the top card of one stack to another stack'},
+  {v:1,  a:'rearrange',                 t:'Rearrange cards in this stack'},
+  {v:2,  a:'give_starter_neighbours',   t:'Give your neighbour a Splat card'},
+  {v:3,  a:'gain_mud',                  t:'Gain a Mud card'},
+  {v:4,  a:'give_big_splat_neighbour',  t:'Give your neighbour a Big Splat card'},
+  {v:5,  a:'give_starter_neighbours_2', t:'Give your neighbour 2 Splat cards'},
+  {v:6,  a:'destroy_other',             t:'Destroy a card on top of a different stack'},
+  {v:7,  a:'gain_mud_2',                t:'Gain 2 Mud cards'},
+  {v:8,  a:'turn_facedown',             t:'Flip 2 other top cards (destroy any already flipped)'},
+  {v:9,  a:'destroy_under',             t:'Flip the 2 cards under this (destroy any already flipped)'},
+  {v:10, a:'destroy_facedown_starter',  t:'Destroy 3 splat or flipped cards'}
+  // The "?" (chain_under) card remains pulled out — flagged as a likely
+  // source of bugs. Re-add it here (with its ability/handling below) if it
+  // comes back. Each colour is now 16 values (-5..10) instead of 15, matching
+  // the updated poker-deck art (adds the new -5 "Gain 2 Splat cards" card).
+];
+
+// Purple cards are wild: they can be played into any stack (like a face-down
+// marker's target choice) but keep 'purple' as their own colour/origin, so
+// they break up an otherwise single-coloured stack. They have no ability of
+// their own — only values 2-4 exist as purple art.
+const PURPLE_VALUE_DEFS = VALUE_DEFS.filter(def=>[2,3,4].includes(def.v));
+const PURPLE_COPIES_PER_VALUE = 3;
+
+const MUD_TYPES = [
+  {key:'rearrange',        t:'Rearrange cards in one stack before playing'},
+  {key:'play_any',         t:'You may play a card into any paint stack'},
+  {key:'use_under',        t:"Perform the action of the card under the card you're playing instead"},
+  {key:'facedown_instead', t:'Play this card face down instead'},
+  {key:'move2',            t:'Move 2 top cards before playing this card'}
+];
+
+const SCORING_SINGLE_COLOUR = {id:'m_single', type:'majority', color:null, singleColour:true, text:'Majority: Most single coloured stacks'};
+const SCORING_SPLAT_FACEDOWN = {id:'m_splatfd', type:'majority', color:null, custom:'splat_facedown', text:'Majority: Most Splat and face down cards'};
+const SCORING_BIG_STACKS = {id:'m_bigstacks', type:'majority', color:null, custom:'big_stacks', text:'Majority: Most stacks with 3 or more cards'};
+let SCORING_MAJORITY, SCORING_POOL;
+function recomputeScoringPool(){
+  SCORING_MAJORITY = COLORS.map(c=>({id:'m_'+c, type:'majority', color:c, text:'Majority: Most '+COLOR_NAMES[c]}));
+  SCORING_POOL = [...SCORING_MAJORITY, SCORING_SINGLE_COLOUR, SCORING_SPLAT_FACEDOWN, SCORING_BIG_STACKS];
+}
+recomputeScoringPool();
+
+/* ============================= STATE ============================= */
+// Test build: the -test copy of this page (dont_get_splat-test.html) shows
+// the development features — per-AI personality picks, the cleanup / give /
+// card-lineup options and the AI simulator. The normal build plays the
+// defaults (keep top 1, one neighbour, printed cards) with random AIs.
+const TEST_BUILD = /-test\.html$/i.test(decodeURIComponent(location.pathname));
+let state = { phase:'intro', players:[], deck:[], discard:[], starterDeck:[], bigSplatDeck:[], scoringDeck:[], round:0,
+  roundScoreCard:null, log:[], modal:null, pickResolve:null, pickableUids:[], pickPrompt:'', continueResolve:null,
+  statusText:'', resolvingName:null, passDirectionBase:'right', passDirection:'right',
+  introNumAI:null, introAITypes:[], keepTopCards:1, giveBoth:false, newLineup:false, aiDenial:true, aiGiftCredit:true, aiMudValue:true, aiMudOption:true, aiMudAll:true, aiCarryAll:true, aiMudChain:true, destroy89:true };
+let modalResolver = null;
+let uidCounter = 1;
+function uid(){ return uidCounter++; }
+
+/* ============================= UNDO ============================= */
+// A "Back" button is offered at every human decision point during a turn.
+// Clicking it unwinds back to the start of the current turn (before the
+// first card was picked) and lets the human redo it from scratch.
+class UndoSignal extends Error {}
+function onBackClick(){
+  state.cardZoom = null;
+  if(state.pickResolve){
+    const r = state.pickResolve; state.pickResolve = null; state.pickableUids = []; state.pickPrompt = '';
+    r('__UNDO__');
+  } else if(modalResolver){
+    const r = modalResolver; modalResolver = null; state.modal = null;
+    r('__UNDO__');
+  }
+}
+
+/* ============================= HELPERS ============================= */
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+function delay(ms){ return state.simMode ? Promise.resolve() : new Promise(r=>setTimeout(r,ms)); }
+function fmtVal(v){ return v>0? '+'+v : String(v); }
+function cardShortLabel(c){ return (c.color? COLOR_NAMES[c.color] : 'Starter') + ' ' + fmtVal(c.value); }
+function log(msg){ if(state.simMode) return; state.log.unshift(msg); if(state.log.length>150) state.log.pop(); render(); }
+
+// Gift options. giveBoth: every give-ability hits each neighbour once (just
+// the one opponent in a 2-player game) instead of the pass-token neighbour.
+// newLineup: the 2-5 values are reworked — 2 and 3 give a Splat, 4 gains a
+// Mud, 5 gives a Big Splat — with 2 starting Splats and 12 Big Splats.
+// The "both neighbours" setup uses both; "one neighbour, new lineup" only
+// the second.
+const GIVE_BOTH_DEFS = {
+  [-3]:{a:'gift_mud',                 t:'Give each neighbour a Mud card'},
+  2:   {a:'give_starter_neighbours',  t:'Give each neighbour a Splat card'},
+  3:   {a:'give_starter_neighbours',  t:'Give each neighbour a Splat card'},
+  4:   {a:'gain_mud',                 t:'Gain a Mud card'},
+  5:   {a:'give_big_splat_neighbour', t:'Give each neighbour a Big Splat card'}
+};
+// Printed 6-10 (default; destroy89 off = the old cards): 6 flips 2 other face-up top cards (already
+// flipped ones are left alone), 8 destroys 3 Splat or flipped cards (the old
+// 10), 9 destroys the 2 cards under it, and 10 destroys 2 other top cards.
+const DESTROY_89_DEFS = {
+  6:  {a:'flip_2_tops',              t:'Flip 2 other top cards (already flipped cards stay)'},
+  8:  {a:'destroy_facedown_starter', t:'Destroy 3 Splat or flipped cards'},
+  9:  {a:'destroy_under',            t:'Destroy the 2 cards under this'},
+  10: {a:'turn_facedown',            t:'Destroy 2 other top cards'}
+};
+function effectiveDef(def){
+  if(state.destroy89 && DESTROY_89_DEFS[def.v]) return DESTROY_89_DEFS[def.v];
+  const d = state.newLineup && GIVE_BOTH_DEFS[def.v];
+  if(!d) return def;
+  return state.giveBoth ? d : {...d, t:d.t.replace('each neighbour','your neighbour')};
+}
+function buildMainDeck(){
+  const deck=[];
+  COLORS.forEach(color=>{
+    VALUE_DEFS.forEach(printed=>{
+      const def = effectiveDef(printed);
+      deck.push({uid:uid(), color, origin:color, value:printed.v, printValue:printed.v, ability:def.a, text:def.t, isStarter:false, isFaceDown:false});
+    });
+  });
+  PURPLE_VALUE_DEFS.forEach(def=>{
+    for(let copy=0; copy<PURPLE_COPIES_PER_VALUE; copy++){
+      deck.push({uid:uid(), color:'purple', origin:'purple', value:def.v, printValue:def.v, ability:null, text:'Can be played in any stack', isStarter:false, isFaceDown:false});
+    }
+  });
+  return shuffle(deck);
+}
+function randomStarter(){
+  if(state.starterDeck.length===0){
+    const reclaimed = state.discard.filter(c=>c.isStarter);
+    if(reclaimed.length>0){
+      state.starterDeck = shuffle(reclaimed);
+      state.discard = state.discard.filter(c=>!c.isStarter);
+      if(state.simStats) state.simStats.splatReshuffles++;
+      log('The Splat deck ran out — reshuffled from the discard pile.');
+    }
+  }
+  if(state.starterDeck.length===0){
+    // Fallback so play can't hard-crash if every starter is somehow tied up at once.
+    if(state.simStats) state.simStats.splatEmpty++;
+    log('No Splat cards available anywhere — this should be rare.');
+    const vals=[1,2,3];
+    const color = COLORS[Math.floor(Math.random()*COLORS.length)];
+    const v = vals[Math.floor(Math.random()*vals.length)];
+    return {uid:uid(), color, origin:color, value:v, printValue:v, ability:null, text:'', isStarter:true, isFaceDown:false};
+  }
+  return state.starterDeck.pop();
+}
+function buildStarterDeck(){
+  // Splat goes 1-3, Big Splat 4-5 — no value overlap between the two decks.
+  // 3 copies each of 1 and 2, plus 2 copies of 3.
+  const copyCounts = {1:3, 2:3, 3:2};
+  const pool=[];
+  COLORS.forEach(color=>{
+    Object.keys(copyCounts).forEach(vStr=>{
+      const v = Number(vStr);
+      for(let copy=0; copy<copyCounts[v]; copy++){
+        pool.push({uid:uid(), color, origin:color, value:v, printValue:v, ability:null, text:'', isStarter:true, isFaceDown:false});
+      }
+    });
+  });
+  return shuffle(pool);
+}
+function randomBigSplat(){
+  if(state.bigSplatDeck.length===0){
+    const reclaimed = state.discard.filter(c=>c.isBigSplat);
+    if(reclaimed.length>0){
+      state.bigSplatDeck = shuffle(reclaimed);
+      state.discard = state.discard.filter(c=>!c.isBigSplat);
+      if(state.simStats) state.simStats.bigReshuffles++;
+      log('The Big Splat deck ran out — reshuffled from the discard pile.');
+    }
+  }
+  if(state.bigSplatDeck.length===0){
+    // Fallback so play can't hard-crash if every Big Splat card is somehow tied up at once.
+    if(state.simStats) state.simStats.bigEmpty++;
+    log('No Big Splat cards available anywhere — this should be rare.');
+    const vals=[4,5];
+    const color = COLORS[Math.floor(Math.random()*COLORS.length)];
+    const v = vals[Math.floor(Math.random()*2)];
+    return {uid:uid(), color, origin:color, value:v, printValue:v, ability:null, text:'', isStarter:false, isBigSplat:true, isFaceDown:false};
+  }
+  return state.bigSplatDeck.pop();
+}
+const BIG_SPLAT_VALUES = [4,5];
+// The "give to both neighbours" option grows the deck to 12: two 4s and
+// one 5 per colour.
+function bigSplatCopies(v){ return state.newLineup && v===4 ? 2 : 1; }
+// Average value of a Big Splat draw for the current deck make-up.
+function bigSplatEV(){
+  const n = BIG_SPLAT_VALUES.reduce((a,v)=>a+bigSplatCopies(v),0);
+  return BIG_SPLAT_VALUES.reduce((a,v)=>a+v*bigSplatCopies(v),0)/n;
+}
+function buildBigSplatDeck(){
+  const pool=[];
+  COLORS.forEach(color=>{
+    BIG_SPLAT_VALUES.forEach(v=>{
+      for(let copy=0; copy<bigSplatCopies(v); copy++){
+        pool.push({uid:uid(), color, origin:color, value:v, printValue:v, ability:null, text:'', isStarter:false, isBigSplat:true, isFaceDown:false});
+      }
+    });
+  });
+  // 4 colours x 2 values (4 and 5) x 1 copy = 8 cards, matching the printed deck.
+  return shuffle(pool);
+}
+function randomMud(){
+  const m = MUD_TYPES[Math.floor(Math.random()*MUD_TYPES.length)];
+  return {uid:uid(), key:m.key, t:m.t};
+}
+function drawCards(n){
+  const out=[];
+  for(let i=0;i<n;i++){
+    if(state.deck.length===0){
+      // Only real, colour-bearing, non-starter cards get reshuffled back in.
+      // A face-down marker (color:null) isn't a valid deck card, and starter
+      // cards belong to their own separate starter deck — neither should
+      // leak into the main numbered deck (and from there into hands/drafts).
+      const usable = state.discard.filter(c=>c.color!==null && !c.isStarter && !c.isBigSplat);
+      if(usable.length===0) break;
+      state.deck = shuffle(usable);
+      state.discard = state.discard.filter(c=>c.color===null || c.isStarter || c.isBigSplat);
+      log('The deck ran out — reshuffled from the discard pile.');
+    }
+    out.push(state.deck.pop());
+  }
+  return out;
+}
+// The pass-direction token (double-sided, flips each round) decides which
+// single neighbour receives a "give to neighbour" ability's cards. Drafted
+// hands pass the OPPOSITE way (see handFromOffset below), so a give-ability
+// always sends its cards against the direction hands are flowing.
+// 'right' = (idx+1), 'left' = (idx-1).
+function passNeighbourOf(idx){
+  const n = state.players.length;
+  return state.passDirection==='left' ? (idx-1+n)%n : (idx+1)%n;
+}
+// Everyone a give-ability hits: the pass-token neighbour, or with the
+// "both neighbours" option each neighbour once (only one in a 2-player game).
+function giveTargetsOf(idx){
+  if(!state.giveBoth) return [passNeighbourOf(idx)];
+  const n = state.players.length;
+  return [...new Set([(idx+1)%n, (idx-1+n)%n])];
+}
+function giveTargetCount(){ return state.giveBoth ? Math.min(2, state.players.length-1) : 1; }
+const PASS_TOKEN_IMG = {right:'Pass1.png', left:'Pass2.png'};
+
+/* ============================= AI PERSONALITIES =============================
+   Five distinct AI archetypes, assigned to AI opponents at random each game
+   (with replacement — a game can have two or more of the same type):
+   - minimizer: baseline "simple AI" — plays whichever card leaves its total
+     lowest once the card's ability resolves, passing its worst cards off
+     to its neighbour. Only uses the simple Mud tricks (face down, play anywhere).
+   - goal:      reads whichever majority goal card(s) are active this round
+     and deliberately dodges them — since a count of 0 never earns a bad
+     majority bonus, it drafts to keep its count toward each active goal at
+     (or as close to) zero, even passing up otherwise-good cards to do it.
+   - destroyer: flips/destroys as much as it can — plays whichever card
+     would wipe the most points off its own board (6/8/9/10, or Mud's
+     "use the ability underneath"), but only when there's a good target;
+     otherwise plays low and keeps its destroy cards stored for later.
+   - planner:   combo player. Simulates its own board for every "play this
+     now, store that for next turn" pair (optionally spending a Mud card on
+     either), so it finds chains like "yellow 8 flips two tops, then the
+     stored yellow 9 flips the 8 itself" and carries them out.
+   - chaos:     hoards and plays "give your neighbour a Splat/Big Splat card"
+     cards above almost anything else, and uses Mud's "use the ability of
+     the card underneath instead" to reactivate a give-ability already
+     sitting in a stack for a second helping.
+   Every AI judges a card by simulating what it would really do to its own
+   board (see the Planner section below), and the other four all lean
+   lightly away from feeding an active goal — dodging goals isn't their
+   point, but it's free to lean that way when it doesn't cost them anything.
+*/
+const AI_TYPES = ['minimizer','goal','destroyer','planner','chaos'];
+const AI_TYPE_LABELS = {minimizer:'Minimizer', goal:'Goal Chaser', destroyer:'Destroyer', planner:'Planner', chaos:'Chaos'};
+// Flipping is close enough to destroying (a flipped card scores 0) that the
+// Destroyer chases the 8 and 9 as well.
+const DESTROY_ABILITY_STRENGTH = {destroy_facedown_starter:10, destroy_under:9, turn_facedown:8, destroy_other:6, flip_2_tops:6};
+// Give-to-neighbour abilities, ranked by how much chaos they cause — Big
+// Splat and double-Splat gifts outweigh a single Splat, and gifting Mud
+// (helpful, not harmful, to the recipient) is a distant last resort.
+const GIVE_ABILITY_STRENGTH = {give_starter_neighbours_2:5, give_big_splat_neighbour:4, give_starter_neighbours:3, gift_mud:1};
+function activeGoalCards(){ return [state.roundScoreCard, state.roundScoreCard2].filter(Boolean); }
+// All colours named by an active per-colour majority goal this round.
+function activeGoalColors(){ return activeGoalCards().filter(g=>g.color).map(g=>g.color); }
+// How much this card would feed (negative) or help dodge (positive) the
+// active goal(s) if drafted — the raw goal signal, independent of how
+// heavily any particular AI personality weighs it. A count of 0 toward a
+// goal never earns its majority bonus, so "feeding" a goal here always
+// means growing a count we'd rather keep at (or near) zero.
+function goalSafetyDelta(player, card){
+  let delta = 0;
+  activeGoalCards().forEach(goal=>{
+    if(goal.color){
+      if(card.color===goal.color) delta -= 12;
+    } else if(goal.custom==='splat_facedown'){
+      const growsSplatCount = ['gain_starter','gain_starter_2','gain_big_splat', ...(state.destroy89 ? ['flip_2_tops'] : ['turn_facedown','destroy_under'])].includes(card.ability);
+      if(growsSplatCount) delta -= 8;
+    } else if(goal.custom==='big_stacks'){
+      // "Most stacks with >=3 cards" — avoid the card that tips a 2-card
+      // stack over the threshold; stacks already at 3+ are counted anyway.
+      // (Wild/purple cards have no stack of their own — skip them.)
+      if(card.color && card.color!=='purple' && player.stacks[card.color].length===2) delta -= 6;
+    } else if(goal.singleColour){
+      // Wild cards are the tool for spoiling a pure stack's single-colour
+      // status later (see goalChaserPlacement) — worth holding onto.
+      if(card.color==='purple') delta += 5;
+    }
+  });
+  return delta;
+}
+// How much weight the three non-Goal-Chaser personalities give goalSafetyDelta
+// when ranking cards to draft — enough to nudge a close call, never enough to
+// override what they're actually trying to do (minimize value, destroy,
+// or set up a combo). The Goal Chaser ignores this entirely: for it, dodging
+// goals IS the objective, at full strength (see GOAL_CHASER_EXPOSURE_WEIGHT).
+const GOAL_AWARENESS_SECONDARY = 0.3;
+// Where should the Goal Chaser dump a wild/forced card to best DEFUSE the
+// active goal(s) — i.e. avoid growing whatever it's trying to keep at 0?
+function goalChaserPlacement(player, colorOptions){
+  const goalColors = activeGoalColors().filter(c=>colorOptions.includes(c));
+  if(goalColors.length>0){
+    const safe = colorOptions.filter(c=>!goalColors.includes(c));
+    if(safe.length>0) return safe[0];
+  }
+  if(activeGoalCards().some(g=>g.custom==='big_stacks')){
+    // Concentrate: a stack already at 3+ is counted anyway, so piling onto
+    // it costs nothing; otherwise use the smallest stack so it stays under 3.
+    const big = colorOptions.find(c=>player.stacks[c].length>=3);
+    if(big) return big;
+    let best=null, bestLen=Infinity;
+    colorOptions.forEach(c=>{ const len=player.stacks[c].length; if(len<bestLen){ bestLen=len; best=c; } });
+    return best;
+  }
+  if(activeGoalCards().some(g=>g.singleColour)){
+    // Spend the wild card spoiling a stack that's still pure, aiming for a
+    // "most single-coloured stacks" count of 0.
+    const pure = colorOptions.filter(c=>{
+      const s = player.stacks[c];
+      if(s.length===0) return false;
+      const origins = new Set(s.filter(cd=>cd.origin).map(cd=>cd.origin));
+      return origins.size===1;
+    });
+    if(pure.length>0) return pure[0];
+  }
+  return null;
+}
+// Which active goal colour (if any) should be shrunk right now — used when
+// the Goal Chaser gets to move or destroy a card and can reduce a count
+// that's currently feeding a majority it's trying to dodge.
+function targetGoalColor(player, colorOptions){
+  const goalColors = activeGoalColors().filter(c=>colorOptions.includes(c));
+  if(goalColors.length===0) return null;
+  return goalColors.reduce((a,b)=> player.stacks[b].length>player.stacks[a].length ? b : a);
+}
+// Which colour should a point-conscious AI steer AWAY from so it doesn't
+// hand itself a majority (and the bad points that come with it)?
+function avoidGoalColor(player, colorOptions){
+  const goalColors = activeGoalColors();
+  const safe = colorOptions.filter(c=>!goalColors.includes(c));
+  if(safe.length>0 && safe.length<colorOptions.length) return safe[0];
+  return null;
+}
+// Best own stack to destroy the top card of (maximises value removed).
+// goalAware adds a small tie-breaking nudge toward a stack that's currently
+// feeding an active colour goal, without letting it override the main
+// "destroy the most value" priority.
+function bestDestroyColor(player, excludeColor, allowed, goalAware){
+  const goalColors = goalAware ? activeGoalColors() : [];
+  let best=null, bestScore=-Infinity;
+  (allowed || COLORS).forEach(c=>{
+    if(c===excludeColor) return;
+    const s = player.stacks[c];
+    if(s.length===0) return;
+    const top = s[s.length-1];
+    const v = top.isFaceDown? 0 : top.value;
+    const score = v + (goalColors.includes(c) ? 3 : 0);
+    if(score>bestScore){ bestScore=score; best=c; }
+  });
+  return best;
+}
+/* ---------- Planner: combo lookahead ----------
+   The Planner simulates its own board for every (play now, store for next
+   turn) pair in its pool, each optionally boosted by one of its Mud cards,
+   and picks the pair that leaves the lowest board after both plays. The
+   pickers below are shared by the simulation AND the real resolution, so
+   the plan it finds is exactly the plan that happens. Random draws (Splat,
+   Big Splat) are simulated at their average value. */
+const PLANNER_SPLAT_EV = 1.875;     // average Splat card (3×1, 3×2, 2×3)
+const PLANNER_MUD_VALUE = 1;        // a held Mud card is worth ~1 point of future combo potential
+// With aiMudValue on, every AI instead values a held Mud card at what it's
+// worth if still unused at game end (2 points off the total, see
+// applyMudPenalties) — and handing a neighbour Mud gives them that much.
+const MUD_VALUE = 2;
+// With aiMudOption on, a held Mud card is also worth what it can do during
+// play — spending one saves the AI ~8 points on average, but players usually
+// hold 2-3 already, so each extra card adds less: the 1st held card gets the
+// full bonus, the 2nd half, the 3rd none. The bonus shrinks as the game runs
+// out of turns to use it in.
+const MUD_OPTION_VALUE = [3, 1.5, 0];
+function gameTurnsLeftFraction(){
+  const total = 3*TURNS_PER_ROUND;
+  const done = (Math.max(1,state.round)-1)*TURNS_PER_ROUND + (state.turn||1);
+  return Math.max(0, (total-done)/total);
+}
+function heldMudValue(sim){
+  if(!state.aiMudValue) return 0;
+  const left = state.aiMudOption ? gameTurnsLeftFraction() : 0;
+  return sim.mud.reduce((a,_,i)=>a + MUD_VALUE + (MUD_OPTION_VALUE[i]||0)*left, 0);
+}
+const PLANNER_GIFT_VALUE = 0.5;     // share of a gift's value it counts as its own gain
+const PLANNER_CARRY_WEIGHT = 0.3;   // weight on top card(s) that survive cleanup into next round
+// With aiCarryAll on, every AI (Planner included) weighs the top card(s) left
+// after cleanup by how often a carried card really scores again: about 73% of
+// carried cards (64% by value) are still face up at the next round's end.
+const CARRY_SURVIVAL = 0.65;
+function simCarry(sim){
+  if(state.round>=3) return 0;
+  const keep = state.keepTopCards || 1;
+  const w = state.aiCarryAll ? CARRY_SURVIVAL : PLANNER_CARRY_WEIGHT;
+  let t = 0;
+  COLORS.forEach(c=>sim.stacks[c].slice(-keep).forEach(cd=>{ t += w*topVal(cd); }));
+  return t;
+}
+// Carry-over value for the non-Planner personalities (only with aiCarryAll).
+function aiCarry(sim){ return state.aiCarryAll ? simCarry(sim) : 0; }
+const PLANNER_MUD_KEYS = ['use_under','play_any','facedown_instead','rearrange','move2'];
+// Rearrange and Move 2 Mud cards come with choices of their own, so a play
+// option using one also carries a mudArg — the stack and order to rearrange,
+// or the two moves to make — found by searching with the caller's scorer.
+// (Only with aiMudAll on; before that no AI used these two Mud types.)
+const MUD_CHOICE_KEYS = ['rearrange','move2'];
+
+function topVal(card){ return card.isFaceDown ? 0 : card.value; }
+function plannerCloneSim(sim){
+  const stacks = {}; COLORS.forEach(c=>stacks[c]=sim.stacks[c].slice());
+  return {stacks, virt:sim.virt.slice(), mud:sim.mud.slice(), gift:sim.gift, aiType:sim.aiType};
+}
+function simBase(player){
+  return {stacks:player.stacks, virt:[], mud:player.mudHand.map(m=>m.key), gift:0, aiType:player.aiType};
+}
+// Flip target: the face-up top worth the most. Destroying an already
+// flipped top is score-neutral, so it only wins over a negative card.
+function plannerFlipPick(stacks, colorOptions){
+  let best=null, bestGain=-Infinity;
+  colorOptions.forEach(c=>{
+    const s = stacks[c]; if(s.length===0) return;
+    const gain = topVal(s[s.length-1]);
+    if(gain>bestGain){ bestGain=gain; best=c; }
+  });
+  return best;
+}
+// Moving a card never changes the total, so just shrink a goal colour (or
+// shift the priciest top card) somewhere that doesn't feed another goal.
+function plannerMovePick(stacks){
+  const srcs = COLORS.filter(c=>stacks[c].length>0);
+  if(srcs.length===0) return null;
+  const src = targetGoalColor({stacks}, srcs) || srcs.reduce((a,b)=> topVal(stacks[b][stacks[b].length-1]) > topVal(stacks[a][stacks[a].length-1]) ? b : a);
+  const dsts = COLORS.filter(c=>c!==src);
+  return {src, dst: avoidGoalColor(null, dsts) || dsts[0]};
+}
+// Same order doRearrange's AI produces: highest buried first, lowest on top.
+function plannerRearrangeOrder(stack){
+  return [...stack].sort((a,b)=>topVal(b)-topVal(a));
+}
+// A Rearrange Mud card's two useful orders: 'low' leaves the cheapest card on
+// top (what survives cleanup), 'high' puts the priciest on top (ready to be
+// flipped/destroyed, or sitting right under a 9 played onto it).
+function mudRearrangeOrder(stack, order){
+  return order==='high' ? [...stack].sort((a,b)=>topVal(a)-topVal(b)) : plannerRearrangeOrder(stack);
+}
+function applyMudArg(sim, mudKey, arg){
+  const st = sim.stacks;
+  if(mudKey==='rearrange'){ st[arg.stack] = mudRearrangeOrder(st[arg.stack], arg.order); return; }
+  arg.moves.forEach(m=>{
+    if(st[m.src].length===0) return;
+    st[m.dst] = st[m.dst].concat([st[m.src][st[m.src].length-1]]);
+    st[m.src] = st[m.src].slice(0,-1);
+  });
+}
+function topMovesOn(stacks){
+  const ms = [];
+  COLORS.forEach(src=>{ if(stacks[src].length) COLORS.forEach(dst=>{ if(dst!==src) ms.push({src, dst}); }); });
+  return ms;
+}
+// Best choice for one Rearrange / Move 2 Mud card in a play option (argSlot
+// says which of its two Mud cards), under scoreFn (lower is better). Move 2
+// is a greedy search: the 3 most promising first moves, then every second
+// move after each. Choices are made on the board as it will be at that point,
+// i.e. after the first Mud card's action when choosing the second's.
+function bestMudArg(sim, card, opt, argSlot, scoreFn){
+  const mudKey = argSlot==='mudArg' ? opt.mud : opt.mud2;
+  const board = plannerCloneSim(sim);
+  if(argSlot==='mudArg2' && opt.mudArg) applyMudArg(board, opt.mud, opt.mudArg);
+  const scoreArg = arg => { const s = plannerCloneSim(sim); plannerSimPlay(s, card, {...opt, [argSlot]:arg}); return scoreFn(s); };
+  let best = null;
+  const consider = arg => { const score = scoreArg(arg); if(!best || score<best.score) best = {score, arg}; };
+  if(mudKey==='rearrange'){
+    COLORS.forEach(c=>{ if(board.stacks[c].length>=2) ['low','high'].forEach(order=>consider({stack:c, order})); });
+  } else {
+    const firsts = topMovesOn(board.stacks).map(m=>({m, score:scoreArg({moves:[m]})})).sort((a,b)=>a.score-b.score).slice(0,3);
+    firsts.forEach(({m})=>{
+      const s1 = plannerCloneSim(board); applyMudArg(s1, 'move2', {moves:[m]});
+      topMovesOn(s1.stacks).forEach(m2=>consider({moves:[m, m2]}));
+    });
+  }
+  return best && best.arg;
+}
+function plannerSimAbility(sim, key, col){
+  const st = sim.stacks;
+  switch(key){
+    case 'gain_starter': sim.virt.push(PLANNER_SPLAT_EV); break;
+    case 'gain_starter_2': sim.virt.push(PLANNER_SPLAT_EV, PLANNER_SPLAT_EV); break;
+    case 'gain_big_splat': sim.virt.push(bigSplatEV()); break;
+    case 'give_starter_neighbours': sim.gift += giveTargetCount()*PLANNER_SPLAT_EV; break;
+    case 'give_starter_neighbours_2': sim.gift += giveTargetCount()*2*PLANNER_SPLAT_EV; break;
+    case 'give_big_splat_neighbour': sim.gift += giveTargetCount()*bigSplatEV(); break;
+    case 'gift_mud': if(state.aiMudValue) sim.gift -= giveTargetCount()*MUD_VALUE; break;
+    case 'gain_mud': case 'gain_mud_2': {
+      const n = key==='gain_mud' ? 1 : 2;
+      for(let i=0;i<n && sim.mud.length<MUD_HAND_LIMIT;i++) sim.mud.push('unknown');
+      break;
+    }
+    case 'rearrange': if(st[col].length>=2) st[col] = plannerRearrangeOrder(st[col]); break;
+    case 'move_top': { const mv = plannerMovePick(st); if(mv) st[mv.dst].push(st[mv.src].pop()); break; }
+    case 'destroy_other': {
+      // Mirrors runAbility: the Goal Chaser shrinks a goal colour first.
+      const opts = COLORS.filter(x=>x!==col && st[x].length>0);
+      const c = sim.aiType==='goal'
+        ? (targetGoalColor({stacks:st}, opts) || bestDestroyColor({stacks:st}, col, opts))
+        : bestDestroyColor({stacks:st}, col, opts, true);
+      if(c) st[c].pop();
+      break;
+    }
+    case 'flip_2_tops': {
+      // Only face-up tops can be flipped; a flipped top is left as it is.
+      const opts = COLORS.filter(x=>x!==col && st[x].length>0 && !st[x][st[x].length-1].isFaceDown);
+      for(let i=0;i<2 && opts.length>0;i++){
+        const c = plannerFlipPick(st, opts);
+        st[c][st[c].length-1] = {...st[c][st[c].length-1], isFaceDown:true};
+        opts.splice(opts.indexOf(c),1);
+      }
+      break;
+    }
+    case 'turn_facedown': {
+      const opts = COLORS.filter(x=>x!==col && st[x].length>0);
+      for(let i=0;i<2 && opts.length>0;i++){
+        const c = plannerFlipPick(st, opts);
+        const s = st[c], top = s[s.length-1];
+        if(top.isFaceDown || state.destroy89) s.pop(); else s[s.length-1] = {...top, isFaceDown:true};
+        opts.splice(opts.indexOf(c),1);
+      }
+      break;
+    }
+    case 'destroy_under': {
+      const s = st[col];
+      const lowest = Math.max(0, s.length-3);
+      for(let i=s.length-2;i>=lowest;i--){
+        if(s[i].isFaceDown || state.destroy89) s.splice(i,1); else s[i] = {...s[i], isFaceDown:true};
+      }
+      break;
+    }
+    case 'destroy_facedown_starter': {
+      for(let k=0;k<3;k++){
+        let best=null, bestVal=-Infinity;
+        COLORS.forEach(c=>st[c].forEach((cd,idx)=>{
+          if((cd.isStarter||cd.isBigSplat||cd.isFaceDown) && topVal(cd)>bestVal){ bestVal=topVal(cd); best={c,idx}; }
+        }));
+        sim.virt.forEach((v,idx)=>{ if(v>bestVal){ bestVal=v; best={virt:true,idx}; } });
+        if(!best) break;
+        if(best.virt) sim.virt.splice(best.idx,1); else st[best.c].splice(best.idx,1);
+      }
+      break;
+    }
+    default: break;
+  }
+}
+// Simulate playing card with the play option opt: {target, mud, mudArg,
+// mud2, mudArg2} — up to two Mud cards, applied in order.
+function plannerSimPlay(sim, card, opt){
+  const muds = [opt.mud, opt.mud2].filter(Boolean);
+  muds.forEach(k=>sim.mud.splice(sim.mud.indexOf(k),1));
+  if(opt.mudArg) applyMudArg(sim, opt.mud, opt.mudArg);
+  if(opt.mudArg2) applyMudArg(sim, opt.mud2, opt.mudArg2);
+  const free = card.color==='purple' || muds.includes('play_any') || muds.includes('facedown_instead');
+  const col = free ? opt.target : card.color;
+  const stack = sim.stacks[col];
+  if(muds.includes('facedown_instead')){ stack.push({...card, isFaceDown:true}); return; }
+  const under = stack.length>0 ? stack[stack.length-1] : null;
+  const ability = muds.includes('use_under') ? (under && under.ability) || null : card.ability;
+  stack.push({...card, ability, isFaceDown:false});
+  if(ability) plannerSimAbility(sim, ability, col);
+}
+// Every way this card could be played: no Mud, one useful Mud card, or (with
+// aiMudChain) two chained, and every stack it could land in when the
+// placement is free. Rearrange / Move 2 options are only offered when a
+// scorer is given to choose their details.
+function plannerPlayOptions(sim, card, mudKeys = PLANNER_MUD_KEYS, scoreFn){
+  const held = sim.mud.filter(k=>mudKeys.includes(k));
+  const keys = [...new Set(held)];
+  const isAction = k => MUD_CHOICE_KEYS.includes(k);
+  const combos = [[], ...keys.map(k=>[k])];
+  if(state.aiMudChain && scoreFn){
+    keys.forEach(a=>keys.forEach(b=>{
+      if(a===b && (!isAction(a) || held.filter(k=>k===a).length<2)) return;
+      if(isAction(b) && !isAction(a)) return;              // Rearrange/Move 2 act before the play, so they go first
+      if(!isAction(a) && !isAction(b) && a>b) return;      // two modifiers: order doesn't matter
+      if([a,b].includes('facedown_instead') && !isAction(a)) return; // face down overrides the other modifiers
+      combos.push([a,b]);
+    }));
+  }
+  const opts = [];
+  combos.forEach(muds=>{
+    if(muds.some(isAction) && (!scoreFn || !state.aiMudAll)) return;
+    const free = card.color==='purple' || muds.includes('play_any') || muds.includes('facedown_instead');
+    (free ? COLORS : [card.color]).forEach(target=>{
+      const opt = {target, mud:muds[0]||null, mud2:muds[1]||null};
+      if(isAction(opt.mud) && !(opt.mudArg = bestMudArg(sim, card, opt, 'mudArg', scoreFn))) return;
+      if(isAction(opt.mud2) && !(opt.mudArg2 = bestMudArg(sim, card, opt, 'mudArg2', scoreFn))) return;
+      opts.push(opt);
+    });
+  });
+  return opts;
+}
+// Estimated end-of-round score for a simulated board (lower is better).
+function plannerEval(sim){
+  let total = 0;
+  COLORS.forEach(c=>sim.stacks[c].forEach(cd=>{ total += topVal(cd); }));
+  sim.virt.forEach(v=>{ total += v; });
+  total -= sim.gift*PLANNER_GIFT_VALUE;
+  total -= state.aiMudValue ? heldMudValue(sim) : sim.mud.length*PLANNER_MUD_VALUE;
+  total += simCarry(sim);
+  activeGoalCards().forEach(g=>{
+    if(g.color) total += 1.5*sim.stacks[g.color].length;
+    else if(g.custom==='splat_facedown') total += sim.virt.length + COLORS.reduce((a,c)=>a+sim.stacks[c].filter(cd=>cd.isStarter||cd.isBigSplat||cd.isFaceDown).length,0);
+    else if(g.custom==='big_stacks') total += 1.5*COLORS.filter(c=>sim.stacks[c].length>=3).length;
+  });
+  return total;
+}
+function plannerDraftPick(player, pool, isLastTurn){
+  const base = simBase(player);
+  let best = null;
+  pool.forEach(playCard=>{
+    const rest = pool.filter(c=>c!==playCard);
+    plannerPlayOptions(base, playCard, PLANNER_MUD_KEYS, plannerEval).forEach(opt=>{
+      const s1 = plannerCloneSim(base);
+      plannerSimPlay(s1, playCard, opt);
+      // Last turn (or nothing left to store): judge this play on its own.
+      const stores = (isLastTurn || rest.length===0) ? [null] : rest;
+      stores.forEach(storeCard=>{
+        let score = plannerEval(s1);
+        if(storeCard){
+          score = Infinity;
+          plannerPlayOptions(s1, storeCard).forEach(opt2=>{
+            const s2 = plannerCloneSim(s1);
+            plannerSimPlay(s2, storeCard, opt2);
+            score = Math.min(score, plannerEval(s2));
+          });
+        }
+        score -= denialValue(player, playCard, isLastTurn) + (storeCard ? denialValue(player, storeCard, isLastTurn) : 0);
+        if(!best || score<best.score) best = {score, playCard, storeCard, opt};
+      });
+    });
+  });
+  player._plan = {...best.opt};
+  return {playCard:best.playCard, storeCard:best.storeCard, passCards:pool.filter(c=>c!==best.playCard && c!==best.storeCard)};
+}
+
+/* ---------- Destroyer: target-aware destruction ----------
+   Uses the Planner's board simulation to measure how many points a card
+   would actually flip or destroy on its own board (including via a Mud
+   card), so it only chases destruction when there's something worth hitting. */
+const DESTROYER_MIN_TARGET = 3;   // points a flip/destroy must remove to be worth chasing
+const DESTROYER_MUD_COST = 2;     // extra points a Mud card must remove to be worth spending
+function simBoardSum(sim){
+  let t = 0;
+  COLORS.forEach(c=>sim.stacks[c].forEach(cd=>{ t += topVal(cd); }));
+  sim.virt.forEach(v=>{ t += v; });
+  return t;
+}
+// The play (stack + optional Mud) that removes the most points from its own board.
+function destroyerBestPlay(player, card){
+  const base = simBase(player);
+  const before = simBoardSum(base);
+  let best = null;
+  plannerPlayOptions(base, card, PLANNER_MUD_KEYS, s=>simBoardSum(s)+aiCarry(s)).forEach(opt=>{
+    if(opt.mud==='facedown_instead' || opt.mud2==='facedown_instead') return; // hides the card but destroys nothing
+    const s = plannerCloneSim(base);
+    plannerSimPlay(s, card, opt);
+    const removed = before + card.value - simBoardSum(s);
+    const score = removed - [opt.mud, opt.mud2].filter(Boolean).length*DESTROYER_MUD_COST;
+    if(!best || score>best.score) best = {score, removed, opt};
+  });
+  return best;
+}
+/* ---------- One-turn simulation for the other personalities ----------
+   The Minimizer, Goal Chaser and Chaos each judge a card by what it would
+   really do to their board (via the same simulation), scored their own way.
+   Lower scores are better. */
+const SIM_MUD_COST = 1;                 // points a Mud card must save to be worth spending
+const GOAL_CHASER_EXPOSURE_WEIGHT = 5;  // Goal Chaser: dodging goals dominates card value
+const SECONDARY_EXPOSURE_WEIGHT = 1;    // everyone else: a light nudge away from goals
+const CHAOS_GIFT_WEIGHT = 2;            // Chaos: each point gifted is worth 2 of its own
+// Passing a give card along is risky: whoever receives our hand always has
+// us among the players their gifts hit (hands pass opposite to the pass
+// token, so the receiver's token neighbour is us — and with the "both
+// neighbours" option we're one of their neighbours anyway). Every AI except
+// Chaos (which hoards gift cards regardless) counts keeping a give card —
+// playing or storing it — as worth about half of what it would cost if the
+// neighbour played it on us. Cards passed on the last turn are discarded,
+// so there's nothing to deny then.
+const DENIAL_WEIGHT = 0.5;
+function incomingGiftEV(card){
+  switch(card.ability){
+    case 'give_starter_neighbours': return PLANNER_SPLAT_EV;
+    case 'give_starter_neighbours_2': return 2*PLANNER_SPLAT_EV;
+    case 'give_big_splat_neighbour': return bigSplatEV();
+    case 'gift_mud': return state.aiMudValue ? -MUD_VALUE : 0;
+    default: return 0;
+  }
+}
+// With aiGiftCredit on, the Minimizer, Goal Chaser and Destroyer also count
+// half of each point they gift to a neighbour as their own gain, the same
+// way the Planner does (PLANNER_GIFT_VALUE).
+function giftCredit(points){ return state.aiGiftCredit ? PLANNER_GIFT_VALUE*points : 0; }
+function giftOutEV(card){ return giveTargetCount()*incomingGiftEV(card); }
+function denialValue(player, card, noDenial){
+  if(noDenial || !state.aiDenial || player.aiType==='chaos') return 0;
+  return DENIAL_WEIGHT*incomingGiftEV(card);
+}
+// Which Mud cards each personality knows how to use. The Minimizer leans on
+// the simple ones; Chaos re-fires gifts; the Goal Chaser uses anything. All
+// of them can Rearrange or Move 2 (when aiMudAll is on).
+const SIM_MUD_KEYS = {
+  minimizer: ['facedown_instead','play_any','rearrange','move2'],
+  goal: PLANNER_MUD_KEYS,
+  chaos: ['use_under','play_any','rearrange','move2']
+};
+// How exposed a simulated board is to the active goal(s): its count toward
+// each goal, plus a flat extra for being above zero (a count of 0 never
+// earns the majority bonus).
+function simGoalExposure(sim){
+  let e = 0;
+  activeGoalCards().forEach(g=>{
+    let n;
+    if(g.color) n = sim.stacks[g.color].length;
+    else if(g.custom==='splat_facedown') n = sim.virt.length + COLORS.reduce((a,c)=>a+sim.stacks[c].filter(cd=>cd.isStarter||cd.isBigSplat||cd.isFaceDown).length,0);
+    else if(g.custom==='big_stacks') n = COLORS.filter(c=>sim.stacks[c].length>=3).length;
+    else if(g.singleColour) n = COLORS.filter(c=>{
+      const s = sim.stacks[c];
+      return s.length>0 && new Set(s.filter(cd=>cd.origin).map(cd=>cd.origin)).size===1;
+    }).length;
+    else n = 0;
+    e += n + (n>0 ? 2 : 0);
+  });
+  return e;
+}
+const SIM_SCORERS = {
+  minimizer: s => simBoardSum(s) + aiCarry(s) - heldMudValue(s) - giftCredit(s.gift) + SECONDARY_EXPOSURE_WEIGHT*simGoalExposure(s),
+  goal: s => GOAL_CHASER_EXPOSURE_WEIGHT*simGoalExposure(s) + simBoardSum(s) + aiCarry(s) - heldMudValue(s) - giftCredit(s.gift),
+  chaos: s => simBoardSum(s) + aiCarry(s) - heldMudValue(s) - CHAOS_GIFT_WEIGHT*s.gift + SECONDARY_EXPOSURE_WEIGHT*simGoalExposure(s)
+};
+// Best way to play this card this turn under the given scorer.
+function simBestPlay(player, card, scoreFn, mudKeys){
+  const base = simBase(player);
+  let best = null;
+  let noMud = null;
+  plannerPlayOptions(base, card, mudKeys, scoreFn).forEach(opt=>{
+    const s = plannerCloneSim(base);
+    plannerSimPlay(s, card, opt);
+    // With aiMudValue the scorer already counts the spent Mud cards' worth.
+    const score = scoreFn(s) + (state.aiMudValue ? 0 : [opt.mud, opt.mud2].filter(Boolean).length*SIM_MUD_COST);
+    if(!opt.mud && (noMud==null || score<noMud)) noMud = score;
+    if(!best || score<best.score) best = {score, opt};
+  });
+  // Simulator bookkeeping: how many points spending the Mud card actually
+  // saved over the best play without it (adding back the Mud's own cost).
+  const spent = [best.opt.mud, best.opt.mud2].filter(Boolean).length;
+  if(spent && noMud!=null) best.opt.mudSaved = noMud - best.score + (state.aiMudValue ? heldMudValue(base) - heldMudValue({mud:base.mud.slice(spent)}) : spent*SIM_MUD_COST);
+  return best;
+}
+// Every AI resolves its card with the same pickers it simulated with.
+function usesSimPlan(player){ return !player.isHuman; }
+
+// Like chooseTarget, but lets AI callers supply a computed preferred pick —
+// used only when that pick is actually among the offered options; falls
+// back to chooseTarget's own behaviour (random for AI, modal for human).
+async function chooseTargetSmart(player, title, options, aiPick){
+  if(!player.isHuman && aiPick!=null && options.some(o=>o.value===aiPick)){
+    await delay(320);
+    return aiPick;
+  }
+  return chooseTarget(player, title, options);
+}
+// Decide what an AI plays/stores/passes-on this turn, given its drafting
+// pool (hand + anything already in storage).
+function aiDraftPick(player, pool, isLastTurn, noDenial){
+  player._plan = null;
+  const deny = c => denialValue(player, c, noDenial || isLastTurn);
+  if(pool.length===0) return {playCard:null, storeCard:null, passCards:[]};
+  if(player.aiType==='planner') return plannerDraftPick(player, pool, isLastTurn);
+  if(pool.length===1){
+    // Still worth simulating where/how to play it (Mud, free placement).
+    if(SIM_SCORERS[player.aiType]){
+      player._plan = {...simBestPlay(player, pool[0], SIM_SCORERS[player.aiType], SIM_MUD_KEYS[player.aiType]).opt};
+    }
+    return {playCard:pool[0], storeCard:null, passCards:[]};
+  }
+  // Nothing can be stored on the last turn, so each personality still plays
+  // its own favourite card and the would-be storage card is passed on too.
+  if(isLastTurn){
+    const pick = aiDraftPick(player, pool, false, true);
+    return {playCard:pick.playCard, storeCard:null, passCards:pool.filter(c=>c!==pick.playCard)};
+  }
+  const type = player.aiType;
+  if(type==='goal'){
+    // Dodging the active goal(s) comes first (heavily weighted exposure);
+    // the card's real effect on its total only breaks near-ties. It stores
+    // the next-safest card.
+    const ranked = pool.map(c=>({c, ...simBestPlay(player, c, SIM_SCORERS.goal, SIM_MUD_KEYS.goal)})).sort((a,b)=>(a.score-deny(a.c))-(b.score-deny(b.c)));
+    player._plan = {...ranked[0].opt};
+    return {playCard:ranked[0].c, storeCard:ranked[1].c, passCards:ranked.slice(2).map(r=>r.c)};
+  }
+  if(type==='destroyer'){
+    // Chases destruction whenever there's a good target: any card that would
+    // flip/destroy at least DESTROYER_MIN_TARGET points beats every card that
+    // wouldn't, and the bigger the haul the better. With no good target it
+    // just plays its lowest card, and keeps a destroy card stored for later.
+    // goalSafetyDelta is still a light secondary nudge.
+    const plays = new Map(pool.map(c=>[c, destroyerBestPlay(player, c)]));
+    // Worth of the Mud a gain-Mud card would add (up to the hand limit).
+    const mudGain = c => {
+      if(!state.aiMudValue) return 0;
+      const n = c.ability==='gain_mud' ? 1 : c.ability==='gain_mud_2' ? 2 : 0;
+      const held = player.mudHand.map(m=>m.key);
+      const after = held.concat(Array(Math.max(0, Math.min(n, MUD_HAND_LIMIT - held.length))).fill('unknown'));
+      return heldMudValue({mud:after}) - heldMudValue({mud:held});
+    };
+    const desire = c => {
+      const removed = plays.get(c).removed;
+      return (removed>=DESTROYER_MIN_TARGET ? 100+removed : 0) - c.value + mudGain(c) + giftCredit(giftOutEV(c)) + goalSafetyDelta(player,c)*GOAL_AWARENESS_SECONDARY + deny(c);
+    };
+    const storeDesire = c => (DESTROY_ABILITY_STRENGTH[c.ability] ? 10 - c.value*0.5 : -c.value + mudGain(c) + giftCredit(giftOutEV(c))) + deny(c);
+    const playCard = pool.reduce((a,b)=> desire(b)>desire(a) ? b : a);
+    const rest = pool.filter(c=>c!==playCard);
+    const storeCard = rest.reduce((a,b)=> storeDesire(b)>storeDesire(a) ? b : a);
+    const best = plays.get(playCard);
+    player._plan = best.removed>=DESTROYER_MIN_TARGET ? {...best.opt} : null;
+    return {playCard, storeCard, passCards: rest.filter(c=>c!==storeCard)};
+  }
+  if(type==='chaos'){
+    // Plays give-to-neighbour cards above almost anything else — each point
+    // gifted counts double its own cost, so it'll eat a bad number to send a
+    // big gift (and uses Mud's "use the ability underneath" to send one again).
+    // It hoards the biggest gift card in storage, otherwise the next-best card.
+    const ranked = pool.map(c=>({c, ...simBestPlay(player, c, SIM_SCORERS.chaos, SIM_MUD_KEYS.chaos)})).sort((a,b)=>a.score-b.score);
+    player._plan = {...ranked[0].opt};
+    const rest = ranked.slice(1).map(r=>r.c);
+    const gifts = rest.filter(c=>GIVE_ABILITY_STRENGTH[c.ability] && c.ability!=='gift_mud');
+    const storeCard = gifts.length>0 ? gifts.reduce((a,b)=> GIVE_ABILITY_STRENGTH[b.ability]>GIVE_ABILITY_STRENGTH[a.ability] ? b : a) : rest[0];
+    return {playCard:ranked[0].c, storeCard, passCards:rest.filter(c=>c!==storeCard)};
+  }
+  // minimizer (default/baseline): plays whichever card leaves its total
+  // lowest once its ability resolves, stores the next-lowest and passes the
+  // rest (its worst cards) along. Its only Mud tricks are the simple ones:
+  // hide a bad card face down, or drop a card somewhere harmless.
+  const ranked = pool.map(c=>({c, ...simBestPlay(player, c, SIM_SCORERS.minimizer, SIM_MUD_KEYS.minimizer)})).sort((a,b)=>(a.score-deny(a.c))-(b.score-deny(b.c)));
+  player._plan = {...ranked[0].opt};
+  return {playCard:ranked[0].c, storeCard:ranked[1].c, passCards:ranked.slice(2).map(r=>r.c)};
+}
+
+/* ============================= SETUP ============================= */
+function makePlayer(id,name,isHuman,aiType){
+  const stacks={}; COLORS.forEach(c=>{stacks[c]=[];});
+  return {id,name,isHuman,aiType:aiType||null,hand:[],mudHand:[],stacks,stored:null,total:0,selected:null};
+}
+function initGame(numAI, aiTypeChoices){
+  const players=[makePlayer(0,'You',true,null)];
+  // Each AI opponent gets the personality picked for it at the menu, or an
+  // independently random one (with replacement — a game can easily deal out
+  // two or more of the same type) wherever a slot was left on "Random".
+  for(let i=1;i<=numAI;i++){
+    const choice = aiTypeChoices && aiTypeChoices[i-1];
+    const aiType = (choice && choice!=='random') ? choice : AI_TYPES[Math.floor(Math.random()*AI_TYPES.length)];
+    players.push(makePlayer(i,'AI '+i,false,aiType));
+  }
+  state.starterDeck = buildStarterDeck();
+  state.bigSplatDeck = buildBigSplatDeck();
+  // Players start with 3 Splat cards, or 2 under the "give to both
+  // neighbours" option, which hands out far more Splats during play.
+  const startingSplats = state.newLineup ? 2 : 3;
+  players.forEach(p=>{
+    for(let i=0;i<startingSplats;i++){
+      const s = randomStarter();
+      p.stacks[s.color].push(s);
+    }
+  });
+  state.players = players;
+  state.deck = buildMainDeck();
+  state.discard = [];
+  state.scoringDeck = shuffle([...SCORING_POOL]);
+  state.round = 0;
+  state.log = [];
+  state.phase = 'setup';
+  // The pass-direction token is flipped randomly before the first round,
+  // then alternates sides every round after that.
+  state.passDirectionBase = Math.random()<0.5 ? 'right' : 'left';
+  state.passDirection = state.passDirectionBase;
+}
+
+/* ============================= MODAL / TARGETING ============================= */
+function chooseOption(title, options){
+  return new Promise(resolve=>{
+    modalResolver = resolve;
+    state.modal = {title, options};
+    render();
+  }).then(val=>{
+    if(val==='__UNDO__') throw new UndoSignal();
+    return val;
+  });
+}
+function onModalChoiceIndex(i){
+  const val = state.modal.options[i].value;
+  state.modal = null;
+  const r = modalResolver; modalResolver = null;
+  render();
+  if(r) r(val);
+}
+async function chooseTarget(player, title, options){
+  if(!options || options.length===0) return null;
+  if(!player.isHuman){
+    await delay(320);
+    return options[Math.floor(Math.random()*options.length)].value;
+  }
+  return await chooseOption(title, options);
+}
+// kind: 'play', 'keep' or 'mud' — sets the confirm popup's wording. A Mud
+// pick can also be skipped ("Play normally"), which resolves with -1.
+function waitForPoolPick(promptText, eligibleCards, kind){
+  return new Promise(resolve=>{
+    state.pickPrompt = promptText;
+    state.pickKind = kind || 'play';
+    state.pickableUids = eligibleCards.map(c=>c.uid);
+    state.pickResolve = resolve;
+    render();
+  }).then(val=>{
+    if(val==='__UNDO__') throw new UndoSignal();
+    return val;
+  });
+}
+function onPoolCardClick(uid){
+  if(!state.pickResolve) return;
+  if(!state.pickableUids.includes(uid)) return;
+  const r = state.pickResolve;
+  state.pickResolve = null;
+  state.pickableUids = [];
+  state.pickPrompt = '';
+  render();
+  r(uid);
+}
+function onPoolSkip(){
+  if(!state.pickResolve || state.pickKind!=='mud') return;
+  const r = state.pickResolve;
+  state.pickResolve = null; state.pickableUids = []; state.pickPrompt = ''; state.cardZoom = null;
+  render();
+  r(-1);
+}
+// Tapping a card opens it large in a popup (touch screens have no hover
+// preview). When the card can be picked right now, the popup also confirms
+// the play / keep, so a stray tap never commits a card.
+function findCardByUid(uid){
+  for(const p of state.players){
+    const c = p.hand.find(c=>c.uid===uid) || p.mudHand.find(m=>m.uid===uid) || (p.stored && p.stored.uid===uid ? p.stored : null)
+      || COLORS.map(col=>p.stacks[col].find(c=>c.uid===uid)).find(Boolean);
+    if(c) return c;
+  }
+  return null;
+}
+function onCardTap(uid){
+  hideCardPreview();
+  if(!findCardByUid(uid)) return;
+  state.cardZoom = {uid};
+  render();
+}
+function onZoomClose(){
+  state.cardZoom = null;
+  render();
+}
+function onZoomConfirm(){
+  const uid = state.cardZoom && state.cardZoom.uid;
+  state.cardZoom = null;
+  onPoolCardClick(uid);
+}
+function cardZoomHtml(){
+  const z = state.cardZoom;
+  const c = z && findCardByUid(z.uid);
+  if(!c){ state.cardZoom = null; return ''; }
+  const canPick = !!state.pickResolve && state.pickableUids.includes(c.uid);
+  const isMud = !!c.key;
+  const kind = state.pickKind;
+  const heading = kind==='keep' ? 'Keep this card in storage?' : kind==='mud' ? state.pickPrompt : 'Play this card?';
+  const confirmLabel = kind==='keep' ? 'Keep' : kind==='mud' ? 'Use Mud' : 'Play';
+  const w = Math.max(120, Math.min(260, Math.round(window.innerWidth*0.62), Math.round((window.innerHeight-220)*180/245)));
+  const text = isMud ? `Mud — ${c.t}` : c.isFaceDown ? 'Face down' : `${fmtVal(c.value)}${c.text ? ' — '+c.text : ''}`;
+  const visual = isMud
+    ? `<img src="${CARD_IMAGES.mud[c.key]}" style="width:${w}px;display:block;border-radius:5px;"/>`
+    : cardVisualHtml(c, w, '', true);
+  return `<div class="overlay" onclick="if(event.target===this) onZoomClose()"><div class="modal zoom-modal">
+    ${canPick ? `<h3>${heading}</h3>` : ''}
+    <div class="zoom-card">${visual}</div>
+    <p class="zoom-text">${text}</p>
+    <div class="zoom-btns">
+      ${canPick
+        ? `<button class="opt" onclick="onZoomClose()">Cancel</button><button class="opt confirm" onclick="onZoomConfirm()">${confirmLabel}</button>`
+        : `<button class="opt" onclick="onZoomClose()">Close</button>`}
+    </div>
+  </div></div>`;
+}
+function waitForContinue(){
+  return new Promise(resolve=>{ state.continueResolve = resolve; render(); });
+}
+function onContinueClick(){
+  if(!state.continueResolve) return;
+  const r = state.continueResolve; state.continueResolve = null;
+  r();
+}
+
+/* ============================= ABILITY LOGIC ============================= */
+async function doRearrange(player, stackColor){
+  const original = player.stacks[stackColor];
+  const total = original.length;
+  if(total < 2) return;
+  const remaining = [...original];
+  const newOrder = [];
+  for(let i=0;i<total;i++){
+    if(remaining.length===1){ newOrder.push(remaining.pop()); break; }
+    const posLabel = i===0 ? 'bottom' : (i===total-1 ? 'top' : `position ${i+1} from bottom`);
+    const opts = remaining.map((c,idx)=>({label: c.isFaceDown ? 'Face down' : fmtVal(c.value), value:idx}));
+    let pick;
+    if(!player.isHuman){
+      // Bury the highest-value card first, so the lowest (best) value card
+      // ends up on top — it's the one that survives end-of-round cleanup
+      // and carries its value into next round.
+      await delay(320);
+      let bestIdx=0, bestVal=-Infinity;
+      remaining.forEach((c,idx)=>{ const v = c.isFaceDown?0:c.value; if(v>bestVal){ bestVal=v; bestIdx=idx; } });
+      pick = bestIdx;
+    } else {
+      pick = await chooseTarget(player, `${player.name}: choose the card for the ${posLabel} of ${COLOR_NAMES[stackColor]} (${i+1}/${total})`, opts);
+    }
+    const [card] = remaining.splice(pick,1);
+    newOrder.push(card);
+  }
+  player.stacks[stackColor] = newOrder;
+  log(`${player.name} rearranged ${COLOR_NAMES[stackColor]}: now ${newOrder.map(c=>c.isFaceDown?'Face down':fmtVal(c.value)).join(' → ')} (bottom to top).`);
+}
+
+function giftMudToNeighbours(player,count){
+  giveTargetsOf(player.id).forEach(ti=>{
+    const target = state.players[ti];
+    for(let i=0;i<count;i++){
+      if(target.mudHand.length>=MUD_HAND_LIMIT){
+        log(`${target.name} is at the Mud card limit (${MUD_HAND_LIMIT}) and can't receive more from ${player.name}.`);
+        break;
+      }
+      const m = randomMud();
+      target.mudHand.push(m);
+      log(`${target.name} received a Mud card (${m.t}) from ${player.name}.`);
+    }
+  });
+}
+function giveMudToSelf(player,count){
+  let added=0;
+  for(let i=0;i<count;i++){
+    if(player.mudHand.length>=MUD_HAND_LIMIT) break;
+    player.mudHand.push(randomMud());
+    added++;
+  }
+  if(added>0) log(`${player.name} gained ${added} Mud card(s).`);
+  if(added<count) log(`${player.name} is at the Mud card limit (${MUD_HAND_LIMIT}) — didn't gain ${count-added} more.`);
+}
+// Simulator bookkeeping (no-op in a normal game): Splat/Big Splat cards
+// received from gifts, per player, per game and per turn.
+function noteGift(ti){
+  const st = state.simStats; if(!st) return;
+  st.received[ti]++; st.turnReceived[ti]++;
+}
+// Simulator bookkeeping: for every card in an AI's drafting pool, whether it
+// was played, stored or passed on — keyed by card value (purple as P2-P4)
+// and personality.
+function noteDraft(p, pool, playCard, storeCard){
+  const cs = state.simStats.cards;
+  pool.forEach(c=>{
+    const key = c.color==='purple' ? 'P'+c.value : String(c.value);
+    const k = key+'|'+p.aiType;
+    const e = cs[k] || (cs[k] = {key, type:p.aiType, text:c.color==='purple' ? 'Wild — play in any stack' : c.text, seen:0, played:0, stored:0});
+    e.seen++;
+    if(c===playCard) e.played++;
+    else if(c===storeCard) e.stored++;
+  });
+}
+function giveStarterToNeighbours(player, count){
+  giveTargetsOf(player.id).forEach(ti=>{
+    const target = state.players[ti];
+    for(let k=0;k<count;k++){
+      const s = randomStarter();
+      target.stacks[s.color].push(s);
+      noteGift(ti);
+      log(`${target.name} received a ${COLOR_NAMES[s.color]} Splat card (${fmtVal(s.value)}) from ${player.name}.`);
+    }
+  });
+}
+
+function giveBigSplatToNeighbours(player, count){
+  giveTargetsOf(player.id).forEach(ti=>{
+    const target = state.players[ti];
+    for(let k=0;k<count;k++){
+      const s = randomBigSplat();
+      target.stacks[s.color].push(s);
+      noteGift(ti);
+      log(`${target.name} received a ${COLOR_NAMES[s.color]} Big Splat card (${fmtVal(s.value)}) from ${player.name}.`);
+    }
+  });
+}
+
+async function applyMud(player, mud, aiArg){
+  switch(mud.key){
+    case 'rearrange': {
+      // AI: carry out exactly the rearrange its simulation planned.
+      const plan = !player.isHuman && aiArg;
+      if(plan && player.stacks[plan.stack].length>=2){
+        player.stacks[plan.stack] = mudRearrangeOrder(player.stacks[plan.stack], plan.order);
+        log(`${player.name} used Mud to rearrange ${COLOR_NAMES[plan.stack]}: now ${player.stacks[plan.stack].map(c=>c.isFaceDown?'Face down':fmtVal(c.value)).join(' → ')} (bottom to top).`);
+        return {};
+      }
+      const opts = COLORS.filter(c=>player.stacks[c].length>=2).map(c=>({label:`${COLOR_NAMES[c]} (${player.stacks[c].length})`, value:c}));
+      if(opts.length===0){ log(`${player.name}'s Mud (Rearrange) fizzles — no stack has enough cards.`); return {}; }
+      const sc = await chooseTarget(player, `${player.name} — Mud: choose a stack to rearrange`, opts);
+      await doRearrange(player, sc);
+      return {};
+    }
+    case 'move2': {
+      // Two independent "move the top card of one stack to another" moves —
+      // NOT a swap. Each move is chosen fresh, so the same or different
+      // stacks can be picked each time. An AI makes the two moves it planned.
+      const planned = !player.isHuman && aiArg && aiArg.moves;
+      for(let i=0; i<2; i++){
+        if(planned && planned[i] && player.stacks[planned[i].src].length>0){
+          const {src, dst} = planned[i];
+          const card = player.stacks[src].pop();
+          player.stacks[dst].push(card);
+          log(`${player.name} used Mud to move ${card.isFaceDown?'a face down card':fmtVal(card.value)} from ${COLOR_NAMES[src]} to ${COLOR_NAMES[dst]} (${i+1}/2).`);
+          continue;
+        }
+        const srcOpts = COLORS.filter(c=>player.stacks[c].length>0).map(c=>({label:COLOR_NAMES[c], value:c}));
+        if(srcOpts.length===0){
+          log(`${player.name}'s Mud (Move 2) has nothing left to move (move ${i+1}/2).`);
+          break;
+        }
+        const src = await chooseTarget(player, `${player.name} — Mud: move top card of which stack? (${i+1}/2)`, srcOpts);
+        const dstOpts = COLORS.filter(c=>c!==src).map(c=>({label:COLOR_NAMES[c], value:c}));
+        const dst = await chooseTarget(player, `${player.name} — Mud: move it to which stack? (${i+1}/2)`, dstOpts);
+        const card = player.stacks[src].pop();
+        player.stacks[dst].push(card);
+        log(`${player.name} used Mud to move ${card.isFaceDown?'a face down card':fmtVal(card.value)} from ${COLOR_NAMES[src]} to ${COLOR_NAMES[dst]} (${i+1}/2).`);
+      }
+      return {};
+    }
+    case 'facedown_instead':
+      log(`${player.name} will play their drafted card face down instead.`);
+      return {mudFaceDown:true};
+    case 'play_any':
+      log(`${player.name} may play their drafted card into any stack this turn.`);
+      return {mudPlayAny:true};
+    case 'use_under':
+      log(`${player.name} will use the ability of the card underneath instead, when they play.`);
+      return {mudUseUnder:true};
+  }
+  return {};
+}
+
+async function runAbility(key, ctx){
+  const {player, targetColor, stack} = ctx;
+  switch(key){
+    case 'give_starter_neighbours': await giveStarterToNeighbours(player,1); break;
+    case 'give_starter_neighbours_2': await giveStarterToNeighbours(player,2); break;
+    case 'give_big_splat_neighbour': await giveBigSplatToNeighbours(player,1); break;
+    case 'gain_starter_2': {
+      for(let i=0;i<2;i++){
+        const s = randomStarter();
+        player.stacks[s.color].push(s);
+        log(`${player.name} gained a ${COLOR_NAMES[s.color]} Splat card (${fmtVal(s.value)}).`);
+      }
+      break;
+    }
+    case 'gain_starter': {
+      const s = randomStarter();
+      player.stacks[s.color].push(s);
+      log(`${player.name} gained a ${COLOR_NAMES[s.color]} Splat card (${fmtVal(s.value)}).`);
+      break;
+    }
+    case 'gain_big_splat': {
+      const s = randomBigSplat();
+      player.stacks[s.color].push(s);
+      log(`${player.name} gained a ${COLOR_NAMES[s.color]} Big Splat card (${fmtVal(s.value)}).`);
+      break;
+    }
+    case 'rearrange': {
+      if(player.stacks[targetColor].length<2){ log(`${player.name}'s ${COLOR_NAMES[targetColor]} stack isn't big enough to rearrange.`); break; }
+      await doRearrange(player, targetColor);
+      break;
+    }
+    case 'gift_mud': giftMudToNeighbours(player,1); break;
+    case 'move_top': {
+      const srcOpts = COLORS.filter(c=>player.stacks[c].length>0).map(c=>({label:COLOR_NAMES[c], value:c}));
+      if(srcOpts.length===0){ log(`${player.name} has nothing to move.`); break; }
+      // Moving a card between your own stacks never changes your raw score,
+      // so every AI (not just the Goal Chaser) gets this goal-dodge for
+      // free — it costs them nothing relative to their main strategy.
+      // Shrink whichever goal colour is active by moving a card OUT of it...
+      // (The Planner/Destroyer use their own picker so the move matches what they simulated.)
+      const plannerMove = usesSimPlan(player) ? plannerMovePick(player.stacks) : null;
+      const srcAiPick = plannerMove ? plannerMove.src : !player.isHuman ? targetGoalColor(player, srcOpts.map(o=>o.value)) : null;
+      const src = await chooseTargetSmart(player, `${player.name}: move the top card of which stack?`, srcOpts, srcAiPick);
+      const dstOpts = COLORS.filter(c=>c!==src).map(c=>({label:COLOR_NAMES[c], value:c}));
+      // ...and dump it somewhere that doesn't feed a different goal colour.
+      const dstAiPick = plannerMove ? plannerMove.dst : !player.isHuman ? avoidGoalColor(player, dstOpts.map(o=>o.value)) : null;
+      const dst = await chooseTargetSmart(player, `${player.name}: move it to which stack?`, dstOpts, dstAiPick);
+      const card = player.stacks[src].pop();
+      player.stacks[dst].push(card);
+      log(`${player.name} moved ${card.isFaceDown?'a face down card':fmtVal(card.value)} from ${COLOR_NAMES[src]} to ${COLOR_NAMES[dst]}.`);
+      break;
+    }
+    case 'gain_mud': giveMudToSelf(player,1); break;
+    case 'destroy_other': {
+      const opts = COLORS.filter(c=>c!==targetColor && player.stacks[c].length>0).map(c=>({label:COLOR_NAMES[c], value:c}));
+      if(opts.length===0){ log(`${player.name} has no other stack to destroy from.`); break; }
+      // The Goal Chaser prefers shrinking an active goal colour's stack
+      // outright (fewer points risked AND a count closer to 0). Everyone
+      // else destroys whichever top card is worth the most, with a light
+      // secondary nudge toward a stack that happens to be feeding a goal.
+      const colorOptions = opts.map(o=>o.value);
+      const aiPick = player.aiType==='goal'
+        ? (targetGoalColor(player, colorOptions) || bestDestroyColor(player, targetColor, colorOptions))
+        : bestDestroyColor(player, targetColor, colorOptions, true);
+      const sc = await chooseTargetSmart(player, `${player.name}: destroy the top card of which stack?`, opts, aiPick);
+      const removed = player.stacks[sc].pop();
+      state.discard.push(toDiscard(removed));
+      log(`${player.name} destroyed ${fmtVal(removed.value)} from ${COLOR_NAMES[sc]}.`);
+      break;
+    }
+    case 'gain_mud_2': giveMudToSelf(player,2); break;
+    case 'flip_2_tops': {
+      // Flip up to 2 other face-up top cards; already flipped tops can't be chosen.
+      const opts = COLORS.filter(c=>c!==targetColor && player.stacks[c].length>0 && !player.stacks[c][player.stacks[c].length-1].isFaceDown)
+        .map(c=>({label:COLOR_NAMES[c], value:c}));
+      let count=0;
+      for(let i=0;i<2 && opts.length>0;i++){
+        const flipAiPick = usesSimPlan(player) ? plannerFlipPick(player.stacks, opts.map(o=>o.value)) : null;
+        const sc = await chooseTargetSmart(player, `${player.name}: flip the top card of which stack? (${i+1}/2)`, opts, flipAiPick);
+        const s = player.stacks[sc];
+        s[s.length-1] = {...s[s.length-1], isFaceDown:true};
+        log(`${player.name} turned the top of ${COLOR_NAMES[sc]} face down.`);
+        count++;
+        opts.splice(opts.findIndex(o=>o.value===sc),1);
+      }
+      if(count===0) log(`${player.name} had no face-up top cards to flip.`);
+      break;
+    }
+    case 'turn_facedown': {
+      const opts = COLORS.filter(c=>c!==targetColor && player.stacks[c].length>0).map(c=>{
+        const s = player.stacks[c];
+        return {label: COLOR_NAMES[c] + (!state.destroy89 && s[s.length-1].isFaceDown ? ' (already flipped — destroy it)' : ''), value:c};
+      });
+      let count=0;
+      for(let i=0;i<2 && opts.length>0;i++){
+        const flipAiPick = usesSimPlan(player) ? plannerFlipPick(player.stacks, opts.map(o=>o.value)) : null;
+        const sc = await chooseTargetSmart(player, `${player.name}: ${state.destroy89?'destroy':'flip'} the top card of which stack? (${i+1}/2)`, opts, flipAiPick);
+        const s = player.stacks[sc];
+        const top = s[s.length-1];
+        if(top.isFaceDown || state.destroy89){
+          // An already-flipped top card is destroyed instead of flipped (and with
+          // the "destroy lineup" option every target is destroyed).
+          s.pop();
+          state.discard.push(toDiscard(top));
+          log(`${player.name} destroyed the flipped top card of ${COLOR_NAMES[sc]}.`);
+        } else {
+          // Keep the card's real identity — only its face-down status changes —
+          // so it returns to its proper discard pile, revealed, if later removed.
+          s[s.length-1] = {...top, isFaceDown:true};
+          log(`${player.name} turned the top of ${COLOR_NAMES[sc]} face down.`);
+        }
+        count++;
+        const idx = opts.findIndex(o=>o.value===sc);
+        if(idx!==-1) opts.splice(idx,1);
+      }
+      if(count===0) log(`${player.name} had no other stacks to turn face down.`);
+      break;
+    }
+    case 'destroy_facedown_starter': {
+      let destroyed = 0;
+      for(let i=0;i<3;i++){
+        const opts = [];
+        COLORS.forEach(c=>{
+          player.stacks[c].forEach((card,idx)=>{
+            if(card.isStarter || card.isBigSplat || card.isFaceDown){
+              opts.push({label:`${COLOR_NAMES[c]} — ${card.isFaceDown?'Flipped':(card.isBigSplat?'Big Splat':'Splat')+' '+fmtVal(card.value)} (pos ${idx+1})`, value:JSON.stringify({c, idx})});
+            }
+          });
+        });
+        if(opts.length===0) break;
+        // AI always destroys whichever eligible card is worth the most.
+        let aiPick = null;
+        if(!player.isHuman){
+          let bestVal=-Infinity;
+          COLORS.forEach(c=>{
+            player.stacks[c].forEach((card,idx)=>{
+              if(card.isStarter || card.isBigSplat || card.isFaceDown){
+                const v = card.isFaceDown?0:card.value;
+                if(v>bestVal){ bestVal=v; aiPick=JSON.stringify({c, idx}); }
+              }
+            });
+          });
+        }
+        const pick = await chooseTargetSmart(player, `${player.name}: destroy a Splat/flipped card (${i+1}/3)`, opts, aiPick);
+        const {c, idx} = JSON.parse(pick);
+        const [removed] = player.stacks[c].splice(idx,1);
+        state.discard.push(toDiscard(removed));
+        destroyed++;
+      }
+      log(`${player.name} destroyed ${destroyed} Splat/flipped card(s).`);
+      break;
+    }
+    case 'destroy_under': {
+      // Flip the 2 cards directly under this one; any already face down is
+      // destroyed instead. Work from the higher index down so a splice
+      // doesn't shift the position of the deeper card.
+      let flippedCount=0, removedCount=0;
+      const lowest = Math.max(0, stack.length-3);
+      for(let idx=stack.length-2; idx>=lowest; idx--){
+        const card = stack[idx];
+        if(card.isFaceDown || state.destroy89){
+          stack.splice(idx,1);
+          state.discard.push(toDiscard(card));
+          removedCount++;
+        } else {
+          stack[idx] = {...card, isFaceDown:true};
+          flippedCount++;
+        }
+      }
+      log(`${player.name} flipped ${flippedCount} and destroyed ${removedCount} card(s) underneath in ${COLOR_NAMES[targetColor]}.`);
+      break;
+    }
+    default: break;
+  }
+}
+
+// A card leaving play and entering the discard pile is always revealed —
+// face-down status only ever applies while a card sits in a tableau.
+function toDiscard(card){ return card.isFaceDown ? {...card, isFaceDown:false} : card; }
+
+function resolveCardForPlacement(card, underCard){
+  return {value:card.value, ability:card.ability, text:card.text};
+}
+
+async function resolvePlay(player, card){
+  let mudPlayAny=false, mudUseUnder=false, mudFaceDown=false;
+
+  if(player.isHuman){
+    // Loop so multiple Mud cards can be chained onto the same play.
+    // Mud cards sit in the hand bar and are tapped + confirmed like any card.
+    while(player.mudHand.length>0){
+      state.statusText = `Playing ${cardShortLabel(card)} — use a Mud card first, or play normally.`;
+      const mudUid = await waitForPoolPick(`Use a Mud card before playing ${cardShortLabel(card)}?`, player.mudHand, 'mud');
+      const idx = player.mudHand.findIndex(m=>m.uid===mudUid);
+      if(idx===-1) break;
+      const mud = player.mudHand.splice(idx,1)[0];
+      const res = await applyMud(player, mud);
+      if(res.mudPlayAny) mudPlayAny=true;
+      if(res.mudUseUnder) mudUseUnder=true;
+      if(res.mudFaceDown) mudFaceDown=true;
+    }
+  } else {
+    // Each AI spends exactly the Mud card(s) its simulation planned for this
+    // play (up to two, chained in order) — which Mud cards it considers
+    // depends on its personality.
+    const plan = player._plan || {};
+    if(state.simStats && plan.mud && plan.mudSaved!=null){ state.simStats.mudSavedN++; state.simStats.mudSaved += plan.mudSaved; }
+    for(const [key, arg] of [[plan.mud, plan.mudArg], [plan.mud2, plan.mudArg2]]){
+      const idx = key ? player.mudHand.findIndex(m=>m.key===key) : -1;
+      if(idx===-1) continue;
+      await delay(200);
+      if(state.simStats){
+        const st = state.simStats; st.mudUses++;
+        st.mudByKey[key] = (st.mudByKey[key]||0) + 1;
+        if(plan.mud2) st.mudChains++;
+      }
+      const mud = player.mudHand.splice(idx,1)[0];
+      const res = await applyMud(player, mud, arg);
+      if(res.mudPlayAny) mudPlayAny=true;
+      if(res.mudUseUnder) mudUseUnder=true;
+      if(res.mudFaceDown) mudFaceDown=true;
+    }
+  }
+
+  let targetColor;
+  if(card.color===null || card.color==='purple' || mudPlayAny || mudFaceDown){
+    const opts = COLORS.map(c=>({label:COLOR_NAMES[c], value:c}));
+    // Every AI steers a free placement away from a majority it doesn't want;
+    // the Goal Chaser additionally knows how to defuse non-colour goals.
+    let aiPick = null;
+    if(!player.isHuman){
+      aiPick = usesSimPlan(player) && player._plan ? player._plan.target
+        : player.aiType==='goal'
+        ? goalChaserPlacement(player, opts.map(o=>o.value))
+        : avoidGoalColor(player, opts.map(o=>o.value));
+    }
+    targetColor = await chooseTargetSmart(player, `${player.name}: choose a stack for ${cardShortLabel(card)}`, opts, aiPick);
+  } else {
+    targetColor = card.color;
+  }
+
+  const stack = player.stacks[targetColor];
+
+  if(mudFaceDown){
+    // Keep the card's real identity while face down; it's just hidden from
+    // view and worth 0 until (if ever) it's washed/destroyed and revealed.
+    const playedCard = {...card, isFaceDown:true};
+    stack.push(playedCard);
+    log(`${player.name} played ${cardShortLabel(card)} face down into ${COLOR_NAMES[targetColor]} (worth 0).`);
+    return;
+  }
+
+  const underCard = stack.length>0 ? stack[stack.length-1] : null;
+
+  const resolved = resolveCardForPlacement(card, underCard);
+  let playedValue = resolved.value;
+  let effectiveAbility = resolved.ability;
+  let effectiveText = resolved.text;
+
+  if(mudUseUnder){
+    if(underCard && underCard.ability){ effectiveAbility = underCard.ability; effectiveText = underCard.text; }
+    else { effectiveAbility = null; effectiveText=''; }
+  }
+
+  const playedCard = {uid:card.uid, color:card.color, origin:card.origin, value:playedValue, printValue:card.printValue, ability:effectiveAbility, text:effectiveText, isStarter:card.isStarter, isFaceDown:false};
+  stack.push(playedCard);
+  log(`${player.name} placed ${fmtVal(playedValue)} into ${COLOR_NAMES[targetColor]}${effectiveAbility? ' → '+effectiveText : ''}`);
+
+  if(effectiveAbility){
+    await runAbility(effectiveAbility, {player, targetColor, stack});
+  }
+}
+
+/* ============================= SCORING ============================= */
+function rawStackSum(p,c){ return p.stacks[c].reduce((a,x)=>a+(x.isFaceDown? 0 : x.value),0); }
+function stackValue(p,c){ return rawStackSum(p,c); }
+
+function computeRoundScores(){
+  const cards = [state.roundScoreCard, state.roundScoreCard2].filter(Boolean);
+  const results = state.players.map(p=>{
+    let base=0;
+    COLORS.forEach(c=>{ base += stackValue(p,c); });
+    return {player:p, base, bonus:0, notes:[]};
+  });
+
+  // Majority scoring — up to two cards active this round.
+  cards.forEach(card=>{
+    let counts;
+    if(card.singleColour){
+      counts = state.players.map(p=>{
+        let n=0;
+        COLORS.forEach(c=>{
+          const s = p.stacks[c];
+          if(s.length>0){
+            const origins = new Set(s.filter(cd=>cd.origin).map(cd=>cd.origin));
+            if(origins.size===1) n++;
+          }
+        });
+        return {p, count:n};
+      });
+    } else if(card.custom==='splat_facedown'){
+      counts = state.players.map(p=>{
+        let n=0;
+        COLORS.forEach(c=>{
+          p.stacks[c].forEach(cd=>{ if(cd.isStarter || cd.isBigSplat || cd.isFaceDown) n++; });
+        });
+        return {p, count:n};
+      });
+    } else if(card.custom==='big_stacks'){
+      counts = state.players.map(p=>{
+        let n=0;
+        COLORS.forEach(c=>{ if(p.stacks[c].length>=3) n++; });
+        return {p, count:n};
+      });
+    } else {
+      counts = state.players.map(p=>({p, count:p.stacks[card.color].length}));
+    }
+    counts.sort((a,b)=>b.count-a.count);
+    const n = state.players.length;
+    const tiers=[15,10,5];
+    const used = tiers.slice(Math.max(0,3-(n-1)));
+    let rank=0;
+    for(let i=0;i<counts.length;i++){
+      if(i>0 && counts[i].count!==counts[i-1].count) rank=i;
+      const tierVal = used[rank]!==undefined ? used[rank] : 0;
+      if(tierVal>0 && counts[i].count>0){
+        const r = results.find(x=>x.player===counts[i].p);
+        r.bonus += tierVal;
+        r.notes.push(`${card.singleColour? 'Single-colour stacks' : COLOR_NAMES[card.color]} count ${counts[i].count} → +${tierVal}`);
+      }
+    }
+  });
+
+  results.forEach(r=>{ r.total = r.base + r.bonus; r.player.total += r.total; });
+  return results;
+}
+
+function cleanupStacks(){
+  // Wash every stack down to just its top card(s) at the end of each round —
+  // 1 by default, or 2 when the "keep top 2" game option is on.
+  const keep = state.keepTopCards || 1;
+  state.players.forEach(p=>{
+    COLORS.forEach(c=>{
+      const s = p.stacks[c];
+      if(s.length<=keep) return;
+      const removed = s.slice(0, s.length-keep);
+      p.stacks[c] = s.slice(s.length-keep);
+      state.discard.push(...removed.map(toDiscard));
+    });
+  });
+  log(keep===1 ? 'Cleanup: each stack was washed down to its top card.' : `Cleanup: each stack was washed down to its top ${keep} cards.`);
+}
+
+// Proactively top up both decks from the discard pile at the end of every
+// round, rather than waiting for a mid-draw reshuffle to catch an empty
+// deck. Each discarded card goes back into whichever deck it came from
+// (main Paint deck vs Splat/starter deck), shuffled and placed at the
+// BOTTOM — cards already in the deck still get drawn first.
+function replenishDecksFromDiscard(){
+  const discard = state.discard;
+  const mainUsable = discard.filter(c=>c.color!==null && !c.isStarter && !c.isBigSplat);
+  const starterUsable = discard.filter(c=>c.isStarter);
+  const bigSplatUsable = discard.filter(c=>c.isBigSplat);
+  if(mainUsable.length>0) state.deck = [...shuffle(mainUsable), ...state.deck];
+  if(starterUsable.length>0) state.starterDeck = [...shuffle(starterUsable), ...state.starterDeck];
+  if(bigSplatUsable.length>0) state.bigSplatDeck = [...shuffle(bigSplatUsable), ...state.bigSplatDeck];
+  state.discard = discard.filter(c=>c.color===null && !c.isStarter && !c.isBigSplat);
+  if(mainUsable.length>0 || starterUsable.length>0 || bigSplatUsable.length>0){
+    log(`End of round: discard pile shuffled into the bottom of the deck(s) — ${mainUsable.length} Paint card(s), ${starterUsable.length} Splat card(s), ${bigSplatUsable.length} Big Splat card(s).`);
+  }
+}
+
+/* ============================= GAME FLOW ============================= */
+const HAND_SIZE = 7;
+const TURNS_PER_ROUND = 6;
+const MUD_HAND_LIMIT = 3;
+const DEFERRED_GIFT_ABILITIES = new Set(['give_starter_neighbours','give_starter_neighbours_2','give_big_splat_neighbour','gift_mud']);
+
+function dealHands(){
+  // Deal one card at a time, round-robin across players (like a real
+  // dealer), rather than fully dealing one player before moving to the
+  // next. With a small colour pool this means that if the deck+discard
+  // can't cover a full deal, the shortfall is shared evenly instead of
+  // whichever player is dealt last being left with nothing.
+  state.players.forEach(p=>{ p.hand = []; p.stored = null; });
+  for(let i=0;i<HAND_SIZE;i++){
+    state.players.forEach(p=>{
+      const [card] = drawCards(1);
+      if(card) p.hand.push(card);
+    });
+  }
+  const shortHanded = state.players.filter(p=>p.hand.length<HAND_SIZE);
+  if(shortHanded.length>0){
+    log(`The card pool ran dry — ${shortHanded.map(p=>`${p.name} (${p.hand.length}/${HAND_SIZE})`).join(', ')} got a short hand this round.`);
+  }
+  state.players.forEach(p=>{
+    if(p.mudHand.length < MUD_HAND_LIMIT) p.mudHand.push(randomMud());
+  });
+  log(`Mud cards dealt for the round (limit ${MUD_HAND_LIMIT} per player).`);
+}
+function pickRoundScoreCard(){
+  if(state.scoringDeck.length<2) state.scoringDeck = shuffle([...SCORING_POOL]);
+  state.roundScoreCard = state.scoringDeck.pop();
+  state.roundScoreCard2 = state.scoringDeck.pop();
+}
+
+async function draftTurn(turnNum){
+  if(state.simMode) return draftTurnInner(turnNum);
+  const turnStartSnapshot = JSON.parse(JSON.stringify(state));
+  try{
+    await draftTurnInner(turnNum);
+  } catch(e){
+    if(e instanceof UndoSignal){
+      state = turnStartSnapshot;
+      state.pickResolve = null; state.continueResolve = null; state.modal = null;
+      state.pickableUids = []; state.pickPrompt = '';
+      render();
+    }
+    throw e;
+  }
+}
+async function draftTurnInner(turnNum){
+  const isLastTurn = turnNum === TURNS_PER_ROUND;
+  state.turn = turnNum;
+  state.phase = 'drafting';
+  render();
+
+  const human = state.players[0];
+  const humanPool = [...human.hand];
+  if(human.stored) humanPool.push(human.stored);
+
+  if(!human.isHuman){
+    // Simulator games: seat 0 is an AI too, handled with the others below.
+  } else if(humanPool.length===0){
+    // Card pool is exhausted (deck + discard both ran dry) — nothing to draft this turn.
+    human._playCard = null;
+    human.stored = null;
+    human._passHand = [];
+  } else {
+    state.statusText = `Turn ${turnNum} of ${TURNS_PER_ROUND} — choose a card to play.`;
+    const playUid = await waitForPoolPick('Choose a card to play', humanPool);
+    const playCard = humanPool.find(c=>c.uid===playUid);
+    let afterPlayPool = humanPool.filter(c=>c!==playCard);
+
+    let storeCard = null;
+    if(!isLastTurn && afterPlayPool.length>0){
+      state.statusText = 'Choose a card to keep in storage for later.';
+      render();
+      const storeUid = await waitForPoolPick('Choose a card to keep in storage', afterPlayPool, 'keep');
+      storeCard = afterPlayPool.find(c=>c.uid===storeUid);
+    }
+    human._playCard = playCard;
+    human.stored = storeCard;
+    human._passHand = afterPlayPool.filter(c=>c!==storeCard);
+  }
+
+  // AI players: drafting heuristic depends on their assigned personality
+  // (see aiDraftPick / AI PERSONALITIES above).
+  state.players.filter(p=>!p.isHuman).forEach(p=>{
+    const pool = [...p.hand];
+    if(p.stored) pool.push(p.stored);
+    const {playCard, storeCard, passCards} = aiDraftPick(p, pool, isLastTurn);
+    if(state.simStats) noteDraft(p, pool, playCard, storeCard);
+    p._playCard = playCard;
+    p.stored = storeCard;
+    p._passHand = passCards;
+  });
+
+  state.phase = 'reveal';
+  state.statusText = 'Revealing drafted cards...';
+  log('— ' + state.players.map(p=> p._playCard ? `${p.name} drafted ${cardShortLabel(p._playCard)}` : `${p.name} has no card to draft`).join(' · '));
+  await delay(450);
+
+  // All players play their card and activate their ability "simultaneously"
+  // — resolved one at a time below, but "give to neighbour" effects are
+  // deferred until every player has placed their own card, so a gift lands
+  // on top of whatever the recipient just played instead of arriving early
+  // and getting buried under it.
+  const origRunAbility = runAbility;
+  runAbility = async function(key, ctx){
+    if(state.pendingGifts && DEFERRED_GIFT_ABILITIES.has(key)){
+      state.pendingGifts.push({key, ctx});
+      return;
+    }
+    return origRunAbility(key, ctx);
+  };
+
+  state.pendingGifts = [];
+  try{
+    for(const p of state.players){
+      state.resolvingName = p.name;
+      state.statusText = `Resolving ${p.name}'s play...`;
+      render();
+      if(p._playCard){
+        await resolvePlay(p, p._playCard);
+      } else {
+        log(`${p.name} had no card to play this turn.`);
+      }
+      render();
+      await delay(200);
+    }
+    for(const g of state.pendingGifts){
+      if(state.simStats && g.key!=='gift_mud'){
+        const st = state.simStats, t = g.ctx.player.aiType;
+        st.giftPlays++; st.typeGiftPlays[t] = (st.typeGiftPlays[t]||0) + 1;
+      }
+      await origRunAbility(g.key, g.ctx);
+      render();
+      await delay(150);
+    }
+  } finally {
+    // Always restore runAbility, even if something above threw, so a single
+    // bad turn can't permanently leave it wrapped layer upon layer.
+    runAbility = origRunAbility;
+    state.pendingGifts = null;
+  }
+  state.resolvingName = null;
+  if(state.simStats){
+    const st = state.simStats;
+    st.maxInTurn = Math.max(st.maxInTurn, ...st.turnReceived);
+    st.turnReceived.forEach(k=>{ st.turnHist[Math.min(k,4)]++; });
+    st.turnReceived = st.turnReceived.map(()=>0);
+  }
+
+  const n = state.players.length;
+  // Drafted hands always pass the OPPOSITE way from this round's ability
+  // pass-token direction — if abilities push cards to the right neighbour,
+  // drafted hands move left, and vice versa.
+  const handFromOffset = state.passDirection==='right' ? 1 : -1;
+  const newHands = state.players.map((p,i)=> state.players[(i+handFromOffset+n)%n]._passHand);
+  state.players.forEach((p,i)=> p.hand = newHands[i]);
+  render();
+}
+
+async function playRound(){
+
+  state.round++;
+  const other = state.passDirectionBase==='right' ? 'left' : 'right';
+  state.passDirection = (state.round % 2 === 1) ? state.passDirectionBase : other;
+  if(state.simStats){
+    state.simStats.carried = state.round>1 ? state.players.flatMap(p=>COLORS.flatMap(c=>p.stacks[c].filter(cd=>!cd.isFaceDown).map(cd=>({p, uid:cd.uid, value:cd.value})))) : null;
+  }
+  dealHands();
+  pickRoundScoreCard();
+  log(state.giveBoth
+    ? `— Round ${state.round} begins — Give-abilities hit both neighbours; hands pass ${state.passDirection==='right'?'LEFT':'RIGHT'} this round.`
+    : `— Round ${state.round} begins — Give-abilities pass to each player's ${state.passDirection.toUpperCase()} neighbour this round.`);
+  render();
+
+  for(let t=1;t<=TURNS_PER_ROUND;t++){
+    let turnDone = false;
+    while(!turnDone){
+      try{
+        await draftTurn(t);
+        turnDone = true;
+      } catch(e){
+        if(e instanceof UndoSignal){ continue; } // state already reverted; redo this turn
+        throw e;
+      }
+    }
+  }
+
+  // Hand size is larger than turns per round, so one drafted card per player
+  // never gets played. Return it (and anything left in storage) to the
+  // discard pile instead of losing it, so it stays in circulation for the
+  // deck's reshuffle-from-discard.
+  state.players.forEach(p=>{
+    if(p.hand.length>0){ state.discard.push(...p.hand.map(toDiscard)); p.hand = []; }
+    if(p.stored){ state.discard.push(toDiscard(p.stored)); p.stored = null; }
+  });
+
+  if(state.simStats && state.simStats.carried){
+    // Simulator: how many of the cards carried over from last round's cleanup
+    // are still in place, face up, and so score again this round.
+    const st = state.simStats;
+    st.carried.forEach(({p, uid, value})=>{
+      const still = COLORS.some(c=>p.stacks[c].some(cd=>cd.uid===uid && !cd.isFaceDown));
+      st.carrySeen++; if(still) st.carrySurvived++;
+      st.carryValueSeen += Math.abs(value); if(still) st.carryValueSurvived += Math.abs(value);
+    });
+  }
+  const results = computeRoundScores();
+  if(state.simStats) results.forEach(r=>{ state.simStats.baseSum += r.base; state.simStats.bonusSum += r.bonus; });
+  state.phase = 'roundSummary';
+  state.lastSummary = results;
+  state.statusText = '';
+  render();
+  if(!state.simMode) await waitForContinue();
+
+  cleanupStacks();
+  replenishDecksFromDiscard();
+}
+
+function applyMudPenalties(){
+  const MUD_PENALTY_PER_CARD = 2;
+  state.players.forEach(p=>{
+    const penalty = p.mudHand.length * MUD_PENALTY_PER_CARD;
+    p.mudPenalty = penalty;
+    if(penalty>0){
+      p.total -= penalty;
+      log(`${p.name} had ${p.mudHand.length} unused Mud card(s) at game end: -${penalty} pts.`);
+    }
+  });
+}
+
+async function startGame(numAI, aiTypeChoices){
+  initGame(numAI, aiTypeChoices);
+  render();
+  for(let i=0;i<3;i++){ await playRound(); }
+  applyMudPenalties();
+  state.phase = 'final';
+  render();
+}
+function restartGame(){ location.reload(); }
+
+/* ============================= SIMULATOR =============================
+   Plays AI-only games (every seat a random personality) with delays, logging
+   and rendering switched off, for 2-5 players with the "give to both
+   neighbours" option off and then on, under each AI variant below, and tallies
+   how gifts land, how often the Splat/Big Splat decks run dry, how often each
+   personality plays a give card, and which personalities win. */
+const SIM_PLAYER_COUNTS = [2,3,4,5];
+const SIM_GIFT_MODES = [
+  {label:'One',      giveBoth:false, newLineup:false},
+  {label:'One (new)', giveBoth:false, newLineup:true},
+  {label:'Both',     giveBoth:true,  newLineup:true}
+];
+const SIM_AI_VARIANTS = [
+  {label:'Base',              aiDenial:false, aiGiftCredit:false, aiMudValue:false, aiMudOption:false},
+  {label:'+Keep',             aiDenial:true,  aiGiftCredit:false, aiMudValue:false, aiMudOption:false},
+  {label:'+Keep +Gift value', aiDenial:true,  aiGiftCredit:true, aiMudValue:false, aiMudOption:false},
+  {label:'+Mud end value',    aiDenial:true,  aiGiftCredit:true, aiMudValue:true,  aiMudOption:false},
+  {label:'+Mud in-game value', aiDenial:true, aiGiftCredit:true, aiMudValue:true,  aiMudOption:true,  aiMudAll:false},
+  {label:'+Rearrange & Move 2', aiDenial:true, aiGiftCredit:true, aiMudValue:true, aiMudOption:true,  aiMudAll:true},
+  {label:'+Carry & Mud chains', aiDenial:true, aiGiftCredit:true, aiMudValue:true, aiMudOption:true,  aiMudAll:true, aiCarryAll:true, aiMudChain:true}
+];
+function newSimAgg(){
+  return {games:0, received:0, seats:0, turnHist:[0,0,0,0,0], maxInTurn:0, giftPlays:0,
+    splatReshuffles:0, bigReshuffles:0, splatEmpty:0, bigEmpty:0, gamesSplatEmpty:0, gamesBigEmpty:0,
+    scoreSum:0, winScoreSum:0, spreadSum:0, typeSeats:{}, typeWins:{}, typeGiftPlays:{}, cards:{}, mudUses:0, mudByKey:{}, mudChains:0, mudSaved:0, mudSavedN:0, mudUnused:0, baseSum:0, bonusSum:0, carrySeen:0, carrySurvived:0, carryValueSeen:0, carryValueSurvived:0};
+}
+async function simulateOneGame(nPlayers, mode){
+  state.giveBoth = mode.giveBoth; state.newLineup = mode.newLineup;
+  initGame(nPlayers-1, null);
+  const p0 = state.players[0];
+  p0.isHuman = false; p0.name = 'AI 0';
+  p0.aiType = AI_TYPES[Math.floor(Math.random()*AI_TYPES.length)];
+  state.simStats = {received:Array(nPlayers).fill(0), turnReceived:Array(nPlayers).fill(0), turnHist:[0,0,0,0,0],
+    maxInTurn:0, giftPlays:0, typeGiftPlays:{}, cards:{}, mudUses:0, mudByKey:{}, mudChains:0, mudSaved:0, mudSavedN:0, baseSum:0, bonusSum:0, carried:null, carrySeen:0, carrySurvived:0, carryValueSeen:0, carryValueSurvived:0, splatReshuffles:0, bigReshuffles:0, splatEmpty:0, bigEmpty:0};
+  for(let i=0;i<3;i++){ await playRound(); }
+  applyMudPenalties();
+  state.simStats.mudUnused = state.players.reduce((a,p)=>a+p.mudHand.length,0);
+  return state.simStats;
+}
+async function runSimulation(){
+  const gamesPer = Math.max(1, parseInt(state.simGames,10) || 200);
+  const keepGiveBoth = state.giveBoth, keepLineup = state.newLineup, keepDenial = state.aiDenial, keepCredit = state.aiGiftCredit, keepMud = state.aiMudValue, keepMudOption = state.aiMudOption, keepMudAll = state.aiMudAll, keepCarry = state.aiCarryAll, keepChain = state.aiMudChain;
+  const results = {gamesPer, keep:state.keepTopCards, destroy89:state.destroy89, rows:[]};
+  // Quick runs (#sim=N&quick) only cover the default gift setup and the two newest AI variants;
+  // &last narrows that to the newest AI only, and &keep=2 sets the cleanup option.
+  const modes = state.simQuick ? SIM_GIFT_MODES.slice(0,1) : SIM_GIFT_MODES;
+  const variants = state.simLastOnly ? SIM_AI_VARIANTS.slice(-1) : state.simQuick ? SIM_AI_VARIANTS.slice(-2) : SIM_AI_VARIANTS;
+  const total = modes.length*variants.length*SIM_PLAYER_COUNTS.length*gamesPer;
+  let done = 0;
+  state.simRunning = true; render();
+  state.simMode = true;
+  try{
+    for(const mode of modes){
+     for(const variant of variants){
+      state.aiDenial = variant.aiDenial; state.aiGiftCredit = variant.aiGiftCredit; state.aiMudValue = variant.aiMudValue; state.aiMudOption = variant.aiMudOption; state.aiMudAll = !!variant.aiMudAll; state.aiCarryAll = !!variant.aiCarryAll; state.aiMudChain = !!variant.aiMudChain;
+      for(const nPlayers of SIM_PLAYER_COUNTS){
+        const agg = newSimAgg();
+        for(let g=0; g<gamesPer; g++){
+          const st = await simulateOneGame(nPlayers, mode);
+          agg.games++;
+          agg.seats += nPlayers;
+          agg.received += st.received.reduce((a,b)=>a+b,0);
+          st.turnHist.forEach((k,i)=>agg.turnHist[i]+=k);
+          agg.maxInTurn = Math.max(agg.maxInTurn, st.maxInTurn);
+          agg.giftPlays += st.giftPlays;
+          mergeCardStats(agg.cards, st.cards);
+          Object.keys(st.mudByKey).forEach(k=>{ agg.mudByKey[k] = (agg.mudByKey[k]||0) + st.mudByKey[k]; });
+          agg.mudUses += st.mudUses; agg.mudChains += st.mudChains;
+          agg.baseSum += st.baseSum; agg.bonusSum += st.bonusSum;
+          agg.carrySeen += st.carrySeen; agg.carrySurvived += st.carrySurvived; agg.carryValueSeen += st.carryValueSeen; agg.carryValueSurvived += st.carryValueSurvived; agg.mudSaved += st.mudSaved; agg.mudSavedN += st.mudSavedN; agg.mudUnused += st.mudUnused;
+          Object.keys(st.typeGiftPlays).forEach(k=>{ agg.typeGiftPlays[k] = (agg.typeGiftPlays[k]||0) + st.typeGiftPlays[k]; });
+          agg.splatReshuffles += st.splatReshuffles; agg.bigReshuffles += st.bigReshuffles;
+          agg.splatEmpty += st.splatEmpty; agg.bigEmpty += st.bigEmpty;
+          if(st.splatEmpty>0) agg.gamesSplatEmpty++;
+          if(st.bigEmpty>0) agg.gamesBigEmpty++;
+          const totals = state.players.map(p=>p.total);
+          const best = Math.min(...totals);
+          agg.scoreSum += totals.reduce((a,b)=>a+b,0);
+          agg.winScoreSum += best;
+          agg.spreadSum += Math.max(...totals) - best;
+          const winners = state.players.filter(p=>p.total===best);
+          state.players.forEach(p=>{
+            agg.typeSeats[p.aiType] = (agg.typeSeats[p.aiType]||0) + 1;
+            if(winners.includes(p)) agg.typeWins[p.aiType] = (agg.typeWins[p.aiType]||0) + 1/winners.length;
+          });
+          done++;
+          if(done%10===0){
+            const el = document.getElementById('sim-progress');
+            if(el) el.textContent = `Simulating… ${done}/${total} games`;
+            await new Promise(r=>setTimeout(r,0));
+          }
+        }
+        results.rows.push({mode:mode.label, variant:variant.label, nPlayers, agg});
+      }
+     }
+    }
+  } finally {
+    state.simMode = false;
+    state.simStats = null;
+    state.simRunning = false;
+    state.giveBoth = keepGiveBoth; state.newLineup = keepLineup; state.aiDenial = keepDenial; state.aiGiftCredit = keepCredit; state.aiMudValue = keepMud; state.aiMudOption = keepMudOption; state.aiMudAll = keepMudAll; state.aiCarryAll = keepCarry; state.aiMudChain = keepChain;
+    state.players = []; state.phase = 'intro';
+  }
+  state.simResults = results;
+  render();
+}
+function mergeCardStats(into, from){
+  Object.keys(from).forEach(k=>{
+    const e = from[k];
+    const t = into[k] || (into[k] = {key:e.key, type:e.type, text:e.text, seen:0, played:0, stored:0});
+    t.seen += e.seen; t.played += e.played; t.stored += e.stored;
+  });
+}
+// Per-card draft table for one gift setup, summed over every player count,
+// using the current (last) AI variant. Play rate = how often a card that was
+// in an AI's pool got played that turn; colour marks cards well above/below
+// the average play rate in that column.
+const CARD_KEY_ORDER = [...VALUE_DEFS.map(d=>String(d.v)), ...PURPLE_VALUE_DEFS.map(d=>'P'+d.v)];
+function cardTableHtml(r, modeLabel){
+  const variant = SIM_AI_VARIANTS[SIM_AI_VARIANTS.length-1].label;
+  const picked = r.rows.filter(x=>x.mode===modeLabel && x.variant===variant);
+  if(picked.length===0) return '';
+  const cards = {}; let games = 0;
+  picked.forEach(x=>{ mergeCardStats(cards, x.agg.cards); games += x.agg.games; });
+  const sum = (key, type) => {
+    const out = {seen:0, played:0, stored:0, text:''};
+    Object.values(cards).forEach(e=>{
+      if(e.key!==key || (type && e.type!==type)) return;
+      out.seen += e.seen; out.played += e.played; out.stored += e.stored; out.text = e.text;
+    });
+    return out;
+  };
+  const cols = [null, ...AI_TYPES];
+  const avgRate = {};
+  cols.forEach(t=>{
+    const all = CARD_KEY_ORDER.map(k=>sum(k,t));
+    const seen = all.reduce((a,e)=>a+e.seen,0), played = all.reduce((a,e)=>a+e.played,0);
+    avgRate[t] = seen ? played/seen : 0;
+  });
+  const rateCell = (e, t) => {
+    if(!e.seen) return '<td>—</td>';
+    const rate = e.played/e.seen, rel = avgRate[t] ? rate/avgRate[t] : 1;
+    const col = rel>1.4 ? 'var(--green)' : rel<0.6 ? 'var(--red)' : 'inherit';
+    return `<td style="color:${col}">${(100*rate).toFixed(0)}%</td>`;
+  };
+  const body = CARD_KEY_ORDER.map(k=>{
+    const all = sum(k, null);
+    if(!all.seen) return '';
+    return `<tr><td><strong>${k.startsWith('P') ? 'Purple '+k.slice(1) : fmtVal(Number(k))}</strong></td>
+      <td style="white-space:normal;min-width:180px;font-size:.75rem;">${all.text||'—'}</td>
+      <td>${(all.played/games).toFixed(2)}</td>${rateCell(all,null)}<td>${(100*all.stored/all.seen).toFixed(0)}%</td>
+      ${AI_TYPES.map(t=>rateCell(sum(k,t),t)).join('')}</tr>`;
+  }).join('');
+  return `<h3 style="margin-top:16px;">Card draft rates — ${modeLabel} gifts, ${variant} AI, ${games} games (all player counts)</h3>
+    <div class="sim-scroll"><table>
+      <tr><th>Card</th><th>Ability</th><th>Played / game</th><th>Play rate</th><th>Store rate</th>${AI_TYPES.map(t=>`<th>${AI_TYPE_LABELS[t]} play rate</th>`).join('')}</tr>
+      <tr><td></td><td style="color:var(--sub);font-size:.75rem;">Average</td><td></td><td>${(100*avgRate[null]).toFixed(0)}%</td><td></td>${AI_TYPES.map(t=>`<td>${(100*avgRate[t]).toFixed(0)}%</td>`).join('')}</tr>
+      ${body}
+    </table></div>`;
+}
+const MUD_SHORT = {rearrange:'Rearrange', play_any:'Any stack', use_under:'Use under', facedown_instead:'Face down', move2:'Move 2'};
+function onSimGamesChange(v){ state.simGames = v; }
+function simResultsHtml(){
+  const r = state.simResults; if(!r) return '';
+  const pct = (a,b)=> b ? (100*a/b).toFixed(1)+'%' : '—';
+  const f1 = x=> x.toFixed(1), f2 = x=> x.toFixed(2);
+  const rows = r.rows.map(({mode,variant,nPlayers,agg})=>{
+    const turns = agg.turnHist.reduce((a,b)=>a+b,0);
+    const multi = agg.turnHist[2]+agg.turnHist[3]+agg.turnHist[4];
+    return `<tr>
+      <td>${nPlayers}</td><td>${mode}</td><td>${variant}</td>
+      <td>${f2(agg.giftPlays/agg.games)}</td>
+      <td>${f2(agg.received/agg.seats)}</td>
+      <td>${pct(agg.turnHist[1],turns)}</td>
+      <td>${pct(multi,turns)}</td>
+      <td>${agg.maxInTurn}</td>
+      <td>${f2(agg.splatReshuffles/agg.games)} / ${f2(agg.bigReshuffles/agg.games)}</td>
+      <td>${pct(agg.gamesSplatEmpty,agg.games)} / ${pct(agg.gamesBigEmpty,agg.games)}</td>
+      <td>${f1(agg.scoreSum/agg.seats)} (${f1(agg.baseSum/agg.seats)} cards + ${f1(agg.bonusSum/agg.seats)} goals)</td>
+      <td>${f1(agg.winScoreSum/agg.games)}</td>
+      <td>${f1(agg.spreadSum/agg.games)}</td>
+      <td>${f2(agg.mudUses/agg.seats)} (${f2(agg.mudChains/2/agg.seats)} chains)</td><td>${f2(agg.mudUnused/agg.seats)}</td><td>${agg.mudSavedN ? f2(agg.mudSaved/agg.mudSavedN) : '—'}</td>
+      <td>${MUD_TYPES.map(m=>f2((agg.mudByKey[m.key]||0)/agg.seats)).join(' / ')}</td>
+      <td>${pct(agg.carrySurvived,agg.carrySeen)} (${pct(agg.carryValueSurvived,agg.carryValueSeen)} by value)</td>
+    </tr>`;
+  }).join('');
+  // Win rate per personality, relative to a fair share (1 / player count).
+  // Give cards each personality plays per game it sits in.
+  const giftRows = AI_TYPES.map(t=>{
+    const cells = r.rows.map(({agg})=>{
+      const seats = agg.typeSeats[t]||0;
+      return seats ? `<td>${f2((agg.typeGiftPlays[t]||0)/seats)}</td>` : '<td>—</td>';
+    }).join('');
+    return `<tr><td>${AI_TYPE_LABELS[t]}</td>${cells}</tr>`;
+  }).join('');
+  const typeRows = AI_TYPES.map(t=>{
+    const cells = r.rows.map(({nPlayers,agg})=>{
+      const seats = agg.typeSeats[t]||0;
+      if(!seats) return '<td>—</td>';
+      const rate = (agg.typeWins[t]||0)/seats;
+      const vsFair = rate*nPlayers;
+      const col = vsFair>1.25 ? 'var(--green)' : vsFair<0.75 ? 'var(--red)' : 'inherit';
+      return `<td style="color:${col}">${(100*rate).toFixed(0)}%</td>`;
+    }).join('');
+    return `<tr><td>${AI_TYPE_LABELS[t]}</td>${cells}</tr>`;
+  }).join('');
+  const typeHead = r.rows.map(({mode,variant,nPlayers})=>`<th>${nPlayers}p ${mode} ${variant}</th>`).join('');
+  return `<div class="summary sim-results">
+    <h3>Simulation — ${r.gamesPer} games per row, keep top ${r.keep}${r.destroy89?'':', old 6-10 cards'}</h3>
+    <div class="sim-scroll"><table>
+      <tr><th>Players</th><th>Gifts</th><th>AI variant</th><th>Give cards played / game</th><th>Splat cards received / player / game</th>
+        <th>Turns receiving 1</th><th>Turns receiving 2+</th><th>Most in one turn</th>
+        <th>Splat / Big Splat reshuffles / game</th><th>Games where Splat / Big Splat deck was truly empty</th>
+        <th>Avg final score</th><th>Avg winning score</th><th>Avg spread</th>
+        <th>Mud spent / player / game</th><th>Mud unused at end / player</th><th>Points saved per Mud spent</th><th>Mud spent / player by type (${MUD_TYPES.map(m=>MUD_SHORT[m.key]).join(' / ')})</th><th>Carried cards still scoring at next round end</th></tr>
+      ${rows}
+    </table></div>
+    <h3 style="margin-top:16px;">Win rate by personality <span style="font-weight:400;color:var(--sub);font-size:.8rem;">(green = well above a fair share, red = well below)</span></h3>
+    <div class="sim-scroll"><table><tr><th>AI</th>${typeHead}</tr>${typeRows}</table></div>
+    <h3 style="margin-top:16px;">Give cards played per game, by personality</h3>
+    <div class="sim-scroll"><table><tr><th>AI</th>${typeHead}</tr>${giftRows}</table></div>
+    ${SIM_GIFT_MODES.map(m=>cardTableHtml(r, m.label)).join('')}
+  </div>`;
+}
+
+/* ============================= INTRO SETUP ============================= */
+function onIntroPickCount(n){
+  if(!TEST_BUILD){ startGame(n, Array(n).fill('random')); return; }
+  state.introNumAI = n;
+  state.introAITypes = Array(n).fill('random');
+  render();
+}
+function onIntroTypeChange(i, value){
+  state.introAITypes[i] = value;
+  render();
+}
+function onIntroKeepChange(value){
+  state.keepTopCards = parseInt(value, 10) || 1;
+  render();
+}
+function onIntroDestroy89Change(value){
+  state.destroy89 = value==='destroy';
+  render();
+}
+function onIntroGiveChange(value){
+  state.giveBoth = value==='both';
+  state.newLineup = value!=='one';
+  render();
+}
+function onIntroBack(){
+  state.introNumAI = null;
+  state.introAITypes = [];
+  render();
+}
+function onIntroStart(){
+  startGame(state.introNumAI, state.introAITypes);
+}
+
+/* ============================= RENDER ============================= */
+function cardImageSrc(color, value, kind){
+  const bucket = kind==='starter' ? CARD_IMAGES.starter : kind==='bigSplat' ? CARD_IMAGES.bigSplat : CARD_IMAGES.card;
+  const c = bucket && bucket[color];
+  if(!c) return '';
+  return c[String(value)] || '';
+}
+function cardVisualHtml(c, widthPx, extraAttrs, noPreview){
+  extraAttrs = extraAttrs || '';
+  const hov = src => noPreview ? '' : `onmouseenter="showCardPreview(event,'${src}')" onmousemove="positionCardPreview(event)" onmouseleave="hideCardPreview()"`;
+  const h = Math.round(widthPx*245/180);
+  if(c.isFaceDown){
+    if(CARD_IMAGES.back){
+      return `<div class="artcard" style="width:${widthPx}px;">
+        <img src="${CARD_IMAGES.back}" style="width:${widthPx}px;display:block;border-radius:5px;" ${hov(CARD_IMAGES.back)} ${extraAttrs}/>
+      </div>`;
+    }
+    return `<div class="simplecard" style="width:${widthPx}px;height:${h}px;background:#2a2a2a;" ${extraAttrs}>
+      <span class="simplecard-num">?</span>
+      <span class="simplecard-tag">Face down</span>
+    </div>`;
+  }
+  const src = cardImageSrc(c.color, c.printValue, c.isBigSplat ? 'bigSplat' : (c.isStarter ? 'starter' : null));
+  if(!src){
+    // Fallback for any missing art
+    const bg = c.color ? COLOR_HEX[c.color] : '#777';
+    return `<div class="simplecard" style="width:${widthPx}px;height:${h}px;background:${bg};" ${extraAttrs}>
+      <span class="simplecard-num">${fmtVal(c.value)}</span>
+      <span class="simplecard-tag">${c.isStarter?'Splat':(c.isBigSplat?'Big Splat':(c.text||''))}</span>
+    </div>`;
+  }
+  return `<div class="artcard" style="width:${widthPx}px;">
+    <img src="${src}" style="width:${widthPx}px;display:block;border-radius:5px;" ${hov(src)} ${extraAttrs}/>
+    <span class="valbadge">${fmtVal(c.value)}</span>
+  </div>`;
+}
+let lastPointerIsMouse = true;
+window.addEventListener('pointerdown', e=>{ lastPointerIsMouse = e.pointerType==='mouse'; }, true);
+function showCardPreview(evt, src){
+  if(!src || !lastPointerIsMouse) return;
+  const el = document.getElementById('card-preview');
+  const img = document.getElementById('card-preview-img');
+  img.src = src;
+  el.style.display = 'block';
+  positionCardPreview(evt);
+}
+function positionCardPreview(evt){
+  const el = document.getElementById('card-preview');
+  if(el.style.display==='none') return;
+  const w = 190, h = Math.round(w*245/180);
+  let x = evt.clientX + 24;
+  let y = evt.clientY - h - 24;
+  if(y < 8) y = evt.clientY + 24;
+  if(x + w > window.innerWidth - 8) x = evt.clientX - w - 24;
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+}
+function hideCardPreview(){
+  document.getElementById('card-preview').style.display = 'none';
+}
+function stackHtml(player, color){
+  const s = player.stacks[color];
+  const n = s.length;
+  const peek = 20, cardW = 66, cardH = Math.round(cardW*245/180);
+  const pileHeight = cardH + Math.max(0,n-1)*peek;
+  let html = `<div class="stack"><div class="shead" style="color:${COLOR_HEX[color]}">${COLOR_NAMES[color]}</div>`;
+  html += `<div class="pile" style="height:${pileHeight}px;width:${cardW}px;">`;
+  if(n===0){
+    html += `<div class="pile-empty" style="width:${cardW}px;height:${cardH}px;">empty</div>`;
+  } else {
+    s.forEach((c,i)=>{
+      const inner = cardVisualHtml(c, cardW, `title="${c.isFaceDown ? 'Face down' : fmtVal(c.value)}" onclick="onCardTap(${c.uid})"`);
+      html += `<div class="pilecard ${i===n-1?'top':''}" style="bottom:${i*peek}px;z-index:${i};width:${cardW}px;">${inner}</div>`;
+    });
+  }
+  html += `</div></div>`;
+  return html;
+}
+function playerHtml(p){
+  let html = `<div class="player ${p.isHuman?'human':''}">`;
+  html += `<div class="phead"><span class="pname">${p.name}${p.isHuman?' (you)':TEST_BUILD?` — ${AI_TYPE_LABELS[p.aiType]}`:''}</span><span class="ptotal">${p.total} pts</span></div>`;
+  html += `<div class="stacks">` + COLORS.map(c=>stackHtml(p,c)).join('') + `</div>`;
+  if(p.isHuman){
+    html += `<div class="mudrow">Mud: ${p.mudHand.length}/${MUD_HAND_LIMIT} (in your hand below)</div>`;
+  } else {
+    html += `<div class="mudrow">Hand: ${p.hand.length} · Mud: ${p.mudHand.length}/${MUD_HAND_LIMIT}</div>`;
+  }
+  html += `</div>`;
+  return html;
+}
+function scoreCardText(card){
+  if(!card) return '';
+  if(card.type==='majority'){
+    const n = state.players.length;
+    const tiers=[15,10,5];
+    const used = tiers.slice(Math.max(0,3-(n-1)));
+    return card.text + ` — payout tiers in play: [${used.join(', ')}]`;
+  }
+  return card.text;
+}
+// Pass token detail: which way give abilities and the draft pass go this
+// round, and who that is for you. Hands pass the opposite way to gifts
+// (see handFromOffset in the round loop).
+function passTokenLinesHtml(){
+  const n = state.players.length;
+  const right = state.passDirection==='right';
+  const nameOf = i => state.players[i] ? state.players[i].name : '';
+  const draftTo = right ? (n-1)%n : 1%n;
+  const give = state.giveBoth
+    ? `Give abilities: ↔ both neighbours`
+    : `Give abilities: ${right?'→ right':'← left'} (to ${nameOf(passNeighbourOf(0))})`;
+  const draft = `Draft pass: ${right?'← left':'→ right'} (to ${nameOf(draftTo)})`;
+  return `${give}<br>${draft}`;
+}
+function render(){
+  if(state.simMode) return;
+  const app = document.getElementById('app');
+  let html = '';
+
+  if(state.phase==='intro'){
+    if(state.introNumAI==null){
+      html += `
+      <div class="hero">
+        <h1 class="brand">🎨 Don't Get Splat</h1>
+        <p>A paintball drafting prototype. Draft cards, build your colour stacks, and try to end each round with the lowest score. Choose how many AI opponents to play against.</p>
+        <div class="opt-row">
+          ${[1,2,3,4].map(n=>`<button class="opt-btn" onclick="onIntroPickCount(${n})">${n} AI opponent${n>1?'s':''}<small>${n+1} players total</small></button>`).join('')}
+        </div>
+        ${TEST_BUILD ? `<div class="sim-panel">
+          <div class="ai-setup-label">AI simulator</div>
+          <p>Plays AI-only games at 2–5 players, with gifts going to one neighbour and then to both, and compares the two.</p>
+          <label>Games per row <input type="number" min="10" step="50" value="${state.simGames||200}" oninput="onSimGamesChange(this.value)" ${state.simRunning?'disabled':''}/></label>
+          <button class="opt-btn" onclick="runSimulation()" ${state.simRunning?'disabled':''}>Run simulation</button>
+          <div id="sim-progress" class="status">${state.simRunning?'Simulating…':''}</div>
+        </div>` : ''}
+      </div>
+      ${TEST_BUILD ? simResultsHtml() : ''}`;
+    } else {
+      html += `
+      <div class="hero">
+        <h1 class="brand">🎨 Don't Get Splat</h1>
+        <p>Give each AI opponent a personality, or leave it on Random — the same personality can be picked more than once.</p>
+        <div class="ai-setup-row">
+          ${state.introAITypes.map((choice,i)=>`
+            <div class="ai-setup-slot">
+              <div class="ai-setup-label">AI ${i+1}</div>
+              <select class="ai-setup-select" onchange="onIntroTypeChange(${i}, this.value)">
+                <option value="random" ${choice==='random'?'selected':''}>Random</option>
+                ${AI_TYPES.map(t=>`<option value="${t}" ${choice===t?'selected':''}>${AI_TYPE_LABELS[t]}</option>`).join('')}
+              </select>
+            </div>`).join('')}
+        </div>
+        <div class="ai-setup-row">
+          <div class="ai-setup-slot">
+            <div class="ai-setup-label">End-of-round cleanup</div>
+            <select class="ai-setup-select" onchange="onIntroKeepChange(this.value)">
+              <option value="1" ${state.keepTopCards===1?'selected':''}>Keep top 1 card</option>
+              <option value="2" ${state.keepTopCards===2?'selected':''}>Keep top 2 cards</option>
+            </select>
+          </div>
+          <div class="ai-setup-slot">
+            <div class="ai-setup-label">Give abilities</div>
+            <select class="ai-setup-select" onchange="onIntroGiveChange(this.value)">
+              <option value="one" ${!state.newLineup?'selected':''}>One neighbour (pass token)</option>
+              <option value="oneNew" ${state.newLineup&&!state.giveBoth?'selected':''}>One neighbour, new lineup (2/3 Splat, 4 Mud, 5 Big Splat)</option>
+              <option value="both" ${state.giveBoth?'selected':''}>Both neighbours (2/3 Splat, 4 Mud, 5 Big Splat)</option>
+            </select>
+          </div>
+          <div class="ai-setup-slot">
+            <div class="ai-setup-label">6, 8, 9 and 10 cards</div>
+            <select class="ai-setup-select" onchange="onIntroDestroy89Change(this.value)">
+              <option value="flip" ${!state.destroy89?'selected':''}>Old cards (8 and 9 flip)</option>
+              <option value="destroy" ${state.destroy89?'selected':''}>Printed (6: flip 2 tops, 8: 3 Splat/flipped, 9: 2 under, 10: 2 tops)</option>
+            </select>
+          </div>
+        </div>
+        <div class="opt-row">
+          <button class="opt-btn" onclick="onIntroBack()">⟵ Back</button>
+          <button class="opt-btn" onclick="onIntroStart()">Start Game</button>
+        </div>
+      </div>`;
+    }
+    app.innerHTML = html;
+    return;
+  }
+
+  // top bar
+  const scorecardsHtml = [state.roundScoreCard, state.roundScoreCard2].filter(Boolean).map(card=>
+    `<div class="scorecard">${card.type==='majority' ? `<img src="${CARD_IMAGES.majority[card.singleColour ? 'single_colour' : (card.custom || card.color)]}"/>` : ''}<div><div class="label">Round Scoring</div><div class="text">${scoreCardText(card)}</div></div></div>`
+  ).join('');
+  const passTokenHtml = `<div class="scorecard" title="Flips every round">
+    <img src="${PASS_TOKEN_IMG[state.passDirection]}" style="width:72px;height:72px;border-radius:50%;"/>
+    <div><div class="label">Pass Token</div><div class="text">${passTokenLinesHtml()}</div></div>
+  </div>`;
+  html += `<div class="topbar">
+    <div class="roundpill">Round ${state.round} / 3</div>
+    ${passTokenHtml}
+    ${scorecardsHtml}
+    <div class="status">${state.statusText||''}</div>
+  </div>`;
+
+  // log
+  html += `<div class="log"><h3>Action log</h3>` + state.log.slice(0,14).map(l=>`<div class="entry">${l}</div>`).join('') + `</div>`;
+
+  if(state.phase==='roundSummary'){
+    const rows = state.lastSummary.map(r=>`
+      <tr>
+        <td>${r.player.name}</td>
+        <td>${r.base}</td>
+        <td>${r.bonus>=0?'+':''}${r.bonus}</td>
+        <td><strong>${r.total}</strong></td>
+        <td style="font-size:.75rem;color:var(--sub)">${r.notes.join('; ')||'—'}</td>
+      </tr>`).join('');
+    html += `<div class="summary">
+      <h3>Round ${state.round} results</h3>
+      <table><tr><th>Player</th><th>Base</th><th>Bonus</th><th>Round total</th><th>Notes</th></tr>${rows}</table>
+      <button class="continue-btn" onclick="onContinueClick()">${state.round<3? 'Continue to next round' : 'See final results'}</button>
+    </div>`;
+  }
+
+  if(state.phase==='final'){
+    const sorted = [...state.players].sort((a,b)=>a.total-b.total);
+    html += `<div class="final"><h2>Final Results</h2>` +
+      sorted.map((p,i)=>`<div class="rank ${i===0?'win':''}"><div class="n">${i===0?'🏆 ':''}${p.name}</div><div class="t">${p.total} pts</div>${p.mudPenalty? `<div style="font-size:.7rem;color:var(--sub);margin-top:4px;">(incl. -${p.mudPenalty} for ${p.mudHand.length} unused Mud)</div>` : ''}</div>`).join('') +
+      `<div><button class="restart-btn" onclick="restartGame()">Play again</button></div></div>`;
+  }
+
+  // boards
+  html += `<div class="board-grid">` + state.players.map(playerHtml).join('') + `</div>`;
+
+  app.innerHTML = html;
+
+  // hand bar (human) + stored card slot
+  if(state.phase!=='final'){
+    const human = state.players[0];
+    const pickable = state.pickableUids || [];
+    const clickable = !!state.pickResolve;
+    let hb = `<div class="handbar">`;
+    hb += `<span class="tag">${clickable? state.pickPrompt : 'Your hand'}:</span>`;
+    if(clickable) hb += `<button class="opt" style="margin-right:8px;" onclick="onBackClick()">↩ Back</button>`;
+    if(clickable && state.pickKind==='mud') hb += `<button class="opt" style="margin-right:8px;" onclick="onPoolSkip()">Play normally ▶</button>`;
+    if(human.hand.length===0 && !human.stored && human.mudHand.length===0) hb += `<span class="tag">empty</span>`;
+
+    if(human.stored){
+      const c = human.stored;
+      const isPickable = pickable.includes(c.uid);
+      const inner = cardVisualHtml(c, 76, `title="${fmtVal(c.value)}${c.text? ' — '+c.text : ''}" onclick="onCardTap(${c.uid})"`);
+      hb += `<div class="cardwrap ${isPickable?'':'disabled'}" style="${isPickable?'':'opacity:.55;'}">${inner}<span class="pick-badge" style="background:#3f7aae;color:#fff;">S</span></div>
+      <span class="tag" style="align-self:center;">|</span>`;
+    }
+
+    human.hand.forEach((c)=>{
+      const isPickable = pickable.includes(c.uid);
+      const inner = cardVisualHtml(c, 76, `title="${fmtVal(c.value)}${c.text? ' — '+c.text : ''}" onclick="onCardTap(${c.uid})"`);
+      hb += `<div class="cardwrap" style="${isPickable?'':'opacity:.55;'}">${inner}</div>`;
+    });
+
+    if(human.mudHand.length>0){
+      hb += `<span class="tag" style="align-self:center;">| Mud:</span>`;
+      human.mudHand.forEach(m=>{
+        const isPickable = pickable.includes(m.uid);
+        const src = CARD_IMAGES.mud[m.key];
+        hb += `<div class="cardwrap" style="${isPickable||!clickable?'':'opacity:.55;'}"><div class="artcard" style="width:76px;">
+          <img src="${src}" style="width:76px;display:block;border-radius:5px;" title="Mud — ${m.t}" onmouseenter="showCardPreview(event,'${src}')" onmousemove="positionCardPreview(event)" onmouseleave="hideCardPreview()" onclick="onCardTap(${m.uid})"/>
+        </div></div>`;
+      });
+    }
+    hb += `</div>`;
+    app.insertAdjacentHTML('beforeend', hb);
+  }
+
+  // modal
+  if(state.modal){
+    let m = `<div class="overlay"><div class="modal"><h3>${state.modal.title}</h3>`;
+    state.modal.options.forEach((o,i)=>{ m += `<button class="opt" onclick="onModalChoiceIndex(${i})">${o.label}</button>`; });
+    m += `<button class="opt" style="opacity:.8;" onclick="onBackClick()">↩ Back</button>`;
+    m += `</div></div>`;
+    app.insertAdjacentHTML('beforeend', m);
+  }
+  if(state.cardZoom) app.insertAdjacentHTML('beforeend', cardZoomHtml());
+}
+
+render();
+// Opening the page as dont_get_splat.html#sim=500 runs the simulator straight away.
+if(TEST_BUILD && /^#sim/.test(location.hash)){
+  const m = location.hash.match(/^#sim=(\d+)/);
+  if(m) state.simGames = m[1];
+  state.simQuick = /quick/.test(location.hash);
+  state.simLastOnly = /last/.test(location.hash);
+  state.destroy89 = !/old89/.test(location.hash);
+  const k = location.hash.match(/keep=(\d)/);
+  if(k) state.keepTopCards = parseInt(k[1],10);
+  runSimulation();
+}
+</script>
+</body>
+</html>

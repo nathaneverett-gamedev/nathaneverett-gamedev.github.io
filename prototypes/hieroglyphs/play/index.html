@@ -1,0 +1,1106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hieroglyphs — Hotseat</title>
+<style>
+:root{--ink:#281d15;--paper:#eee1bc;--gold:#d7a947;--blue:#466998;--red:#a84f37;--green:#628d57;--yellow:#b88832;--shadow:0 4px 13px #150d0873}*{box-sizing:border-box}body{margin:0;background:#292117 radial-gradient(ellipse at top,#615032,#17130f);color:#f8eac6;font:14px 'Libre Baskerville',serif;min-height:100vh}button{font:inherit;cursor:pointer;color:inherit}.app{max-width:1580px;margin:auto;padding:18px}.topbar{display:flex;align-items:center;gap:18px;border-bottom:1px solid #b99850;padding-bottom:14px}.brand{font:700 28px Cinzel,serif;letter-spacing:3px;color:#f4d27c;text-shadow:1px 2px #2a190d}.sub{color:#d5bf91;font-size:12px}.status{margin-left:auto;text-align:right}.turn{font:700 17px Cinzel,serif}.phase{color:#f3cf70;margin-top:4px}.layout{display:grid;grid-template-columns:260px minmax(560px,1fr) 295px;gap:16px;margin-top:16px}.panel{background:#393024e8;border:1px solid #8e7340;border-radius:8px;box-shadow:var(--shadow);padding:12px}.panel h2{font:700 14px Cinzel,serif;letter-spacing:1px;color:#f1ce77;margin:0 0 10px}.market{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.card{width:100%;aspect-ratio:484/744;object-fit:cover;border-radius:5px;box-shadow:1px 2px 5px #100a05;display:block;background:#645}.market .card{cursor:pointer}.card.selected,.market .card.selected{outline:4px solid #ffe177;transform:translateY(-3px)}.deck{margin-top:12px;display:flex;gap:9px;align-items:center}.deckback{height:80px;width:52px;border:2px solid #d6ae59;border-radius:5px;background:repeating-linear-gradient(45deg,#765526,#765526 5px,#c69b47 5px,#c69b47 8px)}.tiny{font-size:11px;color:#d7c49b;line-height:1.5}.main{min-width:0}.board-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.score{color:#f7d874;font:700 19px Cinzel}.grid{background:#1d1812;padding:8px;border:5px solid #806535;border-radius:6px;display:grid;grid-template-columns:repeat(4,1fr);gap:7px;max-width:480px;margin:auto}.cell{position:relative;aspect-ratio:484/744;border:1px dashed #917a4b;border-radius:4px;background:#453829;cursor:pointer}.cell .card{height:100%}.cell.target{box-shadow:inset 0 0 0 4px #ffe177;background:#766039}.cell .token{position:absolute;right:3px;bottom:3px}.token{border-radius:50%;font:700 10px Cinzel;background:#d4a73c;color:#33210d;border:1px solid #ffe99a;padding:4px 5px}.hand-wrap{margin-top:15px}.hand{display:flex;gap:7px;overflow-x:auto;padding:5px}.hand .card{width:78px;flex:0 0 78px;cursor:pointer}.actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}.action{border:1px solid #b58a38;border-radius:4px;background:linear-gradient(#72552a,#493418);padding:8px 10px}.action:hover:not(:disabled){background:#94713b}.action:disabled{opacity:.4;cursor:not-allowed}.god{display:grid;grid-template-columns:76px 1fr;gap:8px;margin:9px 0;padding:7px;background:#2b241b;border-radius:5px;border:1px solid #6f5a34}.god img{width:76px;height:117px;object-fit:cover;border-radius:3px}.god button{font:700 13px Cinzel;background:none;border:0;color:#f4d177;text-align:left;padding:0}.god p{font-size:10px;margin:5px 0;color:#cdbd98;line-height:1.45}.objectives{margin-top:13px}.objective{border:1px solid #886b36;background:#30281e;border-radius:4px;padding:8px;margin:6px 0;font-size:11px}.objective .dots{float:right;color:#f4ce6d}.claimed{opacity:.48;text-decoration:line-through}.log{height:155px;overflow:auto;font-size:11px;line-height:1.5;color:#ddcfb0;background:#251e17;padding:8px;border-radius:4px}.players{display:flex;gap:5px;flex-wrap:wrap}.player-chip{border:1px solid #8e7549;background:#282117;padding:5px 7px;border-radius:3px;font-size:11px}.active{border-color:#ffe17c;color:#ffe17c}.setup{position:fixed;inset:0;background:#1c1712ee;display:flex;align-items:center;justify-content:center;z-index:4}.setupbox{max-width:510px;padding:28px;background:#423522;border:1px solid #c39b4c;border-radius:9px;text-align:center;box-shadow:0 10px 35px #000}.setup h1{font:700 35px Cinzel;color:#f3ce77;margin:0}.setup p{line-height:1.6;color:#e2d1a7}.setup label{display:block;margin:18px}.setup select{background:#eee1bc;color:#302316;padding:8px;margin-left:8px;font:inherit}.start{font:700 16px Cinzel;background:#b88832;border:0;border-radius:4px;padding:11px 22px;color:#25190d}.help{font-size:11px;line-height:1.55;color:#d9c49a;border-top:1px solid #705a35;margin-top:12px;padding-top:11px}@media(max-width:1050px){.layout{grid-template-columns:220px 1fr}.right{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:14px}.right .panel{margin:0}}@media(max-width:680px){.app{padding:8px}.layout{grid-template-columns:1fr}.left{order:2}.right{order:3;display:block}.right .panel{margin-bottom:10px}.topbar{gap:8px}.brand{font-size:21px}.sub{display:none}.grid{gap:3px;padding:4px;border-width:3px}.hand .card{width:61px;flex-basis:61px}}
+.remnants{position:absolute;inset:0;pointer-events:none}.remnant{position:absolute;width:54px;aspect-ratio:1;pointer-events:auto;border:0;background:transparent;padding:0;filter:drop-shadow(1px 2px 2px #160e08)}.remnant img{width:100%;height:100%;display:block}.remnant.top{top:-59px}.remnant.left{left:-59px}.remnant.top.r0{left:0}.remnant.top.r1{left:calc(25% - 1px)}.remnant.top.r2{left:calc(50% - 2px)}.remnant.top.r3{left:calc(75% - 3px)}.remnant.left.r0{top:0}.remnant.left.r1{top:calc(25% - 1px)}.remnant.left.r2{top:calc(50% - 2px)}.remnant.left.r3{top:calc(75% - 3px)}.remnant:hover{filter:drop-shadow(0 0 5px #ffe17c)}@media(max-width:680px){.remnant{width:37px}.remnant.top{top:-41px}.remnant.left{left:-41px}.grid{margin-top:45px!important;margin-left:43px!important}}
+.status{background:var(--turn-col,#5d4524);border:2px solid #f5d36f;border-radius:7px;padding:9px 15px;min-width:280px;box-shadow:0 2px 8px #100a05}.turn{font-size:21px!important;letter-spacing:1px}.phase{font:700 14px Cinzel!important;color:#fff3bd!important}.turn-reveal{position:fixed;inset:0;z-index:8;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:var(--turn-col,#5d4524);color:#fff5d0;text-shadow:2px 3px #24180f}.turn-reveal h1{font:700 clamp(42px,9vw,110px) Cinzel;margin:0;letter-spacing:3px}.turn-reveal p{font:700 clamp(25px,4vw,52px) Cinzel;margin:18px}.turn-reveal button{margin-top:24px;background:#f5d36f;color:#2b1c10;border:3px solid #fff1b0;border-radius:7px;padding:16px 30px;font:700 20px Cinzel;box-shadow:0 3px 8px #0006}.grid{position:relative;margin-top:66px!important;margin-left:66px!important}.remnant{width:calc((100% - 21px)/8)!important}.remnant.top{top:calc((100% - 21px)/-8)!important}.remnant.left{left:calc((100% - 21px)/-8)!important}@media(max-width:680px){.grid{margin-top:45px!important;margin-left:43px!important}.remnant{width:37px!important}.remnant.top{top:-41px!important}.remnant.left{left:-41px!important}.status{min-width:0;padding:6px}.turn{font-size:14px!important}.phase{font-size:11px!important}}
+.supply{display:flex;align-items:center;gap:7px;margin-top:10px;padding-top:8px;border-top:1px solid #705a35;flex-wrap:wrap}.supply-label{font:700 10px Cinzel;color:#e5c46f;margin-right:3px}.supply-token{position:relative;width:35px;height:35px;padding:0;border:0;border-radius:50%;background:#66502b}.supply-token img{width:100%;height:100%;object-fit:cover;border-radius:50%;border:1px solid #d9b45b}.supply-token b{position:absolute;right:-5px;bottom:-5px;min-width:16px;padding:2px;background:#f2d373;color:#302211;border-radius:10px;font:700 10px Arial}.supply-token.glyph-choice{width:43px;height:43px}.glyph-chip{position:absolute;top:6%;left:17%;width:66%;height:34%;object-fit:contain;z-index:2;filter:drop-shadow(1px 1px 2px #111)}.oasis-chip{position:absolute;left:3px;bottom:3px;width:36%;height:36%;object-fit:contain;filter:drop-shadow(1px 1px 1px #111)}.scale-chip{position:absolute;right:3px;bottom:3px;width:32%;height:32%;object-fit:contain;filter:drop-shadow(1px 1px 1px #111)}.objective-card{position:relative;border:1px solid #a78544;background:#271f16;padding:3px;border-radius:4px;width:100%;margin:5px 0}.objective-card img{display:block;width:100%;border-radius:2px}.objective-card:disabled{opacity:.48}.objective-cubes{position:absolute;left:6px;top:58%;display:flex;gap:3px}.objective-cube{width:13px;height:13px;border:1px solid #f4df9b;border-radius:2px;box-shadow:1px 1px 2px #111}.attached-objective{grid-column:1/-1;width:100%!important;height:auto!important;display:block!important;margin:3px 0 0!important;border:1px solid #d7a947}.scribe-row{display:flex;gap:5px;margin-top:8px}.scribe-row button{background:transparent;border:1px solid #9e7b3b;padding:2px;flex:1}.scribe-row img{width:100%;display:block}.bonus-note{width:100%;color:#ffdf84;font-size:11px}
+.turn-reveal[hidden]{display:none!important}.setupbox{max-height:94vh;overflow:auto}.setup-section{margin:14px 0;padding:10px;background:#2b241a;border:1px solid #7d6335;border-radius:5px;text-align:left}.setup-section>b{font:700 13px Cinzel;color:#f3ce77}.setup-section label{margin:7px 0;font-size:12px}.setup-section select{float:right}label.god-row{display:flex;justify-content:space-between;align-items:center}label.god-row[hidden]{display:none}.setup-buttons{display:flex;justify-content:center;gap:10px;margin-top:16px}
+.grid{margin-top:66px!important;margin-left:66px!important}.remnant.top{top:calc((100% - 21px)/-8)!important}.remnant.left{left:calc((100% - 21px)/-8)!important}.remnant.top.r0{left:calc(12.5% - ((100% - 21px)/16))}.remnant.top.r1{left:calc(37.5% - ((100% - 21px)/16))}.remnant.top.r2{left:calc(62.5% - ((100% - 21px)/16))}.remnant.top.r3{left:calc(87.5% - ((100% - 21px)/16))}.remnant.left.r0{top:calc(12.5% - ((100% - 21px)/16))}.remnant.left.r1{top:calc(37.5% - ((100% - 21px)/16))}.remnant.left.r2{top:calc(62.5% - ((100% - 21px)/16))}.remnant.left.r3{top:calc(87.5% - ((100% - 21px)/16))}@media(max-width:680px){.grid{margin-top:45px!important;margin-left:43px!important}.remnant.top{top:-37px!important}.remnant.left{left:-37px!important}.remnant.top.r0{left:calc(12.5% - 18.5px)}.remnant.top.r1{left:calc(37.5% - 18.5px)}.remnant.top.r2{left:calc(62.5% - 18.5px)}.remnant.top.r3{left:calc(87.5% - 18.5px)}.remnant.left.r0{top:calc(12.5% - 18.5px)}.remnant.left.r1{top:calc(37.5% - 18.5px)}.remnant.left.r2{top:calc(62.5% - 18.5px)}.remnant.left.r3{top:calc(87.5% - 18.5px)}}
+.god img,.scribe-row img,.cell .card{transition:transform .16s ease,box-shadow .16s ease;cursor:zoom-in}.god img:hover,.scribe-row img:hover{transform:scale(2.15);transform-origin:center;position:relative;z-index:6;box-shadow:0 7px 18px #000}.cell:hover{z-index:5}.cell .card:hover{transform:scale(1.65);transform-origin:center;position:relative;z-index:7;box-shadow:0 8px 22px #000}.cell.target .card,.cell.target .card:hover{transform:none;cursor:pointer;box-shadow:1px 2px 5px #100a05}.cell .bottom-card{position:absolute;inset:0;width:100%;height:100%;z-index:1}.cell .stacked-card{position:absolute;left:11%;top:6%;width:84%;height:88%;z-index:2}.cell .deckback{display:block;width:100%;height:100%;aspect-ratio:auto}.anubis-cube{position:absolute;bottom:5px;right:5px;width:18px;height:18px;border:2px solid #f7e1a0;border-radius:3px;z-index:4;box-shadow:1px 1px 3px #000}.sun-chip{position:absolute;top:3px;right:3px;width:42%;height:auto;z-index:3;filter:drop-shadow(1px 1px 2px #111);pointer-events:none}.glyph-pick{width:48px;height:48px;padding:0;border:1px solid #d7ad50;border-radius:50%;background:#382a18}.glyph-pick img{display:block;width:100%;height:100%;object-fit:cover;border-radius:50%}.grid{margin-bottom:66px!important}.remnant.bottom{bottom:calc((100% - 21px)/-8)!important}.remnant.right{right:calc((100% - 21px)/-8)!important}.remnant.bottom.r0{left:calc(12.5% - ((100% - 21px)/16))}.remnant.bottom.r1{left:calc(37.5% - ((100% - 21px)/16))}.remnant.bottom.r2{left:calc(62.5% - ((100% - 21px)/16))}.remnant.bottom.r3{left:calc(87.5% - ((100% - 21px)/16))}.remnant.right.r0{top:calc(12.5% - ((100% - 21px)/16))}.remnant.right.r1{top:calc(37.5% - ((100% - 21px)/16))}.remnant.right.r2{top:calc(62.5% - ((100% - 21px)/16))}.remnant.right.r3{top:calc(87.5% - ((100% - 21px)/16))}@media(max-width:680px){.grid{margin-bottom:45px!important}}
+.improvement-pick{width:132px;height:75px;padding:0;border:2px solid #d7ad50;border-radius:5px;background:#382a18}.improvement-pick img{width:100%;height:100%;object-fit:contain;display:block}.remnant.target{filter:drop-shadow(0 0 7px #ffe17c)}.remnant-improvement{position:absolute!important;left:-8%;bottom:-4%;width:116%!important;height:52%!important;object-fit:contain!important;pointer-events:none}.thoth-chip{position:absolute;top:-1%;left:23%;width:54%;height:auto;z-index:4;pointer-events:none}.player-chip{cursor:pointer}.board-view{position:fixed;inset:0;z-index:12;background:#17120de8;display:flex;align-items:center;justify-content:center;padding:18px}.board-view-panel{width:min(760px,96vw);max-height:94vh;overflow:auto;background:#393024;border:1px solid #d7a947;border-radius:8px;padding:16px}.board-view-panel .grid{margin:70px auto!important}.board-view-close{float:right}.layout{grid-template-columns:260px minmax(560px,1fr) 230px 295px}.mid .objectives{margin-top:0}.table-record{margin-top:16px}@media(max-width:1300px){.layout{grid-template-columns:260px minmax(560px,1fr) 230px}.right{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:14px}}@media(max-width:1050px){.layout{grid-template-columns:220px 1fr}.mid{grid-column:1/-1}.mid #objectives{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}}@media(max-width:680px){.layout{grid-template-columns:1fr}.mid{order:2}.left{order:3}.right{order:4;display:block}.mid #objectives{grid-template-columns:repeat(2,1fr)}}.remnants{container-type:size;--pad:8px;--gap:7px;--rw:calc((100cqw - 21px)/8*1.25);--off:10px}.remnant{width:var(--rw)!important}.remnant.top{top:calc(-1*var(--rw) - var(--off))!important}.remnant.bottom{bottom:calc(-1*var(--rw) - var(--off))!important}.remnant.left{left:calc(-1*var(--rw) - var(--off))!important}.remnant.right{right:calc(-1*var(--rw) - var(--off))!important}.remnant.top.r0,.remnant.bottom.r0{left:calc(var(--pad) + (100cqw - 2*var(--pad) - 3*var(--gap))/8 - var(--rw)/2)}.remnant.top.r1,.remnant.bottom.r1{left:calc(var(--pad) + 3*(100cqw - 2*var(--pad) - 3*var(--gap))/8 + var(--gap) - var(--rw)/2)}.remnant.top.r2,.remnant.bottom.r2{left:calc(var(--pad) + 5*(100cqw - 2*var(--pad) - 3*var(--gap))/8 + 2*var(--gap) - var(--rw)/2)}.remnant.top.r3,.remnant.bottom.r3{left:calc(var(--pad) + 7*(100cqw - 2*var(--pad) - 3*var(--gap))/8 + 3*var(--gap) - var(--rw)/2)}.remnant.left.r0,.remnant.right.r0{top:calc(var(--pad) + (100cqh - 2*var(--pad) - 3*var(--gap))/8 - var(--rw)/2)}.remnant.left.r1,.remnant.right.r1{top:calc(var(--pad) + 3*(100cqh - 2*var(--pad) - 3*var(--gap))/8 + var(--gap) - var(--rw)/2)}.remnant.left.r2,.remnant.right.r2{top:calc(var(--pad) + 5*(100cqh - 2*var(--pad) - 3*var(--gap))/8 + 2*var(--gap) - var(--rw)/2)}.remnant.left.r3,.remnant.right.r3{top:calc(var(--pad) + 7*(100cqh - 2*var(--pad) - 3*var(--gap))/8 + 3*var(--gap) - var(--rw)/2)}.grid{margin-top:88px!important;margin-left:88px!important;margin-bottom:88px!important}@media(max-width:680px){.remnants{--pad:4px;--gap:3px;--rw:46px;--off:6px}.grid{margin-top:56px!important;margin-left:56px!important;margin-bottom:56px!important}}
+/* Mobile: header and section tabs pinned to the top, phase actions pinned to the bottom */
+.mobile-tabs{display:none}
+@media(max-width:680px){.topbar{position:sticky;top:0;z-index:5;flex-wrap:wrap;margin:-8px -8px 0;padding:8px 8px 6px;background:#211a12;box-shadow:0 3px 8px #0008}
+.mobile-tabs{display:grid;flex-basis:100%;grid-template-columns:repeat(4,1fr);gap:4px}.mobile-tabs button{position:relative;padding:8px 2px;font:700 12px Cinzel,serif;background:#3a2d1b;color:#e5c46f;border:1px solid #9e7b3b;border-radius:4px}.mobile-tabs button.active{background:#d7a947;color:#281d15;border-color:#f4df9b}.mobile-tabs button.attention::after{content:'';position:absolute;top:4px;right:6px;width:9px;height:9px;border-radius:50%;background:#ffdf84;box-shadow:0 0 0 2px #8e241c}
+.layout{margin-top:10px}.layout>aside,.layout>main{order:0!important}
+body[data-tab="board"] [data-mtab]:not([data-mtab="board"]),body[data-tab="market"] [data-mtab]:not([data-mtab="market"]),body[data-tab="objectives"] [data-mtab]:not([data-mtab="objectives"]),body[data-tab="gods"] [data-mtab]:not([data-mtab="gods"]){display:none!important}#actions{position:fixed;left:0;right:0;bottom:0;z-index:5;margin:0;max-height:45vh;overflow:auto;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:#211a12;border-top:1px solid #b99850;box-shadow:0 -3px 10px #000a}#actions:empty{display:none}
+body{padding-bottom:var(--actions-h,0px)}}
+</style>
+</head>
+<body data-tab="board"><div class="app">
+<header class="topbar"><div><div class="brand">Hieroglyphs</div><div class="sub">A digital table for scribes</div></div><div class="status"><a href="../index.html" style="color:#d5bf91;font-size:12px">&larr; About Hieroglyphs</a><div id="turn" class="turn">Set up a game</div><div id="phase" class="phase"></div></div><nav class="mobile-tabs" aria-label="Game sections"><button type="button" data-tab="board" class="active">Board</button><button type="button" data-tab="market">Market</button><button type="button" data-tab="objectives">Objectives</button><button type="button" data-tab="gods">Gods</button></nav></header>
+<div class="layout"><aside class="left" data-mtab="market"><section class="panel"><h2>Market</h2><div id="market" class="market"></div><div class="deck"><div class="deckback"></div><div class="tiny"><b id="deckcount">0</b> papyrus remain<br>Click a market card in the Draw phase.</div></div></section><section class="panel table-record"><h2>Table record</h2><div id="players" class="players"></div><div id="log" class="log" style="margin-top:9px"></div></section></aside>
+<main class="main" data-mtab="board"><section class="panel"><div class="board-title"><h2 id="boardname">Player board</h2><span id="score" class="score">0 pts</span></div><div id="grid" class="grid"></div><div class="hand-wrap"><h2>Hand — select a papyrus, then an empty grid space</h2><div id="hand" class="hand"></div></div><div id="actions" class="actions"></div></section></main>
+<aside class="mid" data-mtab="objectives"><section class="panel objectives"><h2>Objectives</h2><div id="objectives"></div><div class="tiny">In the Objective phase, select a completed line on your board, then claim an available objective.</div></section></aside>
+<aside class="right" data-mtab="gods"><section class="panel"><h2>Gods</h2><div id="gods"></div><div class="help">In the Manipulate phase, discard one selected hand card to invoke a God. Isis gives glyph tokens; Bastet moves one card into an empty space and grants an Oasis; Tawaret swaps a grid card with a market card, then draws a card and gains a Refresh token.</div></section></aside></div></div>
+<div id="turnReveal" class="turn-reveal" hidden></div><div id="setup" class="setup"><div class="setupbox"><h1>Hieroglyphs</h1><p>Set the table, then pass the device around as each scribe takes their turn.</p><label>Number of scribes <select id="playersCount"><option value="2">2 players</option><option value="3">3 players</option><option value="4">4 players</option></select></label><div class="setup-section"><b>Modules</b><label><input id="fourthGod" type="checkbox"> Use fourth God — remnant Gods</label><label><input id="purpleCards" type="checkbox"> Use Purple cards</label><label><input id="activateCards" type="checkbox"> Use Activate cards</label><label><input id="advancedScribes" type="checkbox"> Use advanced Scribes</label><label><input id="shuffleStarters" type="checkbox"> Shuffle unused starter cards into the deck</label></div><div class="setup-section"><b>God selection</b><label class="god-row">Glyph <select id="godGlyph"><option value="Isis">Isis</option><option value="Aten">Aten</option></select></label><label class="god-row">Market <select id="godMarket"><option value="Tawaret">Tawaret</option><option value="Ra">Ra</option></select></label><label class="god-row">Movement <select id="godMove"><option value="Bastet">Bastet</option><option value="Maat">Maat</option></select></label><label id="remnantGodRow" class="god-row" hidden>Remnant <select id="godRemnant"><option value="Seshat">Seshat</option><option value="Thoth">Thoth</option></select></label><button class="action" id="randomGods" type="button">Randomize Gods</button></div><div class="setup-buttons"><button class="action" id="firstGame" type="button">Play first game</button><button class="start" id="start">Start custom game</button></div><p class="tiny">First game: Isis, Tawaret, Bastet; all modules off; standard 5-point Scribes.</p></div></div>
+<script>
+const A='papyrus/Current/', S='papyrus/starter/', G='Gods/', colors=['Blue','Green','Red','Gold'];
+const names=[]; for(let n=1;n<=16;n++)['','a','b'].forEach(x=>names.push(n+x+'.jpg')); for(let n=37;n<=40;n++)['','a'].forEach(x=>names.push(n+x+'.jpg')); 'abcdef'.split('').forEach(x=>names.push('41'+x+'.jpg')); for(let n=70;n<=73;n++)['','a','b'].forEach(x=>names.push(n+x+'.jpg'));
+const starter=['1a.jpg','1b.jpg','1c.jpg','1d.jpg','1e.jpg','1f.jpg','2a.jpg','2b.jpg','2c.jpg','2d.jpg','2e.jpg','2f.jpg','3a.jpg','3b.jpg','3c.jpg','3d.jpg','3e.jpg','3f.jpg','4.jpg','4a.jpg','4b.jpg','4c.jpg','4d.jpg','4e.jpg','4f.jpg'];
+let state, selected=null, mode=null, selectedLine=null;
+const $=id=>document.getElementById(id), shuffle=a=>{let b=[...a];for(let i=b.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b};
+function cardColour(file){const n=parseInt(file);if(n>=37&&n<=40)return undefined;const map={1:'Blue',2:'Green',3:'Red',4:'Gold',5:'Blue',6:'Red',7:'Gold',8:'Green',9:'Blue',10:'Green',11:'Red',12:'Gold',13:'Blue',14:'Red',15:'Gold',16:'Green',41:'Purple',70:'Green',71:'Red',72:'Gold',73:'Blue'};return map[n]||colors[(n-1)%4]}
+const glyphMap={"4b.jpg":"bird","3b.jpg":"man","7a.jpg":"ankh","9b.jpg":"eye","71a.jpg":"bird","16.jpg":"ankh","41d.jpg":"boat","41a.jpg":"ankh","9.jpg":"ankh","12.jpg":"boat","1.jpg":"ankh","39a.jpg":"urn","2b.jpg":"bird","5b.jpg":"bird","10.jpg":"urn","8b.jpg":"ankh","38a.jpg":"urn","12b.jpg":"eye","38.jpg":"urn","16a.jpg":"eye","11b.jpg":"ankh","3a.jpg":"urn","11.jpg":"man","72b.jpg":"urn","3.jpg":"ankh","15.jpg":"urn","2a.jpg":"boat","7.jpg":"boat","8.jpg":"eye","4.jpg":"urn","71b.jpg":"urn","11a.jpg":"urn","37.jpg":"urn","7b.jpg":"man","41b.jpg":"man","41f.jpg":"urn","40.jpg":"urn","73b.jpg":"bird","41e.jpg":"bird","73.jpg":"ankh","13.jpg":"urn","13b.jpg":"boat","6.jpg":"boat","6b.jpg":"eye","70b.jpg":"ankh","40a.jpg":"urn","8a.jpg":"urn","9a.jpg":"bird","14b.jpg":"boat","4a.jpg":"eye","39.jpg":"urn","10b.jpg":"boat","1b.jpg":"eye","13a.jpg":"man","70.jpg":"man","16b.jpg":"bird","2.jpg":"man","5a.jpg":"urn","41c.jpg":"eye","72a.jpg":"boat","37a.jpg":"urn","10a.jpg":"man","15b.jpg":"man","5.jpg":"man","71.jpg":"boat","14.jpg":"eye","15a.jpg":"ankh","72.jpg":"man","73a.jpg":"eye","14a.jpg":"bird","70a.jpg":"eye","1a.jpg":"boat","6a.jpg":"bird","12a.jpg":"bird"};
+function glyphFor(file,starterCard){if(file==='Aten.jpg')return 'wild';if(parseInt(file)>=37&&parseInt(file)<=40)return 'none';if(starterCard){const group=file[0],suffix=file[1];const map={1:{a:'ankh',b:'man',c:'eye',d:'boat',e:'bird',f:'urn'},2:{a:'man',b:'eye',c:'boat',d:'bird',e:'urn',f:'ankh'},3:{a:'ankh',b:'man',c:'eye',d:'boat',e:'bird',f:'urn'},4:{a:'urn',b:'bird',c:'boat',d:'eye',e:'man',f:'ankh'}};return map[group]?.[suffix]||'wild'}return glyphMap[file]||'wild'}
+const card=(file,starterCard=false)=>({file,src:(starterCard?S:A)+file,color:cardColour(file),glyph:glyphFor(file,starterCard),starter:starterCard});
+function begin(){let count=+$('playersCount').value, deck=shuffle(names).map(x=>card(x));state={players:[],deck,market:[],round:1,turn:0,phase:0,log:[],objectives:shuffle(['Three matching hieroglyphs','Four matching hieroglyphs','A vertical inscription','A horizontal inscription','A line using a token','A line of unique glyphs']).map((label,i)=>({label,points:8-i%3*2,claimed:false}))};for(let i=0;i<count;i++){let sc=shuffle(starter).slice(0,3).map(x=>card(x,true));state.players.push({name:'Player '+(i+1),score:0,hand:deck.splice(0,6),grid:[sc[0],null,null,null,null,sc[1],null,null,null,null,sc[2],null,null,null,null,card('Aten.jpg',true)],tokens:{glyph:0,oasis:0,draw:0,refresh:0},claimed:[]})}state.market=deck.splice(0,4);$('setup').style.display='none';note('The tablets are prepared. Player 1 begins the Play phase.');render()}
+function p(){return state.players[state.turn]} function phaseName(){return ['Play','Manipulate','Objective','Draw'][state.phase]}
+function note(s){state.log.unshift(s)} function img(c,cl='card'){return `<img class="${cl}" draggable="false" src="${c.src}" alt="Papyrus">`}
+function render(){if(!state)return;let player=p();$('turn').textContent=`${player.name} · Round ${state.round} / 12`;$('phase').textContent=phaseName()+' phase';$('boardname').textContent=player.name+"’s tablet";$('score').textContent=player.score+' pts';$('deckcount').textContent=state.deck.length;$('grid').innerHTML=player.grid.map((c,i)=>`<button class="cell ${(!c&&selected&&state.phase===0)?'target':''} ${mode?'target':''}" onclick="cellClick(${i})">${c?img(c):''}${c&&player.tokens.oasis&&i===player.oasisAt?'<span class="token">Oasis</span>':''}</button>`).join('');$('hand').innerHTML=player.hand.map((c,i)=>`<button onclick="handClick(${i})" title="${c.color||'White'} papyrus">${img(c,'card '+(selected===i?'selected':''))}</button>`).join('');$('market').innerHTML=state.market.map((c,i)=>`<button onclick="marketClick(${i})">${img(c,'card '+(mode==='swapMarket'&&selected===i?'selected':''))}</button>`).join('');$('objectives').innerHTML=state.objectives.map((o,i)=>`<button class="objective ${o.claimed?'claimed':''}" onclick="claimObjective(${i})" ${o.claimed?'disabled':''}>${o.label}<span class="dots">${o.points} pts</span></button>`).join('');$('gods').innerHTML=`<div class="god"><img src="${G}IsisF.jpg"><div><button onclick="useGod('isis')">Isis — Glyph tokens</button><p>Gain 2 glyph tokens. Use them later to represent altered hieroglyphs.</p></div></div><div class="god"><img src="${G}BastetA.jpg"><div><button onclick="useGod('bastet')">Bastet — Relocate</button><p>Move a grid card to an empty space; gain an Oasis token.</p></div></div><div class="god"><img src="${G}TawaretA.jpg"><div><button onclick="useGod('tawaret')">Tawaret — Exchange</button><p>Swap a grid card with one from the market. No card effect is activated.</p></div></div>`;$('players').innerHTML=state.players.map((x,i)=>`<span class="player-chip ${i===state.turn?'active':''}">${x.name}: ${x.score} pts · ${x.hand.length} cards</span>`).join('');$('log').innerHTML=state.log.map(x=>`<div>› ${x}</div>`).join('');let actions=[];if(state.phase===0){actions=[['Add +1 score','adjust(1)'],['Subtract 1','adjust(-1)'],[player.tokens.glyph?`Use glyph token (${player.tokens.glyph})`:'No glyph tokens','useGlyph()'],['Finish Play','nextPhase()']]}else if(state.phase===1){actions=[['Skip Manipulate','nextPhase()']]}else if(state.phase===2){actions=[['Select a row / column','chooseLine()'],['Skip Objective','nextPhase()']]}else{actions=[['Draw top deck','drawDeck()'],[player.tokens.refresh?`Refresh market (${player.tokens.refresh})`:'No refresh token','refreshMarket()'],[player.tokens.draw?`Extra draw (${player.tokens.draw})`:'No draw token','extraDraw()']]};$('actions').innerHTML=actions.map(([t,fn])=>`<button class="action" onclick="${fn}" ${t.startsWith('No ') ? 'disabled':''}>${t}</button>`).join('')}
+function handClick(i){if(state.phase!==0)return noteRender('Select cards only in Play.');selected=i;mode=null;render()}function cellClick(i){let player=p();if(mode==='move'){if(player.grid[i])return;player.grid[i]=player.grid[selected];player.grid[selected]=null;player.tokens.oasis++;player.oasisAt=i;note(`${player.name} invokes Bastet and receives an Oasis token.`);mode=null;selected=null;return render()}if(mode==='swapGrid'){if(!player.grid[i])return;selected=i;mode='swapMarket';note('Now select a card in the market to exchange.');return render()}if(state.phase!==0||selected===null||player.grid[i])return;let c=player.hand.splice(selected,1)[0];player.grid[i]=c;note(`${player.name} inscribes a ${c.color} papyrus. Resolve its printed ability, then adjust score if needed.`);selected=null;render()}function marketClick(i){if(state.phase===3&&!mode){p().hand.push(state.market[i]);state.market[i]=state.deck.shift();note(`${p().name} takes a market card.`);endTurn();return}if(mode==='swapMarket'){let player=p();[player.grid[selected],state.market[i]]=[state.market[i],player.grid[selected]];note(`${player.name} exchanges a papyrus via Tawaret.`);mode=null;selected=null;render()}}
+function useGod(g){if(state.phase!==1)return noteRender('Gods are invoked in Manipulate.');if(selected===null)return noteRender('Select a hand card first; it will be discarded to invoke this God.');let discarded=p().hand.splice(selected,1)[0];state.deck.push(discarded);selected=null;if(g==='isis'){p().tokens.glyph+=2;note(`${p().name} invokes Isis and gains 2 glyph tokens.`)}if(g==='bastet'){mode='move';note('Select a card to move, then an empty destination.')}if(g==='tawaret'){mode='swapGrid';note('Select a grid card, then a market card.')}render()}
+function useGlyph(){if(p().tokens.glyph){p().tokens.glyph--;note(`${p().name} spends a glyph token. Treat one hieroglyph as changed when checking an objective.`);render()}}function adjust(n){p().score=Math.max(0,p().score+n);render()}function chooseLine(){if(state.phase===2){selectedLine=true;note('Choose a matching objective at left to record the claim.');render()}}function claimObjective(i){if(state.phase!==2||!selectedLine)return noteRender('First select a completed row or column.');let o=state.objectives[i],player=p();o.claimed=true;player.score+=o.points;player.claimed.push(o);note(`${player.name} claims “${o.label}” for ${o.points} points.`);selectedLine=null;render()}
+function nextPhase(){if(state.phase<3){state.phase++;selected=null;mode=null;render()}}function drawDeck(){if(!state.deck.length)return; p().hand.push(state.deck.shift());note(`${p().name} draws from the deck.`);endTurn()}function refreshMarket(){if(!p().tokens.refresh)return;p().tokens.refresh--;state.deck.push(...state.market);state.market=state.deck.splice(0,4);note(`${p().name} refreshes the market.`);render()}function extraDraw(){if(!p().tokens.draw)return;p().tokens.draw--;p().hand.push(state.deck.shift());note(`${p().name} uses a draw token.`);render()}function endTurn(){state.phase=0;selected=null;mode=null;if(state.turn===state.players.length-1){state.turn=0;state.round++;if(state.round>12){finish();return}}else state.turn++;render()}function finish(){state.players.forEach(x=>x.score+=x.hand.length+x.tokens.glyph+x.tokens.oasis+x.tokens.draw+x.tokens.refresh);let winner=[...state.players].sort((a,b)=>b.score-a.score)[0];note(`Game end: ${winner.name} wins with ${winner.score} points. Cards and unused tokens each added 1 point.`);$('phase').textContent='Game complete';$('actions').innerHTML='<button class="action" onclick="location.reload()">New game</button>';render()}function noteRender(s){note(s);render()}
+// These later declarations intentionally refine the interaction state machine.
+function activateTarget(file){
+  const targets={'37.jpg':'Blue','37a.jpg':'Red','38.jpg':'Green','38a.jpg':'Gold','39.jpg':'Red','39a.jpg':'Blue','40.jpg':'Gold','40a.jpg':'Green'};
+  return targets[file];
+}
+function adjacentTagPairs(first,second){const player=p(),nodes=[];player.grid.forEach((card,index)=>{if(!card||card.facedown)return;const tags=card.colourTags||[card.color];tags.forEach((color,tag)=>nodes.push({id:`c${index}:${tag}`,row:Math.floor(index/4),col:index%4,color}))});(player.remnants||[]).forEach((remnant,index)=>{if(remnant.face!=='E'&&!remnant.sobek)return;const [row,col]=remnant.edge==='top'?[-1,remnant.slot]:remnant.edge==='bottom'?[4,remnant.slot]:remnant.edge==='left'?[remnant.slot,-1]:[remnant.slot,4];for(let tag=0;tag<(remnant.sobek?1:2);tag++)nodes.push({id:`r${index}:${tag}`,row,col,color:remnant.sobek?'Purple':remnant.color});if(remnant.thoth&&!remnant.sobek)nodes.push({id:`r${index}:thoth`,row,col,color:remnant.thoth})});const matches=(node,color)=>node.color===color||node.color==='Purple',used=new Set();let pairs=0;nodes.forEach(a=>nodes.forEach(b=>{if(a.id>=b.id||used.has(a.id)||used.has(b.id)||Math.abs(a.row-b.row)+Math.abs(a.col-b.col)!==1)return;if((matches(a,first)&&matches(b,second))||(matches(a,second)&&matches(b,first))){used.add(a.id);used.add(b.id);pairs++}}));return pairs}
+function computePrintedAbilityPoints(player,c,position){
+  // Starter files share names with main-deck papyri (1a.jpg etc.), so check
+  // the starter flag first: a starter's printed ability is a flat 5 points.
+  if(c.starter)return c.file==='Aten.jpg'?{points:0,detail:'',grantsDraw:false}:{points:5,detail:' (starter papyrus)',grantsDraw:false};
+  const n=parseInt(c.file),grid=player.grid;
+  const whiteTags=colour=>whiteTagCount(colour),isColour=(card,colour)=>card&&!card.facedown&&((card.colourTags||[card.color]).includes(colour)||(card.colourTags||[card.color]).includes('Purple'));
+  const alignedWhiteTags=colour=>{const row=Math.floor(position/4),col=position%4,aligned=r=>(r.edge==='top'||r.edge==='bottom')?r.slot===col:r.slot===row;return (p().remnants||[]).filter(r=>r.face==='E'&&r.color===colour&&aligned(r)).length*2+(p().remnants||[]).filter(r=>r.face==='E'&&r.thoth===colour&&aligned(r)).length+(p().remnants||[]).filter(r=>r.sobek&&aligned(r)).length};
+  const cornerWhiteTags=colour=>{const row=Math.floor(position/4),col=position%4,cornerSlots=[];if(col===0)[row-1,row+1].forEach(slot=>cornerSlots.push(['left',slot]));if(col===3)[row-1,row+1].forEach(slot=>cornerSlots.push(['right',slot]));if(row===0)[col-1,col+1].forEach(slot=>cornerSlots.push(['top',slot]));if(row===3)[col-1,col+1].forEach(slot=>cornerSlots.push(['bottom',slot]));return (p().remnants||[]).filter(r=>cornerSlots.some(([edge,slot])=>r.edge===edge&&r.slot===slot)).reduce((total,r)=>total+(r.sobek?1:0)+(r.face==='E'&&r.color===colour?2:0)+(r.face==='E'&&r.thoth===colour?1:0),0)};
+  const count=colour=>grid.filter(x=>isColour(x,colour)).length+whiteTags(colour);
+  const line=(colour)=>{const row=Math.floor(position/4),col=position%4;return [...new Set([...Array(4).keys()].map(x=>row*4+x).concat([...Array(4).keys()].map(y=>y*4+col)))].filter(i=>isColour(grid[i],colour)).length+alignedWhiteTags(colour)};
+  const diagonal=(colour)=>{const row=Math.floor(position/4),col=position%4;return grid.reduce((sum,x,i)=>{if(!isColour(x,colour))return sum;const dr=Math.abs(Math.floor(i/4)-row),dc=Math.abs(i%4-col);return sum+(dr===1&&dc===1?1:0)},0)+cornerWhiteTags(colour)};
+  const suffix=(c.file.match(/(a|b)\.jpg$/)||['',''])[1],offset={'':1,a:2,b:3}[suffix],sideTargets={'3a.jpg':'Green','3b.jpg':'Blue'},cornerTargets={'5.jpg':'Gold','5a.jpg':'Green','5b.jpg':'Red','6.jpg':'Blue','6a.jpg':'Gold','6b.jpg':'Green','7.jpg':'Green','7a.jpg':'Red','7b.jpg':'Blue','8.jpg':'Red','8a.jpg':'Blue','8b.jpg':'Gold'},target=n>=1&&n<=4?(sideTargets[c.file]||colors[(colors.indexOf(c.color)+offset)%4]):cornerTargets[c.file];
+  let points=0,detail='';
+  if(n>=1&&n<=4){const matches=line(target);points=2*matches;detail=` (${matches} matching ${target} tag${matches===1?'':'s'} in its row/column)`;}
+  else if(n>=5&&n<=8){const matches=diagonal(target);points=3*matches;detail=` (${matches} matching ${target} corner tag${matches===1?'':'s'})`;}
+  else if(n>=9&&n<=12){const pairs={'9.jpg':['Green','Gold'],'9a.jpg':['Gold','Red'],'9b.jpg':['Red','Green'],'10.jpg':['Red','Blue'],'10a.jpg':['Blue','Gold'],'10b.jpg':['Gold','Red'],'11.jpg':['Green','Blue'],'11a.jpg':['Blue','Gold'],'11b.jpg':['Gold','Green'],'12.jpg':['Green','Red'],'12a.jpg':['Red','Blue'],'12b.jpg':['Blue','Green']}[c.file],matches=adjacentTagPairs(pairs[0],pairs[1]);points=3*matches;detail=` (${matches} adjacent ${pairs[0]}/${pairs[1]} tag pair${matches===1?'':'s'})`;}
+  else if(n>=13&&n<=16){const targets={'13.jpg':'eye','13a.jpg':'bird','13b.jpg':'urn','14.jpg':'urn','14a.jpg':'man','14b.jpg':'ankh','15.jpg':'boat','15a.jpg':'bird','15b.jpg':'man','16.jpg':'man','16a.jpg':'ankh','16b.jpg':'eye'},targetGlyph=targets[c.file],sobekWild=(p().remnants||[]).filter(r=>r.sobek).length,matches=grid.filter(x=>x&&!x.facedown&&((x.tokenGlyph||x.glyph)===targetGlyph||(x.tokenGlyph||x.glyph)==='wild')).length+sobekWild;points=2*matches;detail=` (${matches} ${targetGlyph}${matches===1?'':'s'}, including ${sobekWild?'Sobek':''})`;}
+  else if(n===41)points=2;
+  else if(n>=70&&n<=73){points=2;detail='';return {points,detail,grantsDraw:true};}
+  return {points,detail,grantsDraw:false};
+}
+function scorePrintedAbility(c,position){
+  const player=p(),{points,detail,grantsDraw}=computePrintedAbilityPoints(player,c,position);
+  if(grantsDraw)player.tokens.draw++;
+  if(points){player.score+=points;note(`${player.name} automatically scores ${points} point${points===1?'':'s'} from the printed papyrus ability${detail}.`)}
+  return points;
+}
+function cellClick(i){
+  let player=p();
+  if(mode==='sunOasis'){
+    const colour=state.pendingSunOasis,card=player.grid[i];
+    if(!card||card.color!==colour){note(`Select a ${colour} papyrus for this Sun Oasis.`);render();return}
+    if(player.oases.some(o=>o.color===colour)){note(`${player.name} already has the ${colour} Oasis.`);mode=null;state.pendingSunOasis=null;render();return}
+    player.oases.push({color:colour});card.oasisColor=colour;player.tokens.oasis++;mode=null;state.pendingSunOasis=null;note(`${player.name} places the ${colour} Oasis from the Sun reward.`);render();return;
+  }
+  if(mode==='glyphReplace'){
+    if(!player.grid[i])return;
+    const token=state.pendingGlyph;
+    const tags=player.grid[i].colourTags||[player.grid[i].color];if(!state.isisFreePlace&&!token.free&&!tags.includes(token.color)){note(`This ${token.color} token must be placed on a matching colour-tagged papyrus.`);render();return}
+    if(player.grid[i].tokenData)state.glyphPool.push(player.grid[i].tokenData);
+    player.grid[i].tokenGlyph=token.glyph;player.grid[i].tokenData=token;player.glyphTokens.splice(token.index,1);player.tokens.glyph--;mode=null;
+    note(`${player.name} places a ${token.glyph} hieroglyph token; it replaces that card's hieroglyph for scoring.`);state.pendingGlyph=null;state.isisFreePlace=false;render();return;
+  }
+  if(mode==='maatSwap'){
+    if(!player.grid[i])return;
+    if(selected===null){selected=i;note('Select the second card to swap.');render();return}
+    if(selected===i)return;[player.grid[selected],player.grid[i]]=[player.grid[i],player.grid[selected]];note(`${player.name} swaps two cards with Maat.`);
+    if(state.maatScale){[selected,i].forEach(pos=>{if(player.grid[pos])player.grid[pos].scale=true});state.maatScale=false;note(`${player.name} places a Scale token on each swapped papyrus.`)}
+    selected=null;mode=null;render();return;
+  }
+  if(mode==='hathor'){
+    if(selected===null){if(!player.grid[i])return;selected=i;note('Select an empty space in the same row or column to push toward.');render();return}
+    if(player.grid[i]|| (Math.floor(i/4)!==Math.floor(selected/4)&&i%4!==selected%4))return;
+    player.grid[i]=player.grid[selected];player.grid[selected]=null;note(`${player.name} pushes a card with Hathor.`);selected=null;mode=null;render();return;
+  }
+  if(mode==='activate'){
+    if(!player.grid[i]||i===selected)return;
+    if(player.grid[i].color!==state.activateTarget){note(`That papyrus is not ${state.activateTarget}. Select a matching colour-tagged card.`);render();return}
+    const activated=scorePrintedAbility(player.grid[i],i);
+    state.activationMessage=`Activated ${state.activateTarget} papyrus: ${activated?`${activated} points were scored automatically.`:'its non-scoring printed effect is now resolved.'}`;
+    note(`${player.name} activates the selected ${state.activateTarget} papyrus${activated?' and its score is applied.':'. Resolve any non-scoring printed effect now.'}`);
+    mode=null;selected=null;state.activateTarget=null;render();return;
+  }
+  if(mode==='move'){
+    if(selected===null){if(!player.grid[i])return;selected=i;note('Now select an empty destination.');render();return}
+    if(player.grid[i])return;
+    player.grid[i]=player.grid[selected]; player.grid[selected]=null;
+    const oasisColour=player.grid[i].color;if(oasisColour&&oasisColour!=='Purple'&&!player.oases.some(x=>x.color===oasisColour)){player.oases.push({color:oasisColour});player.grid[i].oasisColor=oasisColour;player.tokens.oasis++;note(`${player.name} gains the ${oasisColour} Oasis.`)}else if(!oasisColour){note('This white papyrus does not gain an Oasis.')}else note(`${player.name} already has the ${oasisColour} Oasis.`); mode=null; selected=null;
+    note(`${player.name} invokes Bastet and receives an Oasis token.`); render(); return;
+  }
+  if(mode==='swapGrid'){if(!player.grid[i])return;selected=i;mode='swapMarket';note('Now select a card in the market to exchange.');render();return}
+  if(state.phase!==0||selected===null||player.grid[i])return;
+  if(player.playedRound===state.round){note('Only one papyrus may be played during each Play phase.');selected=null;render();return}
+  let c=player.hand.splice(selected,1)[0]; player.grid[i]=c; player.playedRound=state.round; selected=null;
+  const matches=matchingBlackRemnants(i,c.color),number=parseInt(c.file);
+  scorePrintedAbility(c,i);
+  if(number>=37&&number<=40){mode='activate';selected=i;state.activateTarget=activateTarget(c.file);note(`${player.name} played Activate. Select a ${state.activateTarget} papyrus on the grid to resolve its printed ability.`)}
+  if(matches.length){const improvement=matchingImprovement(i);if(improvement)resolveImprovement(improvement);else{state.pendingRemnant={matches,position:i};note(`${player.name} matched a black ${c.color} remnant. Choose the card bonus.`)}}
+  else if(!(number>=37&&number<=40))note(`${player.name} inscribes a ${c.color} papyrus. Resolve its printed ability, then adjust score if needed.`);
+  render();
+}
+function oasisClusterScore(player){
+  const cardMatches=(card,colour)=>card&&!card.facedown&&((card.colourTags||[card.color]).includes(colour)||(card.colourTags||[card.color]).includes('Purple'));
+  let score=0;
+  player.grid.forEach((oasisCard,start)=>{
+    const colour=oasisCard?.oasisColor;
+    if(!colour)return;
+    const cluster=new Set([start]),pending=[start];
+    while(pending.length){
+      const position=pending.pop(),row=Math.floor(position/4),column=position%4;
+      [[row-1,column],[row+1,column],[row,column-1],[row,column+1]].forEach(([r,c])=>{
+        const next=r*4+c;
+        if(r>=0&&r<4&&c>=0&&c<4&&!cluster.has(next)&&cardMatches(player.grid[next],colour)){cluster.add(next);pending.push(next);}
+      });
+    }
+    score+=cluster.size;
+    (player.remnants||[]).forEach(remnant=>{
+      const position=remnant.edge==='top'?remnant.slot:remnant.edge==='bottom'?12+remnant.slot:remnant.edge==='left'?remnant.slot*4:remnant.slot*4+3;
+      if(!cluster.has(position))return;
+      if(remnant.sobek){score+=1;return}
+      if(remnant.face==='E'&&remnant.color===colour)score+=2;
+      if(remnant.face==='E'&&remnant.thoth===colour)score+=1;
+    });
+  });
+  return score;
+}
+function scaleScore(player){
+  let score=0;
+  player.grid.forEach((card,index)=>{
+    if(!card||!card.scale||card.facedown)return;
+    const row=Math.floor(index/4),col=index%4,mirror=player.grid[row*4+(3-col)];
+    if(mirror&&!mirror.facedown&&mirror.color===card.color)score+=2;
+  });
+  return score;
+}
+function advancedScribeScore(player){
+  const glyphs=player.grid.filter(card=>card&&!card.facedown).map(card=>card.tokenGlyph||card.glyph),cardTokens=player.grid.reduce((total,card)=>total+(card?Number(!!card.tokenGlyph)+Number(!!card.oasisColor)+Number(!!card.scale):0),0),remnantTokens=(player.remnants||[]).reduce((total,remnant)=>total+Number(!!remnant.sobek)+Number(!!remnant.improvement)+Number(!!remnant.thoth),0);
+  const largestGlyphCluster=()=>{
+    let largest=0,seen=new Set();
+    player.grid.forEach((card,start)=>{
+      const glyph=card&&!card.facedown&&(card.tokenGlyph||card.glyph);if(!glyph||glyph==='wild'||seen.has(start))return;
+      let size=0,pending=[start];seen.add(start);
+      while(pending.length){const position=pending.pop(),row=Math.floor(position/4),column=position%4;size++;[[row-1,column],[row+1,column],[row,column-1],[row,column+1]].forEach(([r,c])=>{const next=r*4+c,nextCard=player.grid[next];if(r>=0&&r<4&&c>=0&&c<4&&!seen.has(next)&&nextCard&&!nextCard.facedown&&(nextCard.tokenGlyph||nextCard.glyph)===glyph){seen.add(next);pending.push(next);}})}
+      largest=Math.max(largest,size);
+    });
+    return largest;
+  };
+  return (player.scribes||[]).reduce((total,scribe)=>total+(scribe===1?7*Math.min(...['ankh','man','eye','boat','bird','urn'].map(glyph=>glyphs.filter(value=>value===glyph).length)):scribe===2?2*largestGlyphCluster():scribe===3?cardTokens+remnantTokens:scribe===4?player.hand.length:0),0);
+}
+function endGameScore(player){
+  const supplyTokens=Object.entries(player.tokens||{}).filter(([type])=>type!=='oasis').reduce((total,[,amount])=>total+amount,0);
+  const scribes=state.options?.advancedScribes?advancedScribeScore(player):(player.scribes||[]).length*5;
+  return {hand:player.hand.length,objectives:player.objectivePoints||0,scribes,supply:supplyTokens,oases:oasisClusterScore(player),scales:scaleScore(player)};
+}
+function finish(){
+  state.players.forEach(player=>{const score=endGameScore(player),total=score.hand+score.objectives+score.scribes+score.supply+score.oases+score.scales;player.score+=total;note(`${player.name} end game: ${score.hand} hand, ${score.objectives} objectives, ${score.scribes} Scribes, ${score.supply} supply tokens, ${score.oases} Oasis clusters, ${score.scales} Scale matches (+${total}).`)});
+  let winner=[...state.players].sort((a,b)=>b.score-a.score)[0];
+  note(`Game end: ${winner.name} wins with ${winner.score} points.`);
+  render(); $('phase').textContent='Game complete'; $('actions').innerHTML='<button class="action" onclick="location.reload()">New game</button>';
+}
+const baseRender=render;
+render=function(){baseRender();if(state){renderPlayerRecord();renderOpponentPrivacy();applyGridTargets();renderTurnIdentity();renderTokenGlyphs();renderOases();renderScales();renderRemnants();renderMarketMarkers();renderObjectives();renderConfiguredGods();renderScribes();renderObjectiveAttachments();renderManipulationActions();renderRemnantChoice();renderObjectiveReward();renderAutomaticPlayActions();renderDrawActions();renderSupply();renderAIControls()}};
+function renderPlayerRecord(){$('players').innerHTML=state.players.map((player,index)=>`<button class="player-chip ${index===state.turn?'active':''}" onclick="viewPlayer(${index})" title="View ${player.name}'s board">${player.name}: ${player.score} pts · ${player.hand.length} cards</button>`).join('')}
+function viewPlayer(index){const player=state.players[index];if(!player)return;const viewer=document.createElement('div');viewer.className='board-view';viewer.onclick=event=>{if(event.target===viewer)viewer.remove()};viewer.innerHTML=`<section class="board-view-panel"><button class="action board-view-close" onclick="this.closest('.board-view').remove()">Close</button><div class="board-title"><h2>${player.name}'s tablet</h2><span class="score">${player.score} pts</span></div><p class="tiny">Hand: ${player.hand.length} card${player.hand.length===1?'':'s'} (hidden)</p><div class="grid">${player.grid.map(card=>`<div class="cell">${card?img(card):''}</div>`).join('')}</div></section>`;
+  // Same overlays as the live board, so the snapshot matches what that player sees.
+  const grid=viewer.querySelector('.grid'),cells=grid.querySelectorAll('.cell');renderTokenGlyphs(player,cells);renderOases(player,cells);renderScales(player,cells);grid.append(remnantLayer(player,false));const tray=supplyTray(player,false);if(tray)viewer.querySelector('.board-view-panel').append(tray);document.body.append(viewer)}
+function renderOpponentPrivacy(){if(!p().isAI)return;document.querySelector('.hand-wrap h2').textContent=`${p().name}'s hand is hidden`;$('hand').innerHTML='<div class="tiny">Opponent cards are concealed. Their board and Supply tokens remain visible.</div>'}
+function renderAIControls(){if(!p().isAI||state.reveal)return;$('actions').innerHTML=`<span class="bonus-note">${p().name} is taking their turn…</span>`}
+function runAIUntilHuman(){if(!state||!p().isAI||state.reveal)return;aiTakeAction();if(state&&p().isAI&&!state.reveal)setTimeout(runAIUntilHuman,120)}
+function applyGridTargets(){
+  const player=p(),cells=[...document.querySelectorAll('.cell')];
+  // Only legal next clicks glow; the earlier generic mode flag lit every cell.
+  cells.forEach(cell=>cell.classList.remove('target'));
+  let valid=()=>false;
+  if(state.phase===0&&selected!==null&&!mode)valid=i=>!player.grid[i];
+  else if(mode==='builderPlace')valid=i=>!!player.grid[i];
+  else if(mode==='builderBlind')valid=i=>!player.grid[i];
+  else if(mode==='moveToken'||mode==='move'||mode==='sunMove')valid=i=>selected===null?!!player.grid[i]:!player.grid[i];
+  else if(mode==='maatSwap')valid=i=>selected===null?!!player.grid[i]:!!player.grid[i]&&i!==selected;
+  else if(mode==='hathor'||mode==='swapGrid'||mode==='sunOasis'||mode==='activate')valid=i=>!!player.grid[i];
+  else if(mode==='glyphReplace'){const token=state.pendingGlyph;valid=i=>{const card=player.grid[i],tags=card?.colourTags||[card?.color];return !!card&&!card.facedown&&(state.isisFreePlace||token?.free||tags.includes(token?.color))}}
+  cells.forEach((cell,i)=>{if(valid(i))cell.classList.add('target')});
+}
+function glyphTokenImage(token){if(token.glyph==='wild')return 'Gods/God things/Amun3.png';const name={ankh:'Ankh',man:'Man',eye:'eye',boat:'Boat',bird:'Bird',urn:'Urn'}[token.glyph],suffix={Blue:'B',Green:'G',Red:'R',Gold:'Y'}[token.color];return `Gods/God things/Hieroglyphs/${name}${suffix}.jpg`}
+function sunRewardText(sun){return ({Amun1:'Swap two cards on your grid.',Amun2:'Gain 3 points.',Amun3:'Gain 2 points.',Amun4:'Move a card to an empty space.',Amun5:'Flip a remnant.'})[sun.id]||'Gain this Sun reward.'}
+function renderMarketMarkers(){
+  const cubeColours={Blue:'#365f9e',Green:'#557f43',Red:'#a44632',Gold:'#b88225'};
+  [...$('market').children].forEach((spot,index)=>{const c=state.market[index];spot.style.position='relative';if(c&&c.sun){const sun=document.createElement('img');sun.className='sun-chip';sun.src=`Gods/God things/${c.sun.file}`;sun.alt='Sun reward';sun.title=sunRewardText(c.sun);spot.append(sun)}if(c&&c.anubisOwner!==undefined){const owner=state.players[c.anubisOwner],mark=document.createElement('span');mark.className='anubis-cube';mark.style.background=cubeColours[owner?.color]||'#777';mark.title=`${owner?.name||'Player'}'s Anubis marker`;spot.append(mark)}})
+}
+function renderConfiguredGods(){const art={Isis:'IsisF.jpg',Aten:'AtenA.jpg',Sobek:'Sobek.jpg',Ra:'RaA.jpg',Anubis:'AnubisA.jpg',Tawaret:'TawaretA.jpg',Bastet:'BastetA.jpg',Hathor:'Hathor.jpg',Maat:'MaatA.jpg',Ptah:'Ptah.jpg',Seshat:'SeshatA.jpg',Thoth:'ThothA.jpg'},text={Isis:'Gain hieroglyph tokens.',Aten:'Gain a hieroglyph token and Aten card.',Sobek:'Gain a hieroglyph token and remnant bonus.',Ra:'Influence the market.',Anubis:'Mark a market card.',Tawaret:'Exchange a grid card and market card, draw a card, and gain a Refresh token.',Bastet:'Move a card and place an Oasis.',Hathor:'Push cards vertically and horizontally.',Maat:'Swap two grid cards and place a Scale token on each.',Ptah:'Gain remnant and builder tokens.',Seshat:'Improve a remnant.',Thoth:'Gain a Remnant token and add a colour token to a white remnant.'};$('gods').innerHTML=state.options.gods.map(name=>`<div class="god"><img src="${G}${art[name]}"><div><button onclick="useGod('${name}')">${name}</button><p>${text[name]}</p></div></div>`).join('')}
+function renderTurnIdentity(){const player=p(),palette={Blue:'#365f9e',Green:'#557f43',Red:'#a44632',Gold:'#b88225'},colour=player.color||'Gold';$('turn').textContent=`${colour.toUpperCase()} — ${player.name.toUpperCase()}’S TURN`;$('phase').textContent=`${phaseName().toUpperCase()} PHASE · ROUND ${state.round} OF 12`;document.documentElement.style.setProperty('--turn-col',palette[colour]);const reveal=$('turnReveal');reveal.hidden=!state.reveal;if(state.reveal)reveal.innerHTML=`<h1>${player.name}</h1><p>${phaseName()} phase · Round ${state.round}</p><button onclick="dismissReveal()">Begin turn</button>`}
+function dismissReveal(){state.reveal=false;$('turnReveal').hidden=true;render();if(p().isAI)setTimeout(runAIUntilHuman,120)}
+function scribeCount(){return 6-(state.options.gods||[]).length}
+function scribeIds(){return state.options.advancedScribes&&state.scribePool?state.scribePool:Array.from({length:scribeCount()},(_,i)=>i+1)}
+function renderScribes(){const holder=$('gods'),advanced=state.options.advancedScribes,section=document.createElement('div');section.innerHTML='<h2 style="margin-top:14px">Scribes</h2><div class="scribe-row">'+scribeIds().map(n=>`<button id="scribe${n}" onclick="chooseScribe(${n})" title="${advanced?'Advanced end-game scoring':'Scribe: 5 end-game points'}"><img src="Scribe/${advanced?`Scribe${n}.jpg`:'ScribeBack.jpg'}" alt="Scribe ${n}"></button>`).join('')+`</div><div class="tiny">Claimed objectives may be placed under a Scribe for ${advanced?'the printed advanced end-game scoring.':'5 end-game points.'}</div>`;holder.append(section)}
+function renderObjectiveAttachments(){state.objectives.filter(o=>o.under).forEach(o=>{let host;if(o.under.type==='scribe')host=$(`scribe${o.under.id}`);else host=[...document.querySelectorAll('.god')].find(x=>x.textContent.includes(o.under.name));if(host){const tile=document.createElement('img');tile.className='attached-objective';tile.src=o.image;tile.alt=`${o.name} claimed objective`;host.append(tile)}})}
+function renderObjectiveReward(){if(!state.pendingObjective)return;const o=state.pendingObjective,gods=freeObjectiveGods().map(name=>`<button class="action" onclick="chooseObjectiveGod('${name}')">${name}</button>`).join(''),scribes=freeScribeIds().map(n=>`<button class="action" onclick="chooseScribe(${n})">Scribe ${n}</button>`).join('');$('actions').innerHTML=`<span class="bonus-note">${o.name} is claimed for ${o.points} points. Choose a God or Scribe to place it under; every later claimer of this objective receives the same bonus.</span>${gods}${scribes}`}
+function renderTokenGlyphs(player=p(),cells=$('grid').querySelectorAll('.cell')){player.grid.forEach((c,i)=>{if(c&&c.tokenGlyph){const token=c.tokenData,el=document.createElement(token?'img':'span');if(token){el.className='glyph-chip';el.src=glyphTokenImage(token);el.alt=`${token.glyph} token`}else{el.className='token';el.textContent=c.tokenGlyph}cells[i].append(el)}})}
+function renderOases(player=p(),cells=$('grid').querySelectorAll('.cell')){player.grid.forEach((card,index)=>{if(card&&card.oasisColor){const image=document.createElement('img'),suffix={Blue:'B',Green:'G',Red:'R',Gold:'Y'}[card.oasisColor];image.className='oasis-chip';image.src=`Gods/God things/Hieroglyphs/Oasis${suffix}.jpg`;image.alt=`${card.oasisColor} Oasis`;cells[index].append(image)}})}
+function renderScales(player=p(),cells=$('grid').querySelectorAll('.cell')){player.grid.forEach((card,index)=>{if(card&&card.scale){const image=document.createElement('img');image.className='scale-chip';image.src='Gods/God things/scales.png';image.alt='Scale token';image.title="Scale: scores 2 points if the card mirrored across the grid's vertical centre line shares this card's colour";cells[index].append(image)}})}
+function renderAutomaticPlayActions(){
+  if(state.phase!==0||state.pendingRemnant)return;
+  if(mode==='glyphChoose'||mode==='isisPick')return;
+  const glyph=p().tokens.glyph;
+  const played=p().playedRound===state.round;
+  $('actions').innerHTML=`<span class="bonus-note">${state.activationMessage?state.activationMessage+' ':''}${played?'Printed point abilities and white-remnant colour tags score automatically.':'You must place one papyrus this round before Play can finish.'}${glyph?' Select a pictured glyph token in Supply to play it.':''}</span><button class="action" onclick="nextPhase()" ${played?'':'disabled'}>Finish Play</button>`;
+}
+function renderDrawActions(){
+  if(state.phase!==3)return;
+  const player=p(),drawn=player.drawnRound===state.round,extra=mode==='extraDraw';
+  if(extra){$('actions').innerHTML='<span class="bonus-note">Extra draw: choose a market card or draw from the top deck.</span><button class="action" onclick="drawDeck()">Draw top deck</button>';return}
+  $('actions').innerHTML=`<span class="bonus-note">${drawn?'You may use draw tokens, then finish the Draw phase. The market refills only then.':'Draw one card from the market or top of the deck.'}</span><button class="action" onclick="drawDeck()" ${drawn?'disabled':''}>Draw top deck</button><button class="action" onclick="refreshMarket()" ${player.tokens.refresh?'':'disabled'}>Refresh market (${player.tokens.refresh})</button><button class="action" onclick="extraDraw()" ${player.tokens.draw?'':'disabled'}>Use extra draw (${player.tokens.draw})</button><button class="action" onclick="finishDraw()" ${drawn?'':'disabled'}>Finish Draw</button>`;
+}
+function renderSupply(){
+  const old=document.querySelector('.main .supply');if(old)old.remove();
+  const tray=supplyTray(p(),true);if(tray)$('actions').after(tray);
+}
+function supplyTray(player,interactive){
+  const t=player.tokens,items=[['oasis','Gods/God things/Hieroglyphs/OasisT.jpg','Oasis'],['draw','Gods/God things/MarketDrawToken.png','Draw'],['refresh','Gods/God things/black-refresh-icon-png-7.png','Refresh'],['move','Gods/God things/move.png','Movement'],['remnant','Gods/God things/ManipulateRem.png','Remnant'],['builder','Gods/God things/stone-crafting.png','Builder'],['improvement','Boards/Improvement.png','Improvement'],['colour','Boards/TokenA.png','Colour']].filter(([key])=>t[key]>0),glyphs=player.glyphTokens||[];
+  if(!items.length&&!glyphs.length)return null;
+  const tokenImage=g=>glyphTokenImage(g);
+  const tray=document.createElement('div');tray.className='supply';tray.innerHTML='<span class="supply-label">Supply</span>'+glyphs.map((g,i)=>`<button class="supply-token glyph-choice" ${interactive?`onclick="selectGlyphToken(${i})"`:'tabindex="-1"'} title="${g.color} ${g.glyph} token"><img src="${tokenImage(g)}" alt="${g.glyph}"></button>`).join('')+items.map(([key,src,label])=>`<span class="supply-token" title="${label} tokens"><img src="${src}" alt="${label}"><b>${t[key]}</b></span>`).join('');
+  return tray;
+}
+function matchingBlackRemnants(position,colour){
+  // A match is checked only for the card which was just played.  In
+  // particular, a built-on card's buried card (and a face-down card) cannot
+  // create a second match later.
+  if(!colour)return [];
+  const row=Math.floor(position/4),col=position%4;
+  return (p().remnants||[]).filter(r=>r.face==='D' &&
+    ((r.edge==='top'||r.edge==='bottom') ? r.slot===col : r.slot===row) &&
+    (colour==='Purple'||colour===r.color)
+  ).map(r=>r.edge);
+}
+function renderRemnantChoice(){
+  if(!state.pendingRemnant)return;
+  const position=state.pendingRemnant.position,row=Math.floor(position/4),col=position%4,improvements=(p().remnants||[]).filter(r=>r.face==='D'&&r.improvement&&((r.edge==='top'||r.edge==='bottom')?r.slot===col:r.slot===row));
+  const a=$('actions'),where=state.pendingRemnant.matches.join(' and ');
+  if(improvements.length){a.innerHTML=`<span class="bonus-note">Matching improved remnant: resolve its replacement reward.</span>`+improvements.map(r=>`<button class="action" onclick="resolveImprovement(${r.improvement})">Improvement ${r.improvement}</button>`).join('');return}
+  a.innerHTML=`<span class="bonus-note">Matching black remnant (${where}): choose its card bonus.</span><button class="action" onclick="resolveRemnantBonus('points')">Take 2 points</button><button class="action" onclick="resolveRemnantBonus('draw')">Gain a draw token</button>`;
+}
+function resolveRemnantBonus(choice){
+  const player=p();
+  if(choice==='points'){player.score+=2;note(`${player.name} takes 2 points from a matching remnant.`)}
+  else{player.tokens.draw++;note(`${player.name} gains a draw token from a matching remnant.`)}
+  state.pendingRemnant=null;render();
+}
+function renderManipulationActions(){
+  const actions=$('actions');
+  if(mode==='isisPick'){const options=[];['ankh','man','eye','boat','bird','urn'].forEach(g=>colors.forEach(c=>{if(!(state.isisChosen||[]).some(t=>t.glyph===g||t.color===c))options.push(`<button class="action" onclick="chooseIsisToken('${g}','${c}')">${g} · ${c}</button>`)}));actions.innerHTML='<span class="bonus-note">Choose 2 tokens, each a different colour and hieroglyph.</span>'+options.join('');return}
+  if(mode==='isisReady'){actions.innerHTML='<span class="bonus-note">Isis allows one of the new tokens to be placed on any colour papyrus.</span><button class="action" onclick="note(\'Select one of the pictured glyph tokens in your supply.\');render()">Place one anywhere</button><button class="action" onclick="nextPhase()">Keep tokens</button>';return}
+  if(state.phase!==1)return;
+  if(p().godRound===state.round){actions.innerHTML='<span class="bonus-note">God ability already used this round.</span><button class="action" onclick="nextPhase()">Finish Manipulate</button>';return}
+  if(selected===null){
+    actions.innerHTML='<button class="action" disabled>Select a card in your hand to discard</button><button class="action" onclick="nextPhase()">Skip Manipulate</button>';
+    return;
+  }
+  actions.innerHTML=state.options.gods.map(name=>`<button class="action" onclick="useGod('${name}')">Discard selected & invoke ${name}</button>`).join('')+'<button class="action" onclick="selected=null;render()">Choose another card</button>';
+}
+function handClick(i){
+  if(state.phase===0&&p().playedRound===state.round)return noteRender('Only one papyrus may be played during each Play phase.');
+  if(state.phase!==0&&state.phase!==1)return noteRender('Cards can be selected in Play or Manipulate.');
+  selected=i;mode=null;
+  if(state.phase===1)note(`${p().name} selected a card to discard. Choose a God action below.`);
+  render();
+}
+function renderRemnants(){
+  const grid=$('grid'), pieces=[['Blue','D','top'],['Green','E','top'],['Red','D','top'],['Gold','E','top'],['Blue','E','left'],['Green','D','left'],['Red','E','left'],['Gold','D','left']];
+  const layer=document.createElement('div');layer.className='remnants';
+  layer.innerHTML=pieces.map((r,i)=>`<button class="remnant ${r[2]} r${i%4}" title="${r[0]} remnant — ${r[1]==='D'?'card-match bonus':'two colour tags'}"><img src="Boards/${r[0]==='Gold'?'Yellow':r[0]}${r[1]}.png" alt="${r[0]} remnant"></button>`).join('');
+  grid.append(layer);
+}
+function advancePhaseTurn(){
+  if(state.phase===1)state.isisFreePlace=false;
+  state.reveal=true;
+  selected=null;mode=null;state.phaseMoves=(state.phaseMoves||0)+1;
+  if(state.phaseMoves<state.players.length){state.turn=(state.turn+1)%state.players.length;render();return}
+  state.phaseMoves=0;state.phase++;
+  if(state.phase>3){state.round++;state.phase=0;state.first=((state.first||0)+1)%state.players.length;if(state.round>12){finish();return}}
+  state.turn=state.phase===0?(state.first||0):(state.first||0);render();
+}
+nextPhase=function(){if(state.phase===0&&p().playedRound!==state.round)return noteRender(`${p().name} must play one papyrus before finishing Play.`);advancePhaseTurn()};
+endTurn=function(){advancePhaseTurn()};
+// Starter glyphs vary by colour; this table preserves the artwork rather than
+// merely choosing three random files.
+const starterGlyphs={
+  1:{a:'ankh',b:'scribe',c:'eye',d:'boat',e:'bird',f:'urn'},
+  2:{a:'scribe',b:'eye',c:'boat',d:'bird',e:'urn',f:'ankh'},
+  3:{a:'ankh',b:'scribe',c:'eye',d:'boat',e:'bird',f:'urn'},
+  4:{a:'urn',b:'bird',c:'boat',d:'eye',e:'scribe',f:'ankh'}
+};
+function makeStarters(){
+  const used=new Set(),missing=1+Math.floor(Math.random()*4),slots=Array(4);
+  [1,2,3,4].filter(colour=>colour!==missing).forEach(colour=>{
+    const options=shuffle(Object.entries(starterGlyphs[colour]).filter(([,glyph])=>!used.has(glyph)));
+    const [suffix,glyph]=options[0]; used.add(glyph);
+    slots[colour-1]=card(`${colour}${suffix}.jpg`,true);
+  });
+  slots[missing-1]=card('Aten.jpg',true);return slots;
+}
+function chooseIsisToken(glyph,color){
+  const player=p();player.glyphTokens.push({glyph,color});player.tokens.glyph++;state.isisChosen.push({glyph,color});state.isisPicks--;
+  if(state.isisPicks>0){note(`Isis grants a ${color} ${glyph}; choose one more different token.`)}
+  else{mode='isisReady';state.isisFreePlace=true;note('Isis grants both tokens. You may now select one pictured supply token and place it on any papyrus.');}
+  render();
+}
+function selectGlyphToken(index){
+  const player=p(),token=player.glyphTokens[index];
+  if(!token)return;
+  if(state.phase!==0&&!state.isisFreePlace){note('Glyph tokens are normally played in Play. Isis may place one immediately.');render();return}
+  state.pendingGlyph={...token,index};if(token.free)state.isisFreePlace=true;mode='glyphReplace';note(`Select a papyrus for the ${token.color} ${token.glyph} token.`);render();
+}
+function useGod(g){
+  g=g.toLowerCase();
+  if(state.phase!==1)return noteRender('Gods are invoked in Manipulate.');
+  if(p().godRound===state.round)return noteRender(`${p().name} has already invoked a God this round.`);
+  if(selected===null)return noteRender('Select a hand card first; it will be discarded to invoke this God.');
+  const discarded=p().hand.splice(selected,1)[0];state.deck.push(discarded);p().godRound=state.round;selected=null;
+  if(g==='isis'){state.isisPicks=2;state.isisChosen=[];state.tokenPickFree=true;mode='isisPick';note(`${p().name} invokes Isis. Choose two different coloured hieroglyph tokens.`);render();return}
+  if(g==='aten'){p().hand.push(card('Aten.jpg',true));state.isisPicks=1;state.isisChosen=[];state.tokenPickFree=false;mode='isisPick';note(`${p().name} invokes Aten: gain an Aten card and choose one hieroglyph token.`);render();return}
+  if(g==='sobek'){p().tokens.remnant=(p().tokens.remnant||0)+1;state.isisPicks=1;state.isisChosen=[];state.tokenPickFree=false;mode='isisPick';note(`${p().name} invokes Sobek: gain a remnant token and choose one hieroglyph token.`);render();return}
+  if(g==='ra'){p().tokens.refresh++;state.suns=state.market.map((_,i)=>i);note(`${p().name} invokes Ra: Sun rewards are placed on market cards and gains a Refresh token.`);render();return}
+  if(g==='anubis'){mode='anubisMark';note('Select a market card to mark with Anubis.');render();return}
+  if(g==='bastet'){mode='move';note('Select a card to move, then an empty destination.');render();return}
+  if(g==='hathor'){mode='hathor';note('Select a card to push. Then select an empty space in its row or column.');render();return}
+  if(g==='maat'){state.maatScale=true;mode='maatSwap';note('Select the first card to swap, then the second card. Each swapped card gets a Scale token.');render();return}
+  if(g==='ptah'){p().tokens.remnant=(p().tokens.remnant||0)+1;p().tokens.builder=(p().tokens.builder||0)+1;note(`${p().name} invokes Ptah: gains a Remnant and Builder token.`);render();return}
+  if(g==='seshat'){p().tokens.remnant=(p().tokens.remnant||0)+1;p().tokens.improvement=(p().tokens.improvement||0)+1;note(`${p().name} invokes Seshat: gains a Remnant and Improvement token.`);render();return}
+  if(g==='thoth'){p().tokens.remnant=(p().tokens.remnant||0)+1;p().tokens.colour=(p().tokens.colour||0)+1;note(`${p().name} invokes Thoth: gains a Remnant and Colour token.`);render();return}
+  if(g==='tawaret'){mode='swapGrid';note('Select a grid card, then a market card.');render();}
+}
+function useGlyph(){
+  if(!p().tokens.glyph)return;
+  mode='glyphChoose';note(`${p().name}: choose the hieroglyph token to place, then select a papyrus.`);render();
+}
+function chooseGlyph(glyph){mode='glyphReplace';state.pendingGlyph=glyph;note(`Select the papyrus to receive the ${glyph} token.`);render()}
+function makeObjectives(set='A'){if(set==='B'){const patterns=[['urn','urn','urn','ankh'],['ankh','eye','ankh','ankh'],['eye','eye','man','eye'],['man','man','man','boat'],['boat','bird','boat','boat'],['bird','bird','urn','bird']];return patterns.map((pattern,i)=>({name:`Goal ${i+1}`,pattern,image:`Gods/Goal${i+1}.png`,claims:[]}))}return [['Ankh','ankh'],['Eye','eye'],['Man','man'],['Bird','bird'],['Boat','boat'],['Urn','urn']].map(([name,glyph])=>({name,glyph,image:`Gods/${name}.png`,claims:[]}))}
+function matchingObjectiveLine(player,objective){
+  const lines=[0,1,2,3].map(r=>[0,1,2,3].map(c=>r*4+c)).concat([0,1,2,3].map(c=>[0,1,2,3].map(r=>r*4+c)));
+  return lines.find(line=>{
+    const glyphs=line.map(i=>{const card=player.grid[i];return !card||card.facedown?null:card.tokenGlyph||card.glyph});
+    if(glyphs.includes(null))return false;
+    return glyphs.every((glyph,slot)=>glyph==='wild'||glyph===(objective.pattern?objective.pattern[slot]:objective.glyph));
+  });
+}
+function renderObjectives(){
+  if(!state.objectiveReady){state.objectives=makeObjectives(state.options?.objectiveSet||'A');state.objectiveReady=true;}
+  $('objectives').innerHTML=state.objectives.map((o,i)=>{const taken=o.claims.length,alreadyClaimed=o.claims.some(c=>c.player===state.turn),claimable=state.phase===2&&!alreadyClaimed&&taken<4&&!!matchingObjectiveLine(p(),o),cubes=o.claims.map(c=>`<span class="objective-cube" style="background:${c.color}" title="${c.name}: ${c.points} end-game points"></span>`).join('');return `<button class="objective-card" onclick="claimObjective(${i})" ${claimable?'':'disabled'} title="${claimable?`${o.name}: claim this matching row or column`:`${o.name}: no available matching row or column`}"><img src="${o.image}" alt="${o.name} objective"><span class="objective-cubes">${cubes}</span></button>`}).join('');
+  if(state.phase===2&&!state.pendingObjective){const available=state.objectives.some(o=>o.claims.length<4&&!o.claims.some(c=>c.player===state.turn)&&matchingObjectiveLine(p(),o));$('actions').innerHTML=`<span class="bonus-note">${available?'Select an available completed row or column, then claim its objective.':'No available completed row or column can claim an objective.'}</span><button class="action" onclick="chooseLine()" ${available?'':'disabled'}>Select a row / column</button><button class="action" onclick="nextPhase()">Skip Objective</button>`}
+}
+function claimObjective(index){
+  if(state.phase!==2)return noteRender('Objectives are claimed in the Objective phase.');
+  const player=p(),objective=state.objectives[index];
+  if(objective.claims.some(c=>c.player===state.turn)){note(`${player.name} has already claimed this objective.`);render();return}
+  const validLine=matchingObjectiveLine(player,objective),valid=!!validLine;
+  if(!valid){note(`${player.name} cannot claim ${objective.name}: no matching four-card row or column.`);render();return}
+  if(!objective.claims.length&&state.players.length<4){const columns=state.players.length;state.objectives.forEach((other,i)=>{if(i!==index&&i%columns===index%columns&&!other.claims.length)other.claims.push({name:'Dummy cube',color:'#777',points:15,dummy:true})})}
+  const rewards=[15,12,10,8],points=rewards[objective.claims.length],first=!objective.under&&!objective.claims.some(c=>!c.dummy);objective.claims.push({player:state.turn,name:player.name,color:player.color,points});player.objectivePoints+=points;
+  state.pendingObjective={index,name:objective.name,points,first};
+  // Later claimers receive the bonus the first claimer attached to this objective.
+  const under=objective.under;
+  if(under){note(`${player.name} claims ${objective.name} and receives its ${under.type==='scribe'?`Scribe ${under.id}`:under.name} bonus.`);if(under.type==='scribe')chooseScribe(under.id);else chooseObjectiveGod(under.name);return}
+  if(!freeScribeIds().length&&!freeObjectiveGods().length){state.pendingObjective=null;note(`${player.name} claims ${objective.name}; no God or Scribe bonus is left to attach.`);advancePhaseTurn();return}
+  note(`${player.name} claims ${objective.name}: choose a God or Scribe to place it under.`);render()
+}
+// Each God and Scribe can hold only one objective.
+function freeScribeIds(){return scribeIds().filter(id=>!state.objectives.some(o=>o.under&&o.under.type==='scribe'&&o.under.id===id))}
+function freeObjectiveGods(){return state.options.gods.filter(name=>!state.objectives.some(o=>o.under&&o.under.type==='god'&&o.under.name===name))}
+function chooseScribe(number){if(!state.pendingObjective)return noteRender('Scribes are selected when claiming an objective.');const objective=state.objectives[state.pendingObjective.index];if(!objective.under){if(!freeScribeIds().includes(number))return noteRender(`Scribe ${number} already holds an objective.`);objective.under={type:'scribe',id:number}}else if(objective.under.type!=='scribe'||objective.under.id!==number)return noteRender('This objective already has its bonus.');p().scribes.push(number);note(`${p().name} gains Scribe ${number} scoring (+5 points at game end).`);state.pendingObjective=null;advancePhaseTurn()}
+function chooseObjectiveGod(name){if(!state.pendingObjective)return;const objective=state.objectives[state.pendingObjective.index];if(state.pendingObjective.first)objective.under={type:'god',name};state.pendingObjective=null;state.freeGod=true;if(name==='Isis'){state.isisPicks=2;state.isisChosen=[];mode='isisPick';note(`${p().name} receives Isis's free activation and chooses two tokens.`);render();return}if(name==='Bastet'){mode='move';note(`${p().name} receives Bastet's free activation. Select a card, then an empty destination.`);render();return}mode='swapGrid';note(`${p().name} receives Tawaret's free activation. Select a grid card, then a market card.`);render()}
+function setupOptions(){return {objectiveSet:$('objectiveSet').value,aiOpponents:$('aiOpponents').checked,fourthGod:$('fourthGod').checked,purple:$('purpleCards').checked,activate:$('activateCards').checked,advancedScribes:$('advancedScribes').checked,shuffleStarters:$('shuffleStarters').checked,gods:[$('godGlyph').value,$('godMarket').value,$('godMove').value].concat($('fourthGod').checked?[$('godRemnant').value]:[])}}
+function randomGods(){const pick=id=>{const select=$(id);select.selectedIndex=Math.floor(Math.random()*select.options.length)};pick('godGlyph');pick('godMarket');pick('godMove');if($('fourthGod').checked)pick('godRemnant')}
+function firstGame(){['fourthGod','purpleCards','activateCards','advancedScribes','shuffleStarters'].forEach(id=>$(id).checked=false);$('aiOpponents').checked=true;$('objectiveSet').value='A';$('godGlyph').value='Isis';$('godMarket').value='Tawaret';$('godMove').value='Bastet';$('remnantGodRow').hidden=true;begin()}
+function begin(){
+  const options=setupOptions(),count=+$('playersCount').value,deck=shuffle(names.filter(x=>(options.purple||!x.startsWith('41'))&&(options.activate||!/^([3][7-9]|40)/.test(x)))).map(x=>card(x)),glyphPool=['ankh','man','eye','boat','bird','urn'].flatMap(glyph=>['Blue','Green','Red','Gold'].map(color=>({glyph,color})));
+  state={options,glyphPool,remnants:initialiseRemnants(),improvementStacks:{7:6,8:6},improvementOffer:[],thothSupply:{Blue:4,Green:4,Red:4,Gold:4},scribePool:options.advancedScribes?shuffle([1,2,3,4]).slice(0,6-options.gods.length):null,players:[],deck,discardPile:[],market:[],round:1,turn:0,phase:0,first:0,phaseMoves:0,log:[],objectives:shuffle(['Three matching hieroglyphs','Four matching hieroglyphs','A vertical inscription','A horizontal inscription','A line using a token','A line of unique glyphs']).map((label,i)=>({label,points:8-i%3*2,claimed:false}))};
+  refillImprovementOffer();
+  const aiProfiles=['cards','objectives','balanced'];
+  for(let i=0;i<count;i++){const sc=makeStarters(),isAI=options.aiOpponents&&i>0;state.players.push({name:i===0?'Player 1':'AI '+i,color:colors[i],isAI,aiProfile:isAI?aiProfiles[(i-1)%aiProfiles.length]:null,score:0,objectivePoints:0,hand:deck.splice(0,6),grid:[sc[0],null,null,null,null,sc[1],null,null,null,null,sc[2],null,null,null,null,sc[3]],remnants:initialiseRemnants(),tokens:{glyph:0,oasis:0,draw:0,refresh:0},glyphTokens:[],oases:[],scribes:[],claimed:[]})}
+  state.market=deck.splice(0,4);
+  if(options.shuffleStarters){
+    // 4.jpg is the blank starter template, not a playable card.
+    const dealt=new Set(state.players.flatMap(player=>player.grid.filter(c=>c&&c.starter).map(c=>c.file))),extra=starter.filter(file=>file!=='4.jpg'&&!dealt.has(file)).map(file=>card(file,true));
+    state.deck=shuffle(deck.concat(extra));
+    note(`${extra.length} unused starter cards are shuffled into the papyrus deck.`);
+  }
+  $('setup').style.display='none';note('The tablets are prepared. Each player has three different-coloured, different-hieroglyph starter cards. Player 1 begins the Play phase.');render();
+}
+function anyDeckCards(){return state.deck.length||(state.discardPile&&state.discardPile.length)}
+function refillDeckIfEmpty(){
+  if(state.deck.length||!state.discardPile||!state.discardPile.length)return;
+  state.deck=shuffle(state.discardPile);state.discardPile=[];
+  note('The papyrus deck is exhausted and reshuffled from the discard pile.');
+}
+function drawDeck(){
+  refillDeckIfEmpty();
+  const player=p(),isExtra=mode==='extraDraw';if(!state.deck.length)return;
+  if(!isExtra&&player.drawnRound===state.round)return;
+  player.hand.push(state.deck.shift());player.drawnRound=state.round;
+  if(isExtra){player.tokens.draw--;mode=null;note(`${player.name} uses a draw token to take the top card.`)}else note(`${player.name} draws from the deck.`);
+  render();
+}
+function marketClick(index){
+  const player=p();if(mode==='anubisMark'){const marked=state.market[index];if(!marked)return;if(marked.anubisOwner!==undefined&&marked.anubisOwner!==state.turn){note('That market card already has another player’s Anubis marker. Choose a different card.');render();return}state.market.forEach(c=>{if(c&&c.anubisOwner===state.turn)delete c.anubisOwner});marked.anubisOwner=state.turn;mode=null;note(`${player.name} marks a market card with Anubis; another player who draws it gives them 2 points.`);render();return}if(mode==='swapMarket'){if(state.market[index])resolveAnubisMarker(state.market[index],player);[player.grid[selected],state.market[index]]=[state.market[index],player.grid[selected]];note(`${player.name} exchanges a papyrus via Tawaret.`);selected=null;if(state.tawaretExtra){state.tawaretExtra=false;player.tokens.refresh++;mode='raDraw';note(`${player.name} gains a Refresh token and may draw a card immediately.`);render();return}mode=null;render();return}
+  if(state.phase!==3)return;
+  const isExtra=mode==='extraDraw';if(!isExtra&&player.drawnRound===state.round)return;
+  const taken=state.market.splice(index,1)[0];if(!taken)return;resolveAnubisMarker(taken,player);const sun=taken.sun;delete taken.sun;player.hand.push(taken);player.drawnRound=state.round;if(sun)resolveSunReward(sun);
+  if(isExtra){player.tokens.draw--;mode=null;note(`${player.name} uses a draw token to take a market card.`)}else note(`${player.name} draws a market card. The market refills at turn end.`);
+  render();
+}
+function resolveAnubisMarker(card,drawer){
+  if(card.anubisOwner===undefined)return;
+  const owner=state.players[card.anubisOwner];
+  if(owner&&card.anubisOwner!==state.turn){drawer.score-=2;owner.score+=2;note(`${drawer.name} draws ${owner.name}'s Anubis-marked papyrus: ${drawer.name} gives ${owner.name} 2 points.`)}
+  delete card.anubisOwner;
+}
+function extraDraw(){if(!p().tokens.draw)return;mode='extraDraw';render()}
+function refillMarket(){while(state.market.length<4&&(refillDeckIfEmpty(),state.deck.length))state.market.push(state.deck.shift())}
+function finishDraw(){if(p().drawnRound!==state.round)return;refillMarket();note('The market is replenished.');advancePhaseTurn()}
+const objectiveChoice=document.createElement('label');objectiveChoice.innerHTML='Objective set <select id="objectiveSet"><option value="A">A — matching glyphs</option><option value="B">B — printed sequences</option></select>';$('fourthGod').parentElement.before(objectiveChoice);
+const aiChoice=document.createElement('label');aiChoice.innerHTML='<input id="aiOpponents" type="checkbox"> Play against AI opponents (Player 1 remains human)';$('fourthGod').parentElement.before(aiChoice);
+// Final God-action rules. These replace the early prototype handlers above.
+function chooseIsisToken(glyph,color){
+  const player=p(),index=(state.glyphPool||[]).findIndex(t=>t.glyph===glyph&&t.color===color);if(index<0)return;
+  const token=state.glyphPool.splice(index,1)[0];player.glyphTokens.push(token);player.tokens.glyph++;state.isisChosen.push(token);state.isisPicks--;
+  if(state.isisPicks>0)note(`Choose ${state.isisPicks} more distinct hieroglyph token.`);
+  else if(state.tokenPickFree){mode='isisReady';state.isisFreePlace=true;note('Isis grants both tokens. You may place one of them on any colour papyrus, or keep both.');}
+  else if(state.resumeBuilderBlind){state.resumeBuilderBlind=false;mode='builderBlind';note(`${player.name} gains the ${color} ${glyph} token. Now place the Builder face-down card in an empty grid space.`)}
+  else if(state.pendingSobek){state.pendingSobek=false;mode='sobekReplaceRemnant';note(`${player.name} gains the ${color} ${glyph} token. Now select a remnant to replace with Sobek.`)}
+  else {mode=null;note(`${player.name} gains the ${color} ${glyph} hieroglyph token.`)}
+  render();
+}
+function renderManipulationActions(){
+  const actions=$('actions');
+  if(mode==='seshatChooseImprovement'){const offer=state.improvementOffer||[];actions.innerHTML='<span class="bonus-note">Seshat: choose one improvement, then place it on a black remnant.</span>'+offer.map(id=>`<button class="improvement-pick" onclick="chooseImprovement(${id})" title="Improvement ${id} (${state.improvementStacks[id]} left)"><img src="Boards/Improvement${id}.png" alt="Improvement ${id}"></button>`).join('');return}
+  if(mode==='thothChooseColour'){const supply=state.thothSupply||{},letters={Blue:'B',Green:'G',Red:'R',Gold:'Y'};actions.innerHTML='<span class="bonus-note">Thoth: choose a colour token to add to an eligible white remnant (one token per remnant).</span>'+colors.map(colour=>`<button class="glyph-pick" onclick="chooseThothColour('${colour}')" ${supply[colour]?'':'disabled'} title="${colour} Thoth token (${supply[colour]||0} left)"><img src="Gods/God things/Thoth${letters[colour]}.png" alt="${colour} Thoth token"></button>`).join('');return}
+  if(mode==='isisPick'){const chosen=state.isisChosen||[],available=(state.glyphPool||[]).filter(t=>!state.tokenPickFree||!chosen.some(x=>x.glyph===t.glyph||x.color===t.color));actions.innerHTML=`<span class="bonus-note">${state.tokenPickFree?'Choose 2 available tokens, each different in colour and hieroglyph.':'Choose 1 available hieroglyph token.'}</span>`+available.map(t=>`<button class="glyph-pick" onclick="chooseIsisToken('${t.glyph}','${t.color}')" title="${t.color} ${t.glyph}"><img src="${glyphTokenImage(t)}" alt="${t.color} ${t.glyph}"></button>`).join('');return}
+  if(mode==='sobekReplaceRemnant'){actions.innerHTML='<span class="bonus-note">Sobek: select a remnant around the board to replace it with the Sobek marker.</span>';return}
+  if(mode==='isisReady'){actions.innerHTML='<span class="bonus-note">Isis: optionally place one newly gained token on any coloured papyrus.</span><button class="action" onclick="note(\'Select a pictured glyph token in your supply.\');render()">Place one anywhere</button><button class="action" onclick="mode=null;state.isisFreePlace=false;render()">Keep tokens</button>';return}
+  if(state.phase!==1)return;
+  if(p().godRound===state.round){actions.innerHTML='<span class="bonus-note">God ability already used this round.</span><button class="action" onclick="nextPhase()">Finish Manipulate</button>';return}
+  if(selected===null){actions.innerHTML='<button class="action" disabled>Select a card in your hand to discard</button><button class="action" onclick="nextPhase()">Skip Manipulate</button>';return}
+  actions.innerHTML=state.options.gods.map(name=>`<button class="action" onclick="useGod('${name}')">Discard selected & invoke ${name}</button>`).join('')+'<button class="action" onclick="selected=null;render()">Choose another card</button>';
+}
+function startGodAbility(name){
+  const g=name.toLowerCase(),player=p();
+  if(g==='isis'){state.isisPicks=2;state.isisChosen=[];state.tokenPickFree=true;mode='isisPick';note(`${player.name} invokes Isis: choose two distinct hieroglyph tokens.`);}
+  else if(g==='aten'){player.hand.push(card('Aten.jpg',true));state.isisPicks=1;state.isisChosen=[];state.tokenPickFree=false;mode='isisPick';note(`${player.name} invokes Aten: gain an Aten card and choose one hieroglyph token.`);}
+  else if(g==='sobek'){state.pendingSobek=true;state.isisPicks=1;state.isisChosen=[];state.tokenPickFree=false;mode='isisPick';note(`${player.name} invokes Sobek: choose one coloured hieroglyph token, then replace a white remnant with Sobek.`);}
+  else if(g==='ra'){placeSunTokens();if(state.deck.length)player.hand.push(state.deck.shift());player.tokens.refresh++;note(`${player.name} invokes Ra: Sun rewards are added to unsunned market cards, draws a card, and gains Refresh.`);}
+  else if(g==='anubis'){mode='anubisMark';note('Select a market card to mark with Anubis.');}
+  else if(g==='bastet'){mode='move';note('Select a card to move, then an empty destination.');}
+  else if(g==='hathor'){mode='hathor';note('Select a card to push, then an empty space in its row or column.');}
+  else if(g==='maat'){state.maatScale=true;mode='maatSwap';note('Select two grid cards to swap. Each swapped card gets a Scale token.');}
+  else if(g==='ptah'){player.tokens.remnant=(player.tokens.remnant||0)+1;player.tokens.builder=(player.tokens.builder||0)+1;note(`${player.name} gains a Remnant and Builder token.`);}
+  else if(g==='seshat'){player.tokens.remnant=(player.tokens.remnant||0)+1;if((player.remnants||[]).filter(r=>r.improvement).length>=2){mode=null;note(`${player.name} gains a Remnant token. Their board already has the maximum two improvements.`)}else{mode='seshatChooseImprovement';note(`${player.name} gains a Remnant token and chooses an improvement for a black remnant.`)}}
+  else if(g==='thoth'){player.tokens.remnant=(player.tokens.remnant||0)+1;mode='thothChooseColour';note(`${player.name} gains a Remnant token and chooses a Thoth colour token to add to a white remnant.`);}
+  else if(g==='tawaret'){state.tawaretExtra=true;mode='swapGrid';note('Select a grid card, then a market card.');}
+  render();
+}
+function useGod(name){if(state.phase!==1)return noteRender('Gods are invoked in Manipulate.');if(p().godRound===state.round)return noteRender(`${p().name} has already invoked a God this round.`);if(selected===null)return noteRender('Select a hand card first; it will be discarded to invoke this God.');state.discardPile.push(p().hand.splice(selected,1)[0]);selected=null;p().godRound=state.round;startGodAbility(name)}
+function placeSunTokens(){if(!state.sunPool)state.sunPool=shuffle(['Amun1.png','Amun1.png','Amun2.png','Amun2.png','Amun3.png','Amun3.png','Amun4.png','Amun4.png','Amun5.png','Amun5.png']).map(file=>({file,id:file.replace('.png','')}));state.market.forEach(card=>{if(!card.sun&&state.sunPool.length)card.sun=state.sunPool.shift()})}
+function resolveSunReward(sun){const player=p();if(!sun)return;const id=sun.id;
+  if(id==='Amun1'){selected=null;mode='maatSwap';note(`${player.name}'s Sun reward: swap two cards on your grid.`)}
+  else if(id==='Amun2'){player.score+=3;note(`${player.name} gains 3 points from the Sun token.`)}
+  else if(id==='Amun3'){player.score+=2;note(`${player.name} gains 2 points from the Sun token.`)}
+  else if(id==='Amun4'){selected=null;mode='sunMove';note(`${player.name}'s Sun reward: move a card to an empty space.`)}
+  else if(id==='Amun5'){mode='sunFlip';note(`${player.name}'s Sun reward: flip a remnant between its black and white sides.`)}
+}
+function chooseObjectiveGod(name){if(!state.pendingObjective)return;const objective=state.objectives[state.pendingObjective.index];if(!objective.under){if(!freeObjectiveGods().includes(name))return noteRender(`${name} already holds an objective.`);objective.under={type:'god',name}}else if(objective.under.type!=='god'||objective.under.name!==name)return noteRender('This objective already has its bonus.');state.pendingObjective=null;startGodAbility(name)}
+// Board-token actions and mutable remnants.
+// Colour order is shuffled per player; the left edge repeats the top edge's
+// order with each remnant flipped to its other (black/white) face.
+function initialiseRemnants(){const order=shuffle(colors),faces=['D','E','D','E'];return ['top','left'].flatMap(edge=>order.map((color,slot)=>({color,face:edge==='top'?faces[slot]:faces[slot]==='D'?'E':'D',edge,slot})))}
+function refillImprovementOffer(){state.improvementOffer=[7,8].filter(id=>state.improvementStacks[id]>0)}
+function chooseImprovement(id){const index=(state.improvementOffer||[]).indexOf(id);if(mode!=='seshatChooseImprovement'||index<0)return;state.improvementStacks[id]--;refillImprovementOffer();state.pendingImprovement=id;mode='seshatPlaceImprovement';note(`Seshat: select a black remnant for Improvement ${id}.`);render()}
+function chooseThothColour(colour){if(mode!=='thothChooseColour'||!(state.thothSupply||{})[colour])return;mode='thothPlaceColour';state.pendingThothColour=colour;note(`${p().name} selects a ${colour} Thoth token. Select an eligible white remnant with no Thoth token.`);render()}
+function resolveImprovement(id){const player=p(),token={2:'builder',3:'refresh',5:'glyph',6:'move',8:'draw'}[id],points=id===7?4:2;state.pendingRemnant=null;player.score+=points;if(token==='glyph'){state.isisPicks=1;state.isisChosen=[];state.tokenPickFree=false;mode='isisPick';note(`${player.name}'s Improvement ${id} gives ${points} points. Choose a hieroglyph token.`)}else{if(token)player.tokens[token]=(player.tokens[token]||0)+1;note(`${player.name}'s Improvement ${id} automatically gives ${points} points${token?` and a ${token} token`:''}.`)}render()}
+function whiteTagCount(colour){const remnants=p().remnants||[];return remnants.filter(r=>r.face==='E'&&r.color===colour).length*2+remnants.filter(r=>r.face==='E'&&r.thoth===colour).length+remnants.filter(r=>r.sobek).length}
+function matchingBlackRemnants(position,colour){const row=Math.floor(position/4),col=position%4;return (p().remnants||[]).filter(r=>r.face==='D'&&(r.edge==='top'||r.edge==='bottom'?r.slot===col:r.slot===row)&&(colour===r.color||colour==='Purple')).map(r=>r.edge)}
+function matchingImprovement(position){const row=Math.floor(position/4),col=position%4;return (p().remnants||[]).find(r=>r.face==='D'&&r.improvement&&((r.edge==='top'||r.edge==='bottom')?r.slot===col:r.slot===row))?.improvement}
+function renderRemnants(){$('grid').append(remnantLayer(p(),true))}
+// Read-only when interactive is false, so the board viewer can show another player's remnants.
+function remnantLayer(player,interactive){
+  const remnants=player.remnants||(player.remnants=initialiseRemnants()),layer=document.createElement('div');layer.className='remnants';
+  const thothLetters={Blue:'B',Green:'G',Red:'R',Gold:'Y'};
+  layer.innerHTML=remnants.map((r,i)=>{const eligible=interactive&&((mode==='seshatPlaceImprovement'&&!r.sobek&&r.face==='D'&&!r.improvement)||(mode==='sobekReplaceRemnant'&&!r.sobek&&r.face==='E')||(mode==='thothPlaceColour'&&!r.sobek&&r.face==='E'&&!r.thoth)),base=r.sobek?'Boards/Sobek.png':`Boards/${r.color==='Gold'?'Yellow':r.color}${r.face}.png`;return `<button class="remnant ${eligible?'target ':''}${r.edge} r${r.slot}" ${interactive?`onclick="remnantClick(${i})"`:'tabindex="-1"'} title="${r.improvement?`Improvement ${r.improvement} on ${r.color} black remnant`:r.sobek?'Sobek marker':`${r.color} ${r.face==='D'?'black match-bonus':'white colour-tag'} remnant${r.thoth?` with a ${r.thoth} Thoth token`:''}`}"><img src="${base}" alt="${r.sobek?'Sobek marker':`${r.color} remnant`}">${r.improvement?`<img class="remnant-improvement" src="Boards/Improvement${r.improvement}.png" alt="Improvement ${r.improvement}">`:''}${r.thoth?`<img class="remnant-improvement" src="Gods/God things/Thoth${thothLetters[r.thoth]}.png" alt="${r.thoth} Thoth token">`:''}</button>`}).join('');return layer;
+}
+function remnantClick(index){const remnants=p().remnants,r=remnants[index];if(mode==='seshatPlaceImprovement'){if(r.sobek||r.face!=='D'||r.improvement){note('Seshat improvements must be placed on an uncovered black remnant.');render();return}r.improvement=state.pendingImprovement;state.pendingImprovement=null;refillImprovementOffer();mode=null;note(`${p().name} places Improvement ${r.improvement} on a black remnant.`);render();return}if(mode==='sobekReplaceRemnant'){if(r.sobek||r.face!=='E'){note('Sobek must replace a white remnant.');render();return}remnants[index]={edge:r.edge,slot:r.slot,sobek:true};mode=null;note(`${p().name} replaces a white remnant with the Sobek marker.`);render();return}if(mode==='remnantFlip'){if(r.sobek||r.improvement)return; r.face=r.face==='D'?'E':'D';p().tokens.remnant--;mode=null;note(`${p().name} flips a remnant to its ${r.face==='D'?'black bonus':'white tag'} side.`);render();return}if(mode==='sunFlip'){if(r.sobek||r.improvement)return; r.face=r.face==='D'?'E':'D';mode=null;note(`${p().name} flips a remnant to its ${r.face==='D'?'black bonus':'white tag'} side with the Sun reward.`);render();return}if(mode==='thothPlaceColour'){if(r.sobek||r.face!=='E'||r.thoth){note('Thoth tokens must be placed on a white remnant with no existing Thoth token.');render();return}const colour=state.pendingThothColour;r.thoth=colour;state.thothSupply[colour]--;state.pendingThothColour=null;mode=null;note(`${p().name} adds a ${colour} Thoth token to a white remnant.`);render();return}if(mode==='remnantMoveFrom'){state.remnantSource=index;mode='remnantMoveTo';render();return}}
+function moveRemnantTo(edge,slot){if(mode!=='remnantMoveTo')return;const remnants=p().remnants,r=remnants[state.remnantSource];if(remnants.some((x,i)=>i!==state.remnantSource&&x.edge===edge&&x.slot===slot))return;r.edge=edge;r.slot=slot;p().tokens.remnant--;state.remnantSource=null;mode=null;note(`${p().name} moves a remnant to the ${edge} of the board.`);render()}
+function useBoardToken(kind){
+  const player=p();if(state.phase!==0||!player.tokens[kind])return;
+  if(kind==='remnant'){mode='remnantChoose';render();return}
+  if(kind==='builder'){if(selected===null){note('Select a hand card first, then use a Builder token.');render();return}mode='builderPlace';note('Select an occupied grid location to build on.');render();}
+}
+const boardTokenCellClick=cellClick;
+cellClick=function(i){
+  const player=p();
+  if(mode==='builderPlace'){
+    if(!player.grid[i]){note('Builder requires an occupied grid location.');render();return}
+    const top=player.hand.splice(selected,1)[0],bottom=player.grid[i];selected=null;top.under=bottom;top.color=bottom.color;top.oasisColor=top.oasisColor||bottom.oasisColor;top.tokenGlyph=top.tokenGlyph||bottom.tokenGlyph;top.tokenData=top.tokenData||bottom.tokenData;player.grid[i]=top;player.tokens.builder--;state.pendingBuilderBlind=true;mode='builderBlind';note('Builder combines the cards (the lower card supplies the colour). Now place the top deck card face down in an empty space.');render();return;
+  }
+  if(mode==='builderBlind'){
+    if(player.grid[i]){note('The face-down card must go in an empty grid location.');render();return}
+    refillDeckIfEmpty();if(!state.deck.length)return;const blind=state.deck.shift();blind.facedown=true;player.grid[i]=blind;state.pendingBuilderBlind=false;mode=null;note(`${player.name} places the required face-down papyrus.`);render();return;
+  }
+  return boardTokenCellClick(i);
+};
+function img(c,cl='card'){if(c.facedown)return `<span class="${cl} deckback" aria-label="Face-down papyrus"></span>`;if(c.under)return `<img class="card bottom-card" draggable="false" src="${c.under.src}" alt="Underlying papyrus"><img class="card stacked-card" draggable="false" src="${c.src}" alt="Built papyrus">`;return `<img class="${cl}" draggable="false" src="${c.src}" alt="Papyrus">`}
+const boardTokenRenderSupply=renderSupply;
+renderSupply=function(){boardTokenRenderSupply();const tray=document.querySelector('.supply');if(!tray)return;const t=p().tokens;
+  if(t.oasis){tray.querySelectorAll('[title="Oasis tokens"]').forEach(x=>x.remove())}
+  [['remnant','Remnant'],['builder','Builder'],['move','Movement']].forEach(([key,label])=>{if(t[key]>0){const existing=[...tray.querySelectorAll('.supply-token')].find(x=>x.title===`${label} tokens`);if(existing){const button=document.createElement('button');button.className='supply-token';button.title=`Use ${label} token`;button.onclick=()=>useBoardToken(key);button.innerHTML=existing.innerHTML;existing.replaceWith(button)}}});
+};
+const boardTokenRenderPlay=renderAutomaticPlayActions;
+renderAutomaticPlayActions=function(){
+  if(mode==='remnantChoose'){$('actions').innerHTML='<span class="bonus-note">Remnant token: choose whether to flip a remnant or move one to an empty board edge.</span><button class="action" onclick="mode=\'remnantFlip\';render()">Flip a remnant</button><button class="action" onclick="mode=\'remnantMoveFrom\';render()">Move a remnant</button><button class="action" onclick="mode=null;render()">Cancel</button>';return}
+  if(mode==='remnantFlip'){$('actions').innerHTML='<span class="bonus-note">Select a remnant to flip between its white tags and black bonus side.</span>';return}
+  if(mode==='remnantMoveFrom'){$('actions').innerHTML='<span class="bonus-note">Select the remnant you want to move.</span>';return}
+  if(mode==='remnantMoveTo'){const occupied=(edge,slot)=>(p().remnants||[]).some(r=>r.edge===edge&&r.slot===slot),spots=['top','right','bottom','left'].flatMap(edge=>[0,1,2,3].filter(slot=>!occupied(edge,slot)).map(slot=>`<button class="action" onclick="moveRemnantTo('${edge}',${slot})">${edge} ${slot+1}</button>`));$('actions').innerHTML='<span class="bonus-note">Choose an empty remnant position.</span>'+spots.join('');return}
+  if(mode==='builderPlace'){$('actions').innerHTML='<span class="bonus-note">Builder: select an occupied grid location for the selected hand card.</span>';return}
+  if(mode==='builderBlind'){$('actions').innerHTML='<span class="bonus-note">Builder: place the top deck card face down in an empty grid location.</span>';return}
+  boardTokenRenderPlay();
+};
+function refreshMarket(){
+  const player=p();if(state.phase!==3||!player.tokens.refresh)return;
+  // Suns occupy market positions, not the discarded papyrus: refreshing never
+  // removes them. They leave play only when the marked card is taken.
+  const suns=state.market.map(card=>card.sun||null);
+  state.market.forEach(card=>{delete card.sun;if(card.anubisOwner!==undefined){const owner=state.players[card.anubisOwner];delete card.anubisOwner;if(owner){owner.hand.push(card);note(`${owner.name} takes their Anubis-marked market card as it is refreshed.`)}}else state.discardPile.push(card)});
+  state.market=[];for(let i=0;i<4&&(refillDeckIfEmpty(),state.deck.length);i++){const card=state.deck.shift();if(suns[i])card.sun=suns[i];state.market.push(card)}
+  player.tokens.refresh--;note(`${player.name} refreshes the market; all Sun tokens remain in place.`);render();
+}
+// Ra's immediate draw follows the normal Draw-phase choice, without consuming
+// the player's regular Draw action.
+const godActionRender=renderManipulationActions;
+renderManipulationActions=function(){
+  if(mode==='raDraw'){$('actions').innerHTML='<span class="bonus-note">Choose one card to draw immediately.</span><button class="action" onclick="raDrawDeck()">Draw top deck</button><span class="bonus-note">Or click a market card.</span>';return}
+  if(mode==='hathorDirection'){const axes=state.hathorAxes||{},buttons=[];if(!axes.horizontal)buttons.push('<button class="action" onclick="pushHathor(0,-1)">Push left</button><button class="action" onclick="pushHathor(0,1)">Push right</button>');if(!axes.vertical)buttons.push('<button class="action" onclick="pushHathor(-1,0)">Push up</button><button class="action" onclick="pushHathor(1,0)">Push down</button>');$('actions').innerHTML='<span class="bonus-note">Choose a direction. Cards cascade and wrap until they reach an empty location.</span>'+buttons.join('');return}
+  if(mode==='hathor'){$('actions').innerHTML=`<span class="bonus-note">Hathor: select a card for the ${state.hathorAxes?.vertical?'horizontal':'vertical'} push${state.hathorAxes?.horizontal?'':' (you may choose either axis first)'}.</span>`;return}
+  godActionRender();
+};
+const originalStartGodAbility=startGodAbility;
+startGodAbility=function(name){
+  if(name.toLowerCase()==='ra'){placeSunTokens();p().tokens.refresh++;mode='raDraw';note(`${p().name} invokes Ra: Sun rewards are added to unsunned market cards. Choose an immediate draw from the deck or market.`);render();return}
+  if(name.toLowerCase()==='hathor'){state.hathorAxes={vertical:false,horizontal:false};mode='hathor';note(`${p().name} invokes Hathor: make one vertical and one horizontal cascading push, in either order.`);render();return}
+  originalStartGodAbility(name);
+};
+function raDrawDeck(){if(mode!=='raDraw')return;refillDeckIfEmpty();if(!state.deck.length)return;p().hand.push(state.deck.shift());mode=null;note(`${p().name} draws a card from the deck.`);render()}
+const raMarketClick=marketClick;
+marketClick=function(index){
+  if(mode==='raDraw'){const taken=state.market.splice(index,1)[0];if(!taken)return;resolveAnubisMarker(taken,p());const sun=taken.sun;delete taken.sun;p().hand.push(taken);refillMarket();if(sun)resolveSunReward(sun);if(mode==='raDraw')mode=null;note(`${p().name} draws a market card; the market is replenished.`);render();return}
+  raMarketClick(index);
+};
+const hathorCellClick=cellClick;
+cellClick=function(i){
+  if(mode==='hathor'){if(!p().grid[i])return;selected=i;mode='hathorDirection';note('Choose the direction for this cascading push.');render();return}
+  return hathorCellClick(i);
+};
+function pushHathor(dr,dc){
+  if(mode!=='hathorDirection'||selected===null)return;const axis=dr?'vertical':'horizontal',axes=state.hathorAxes||{};if(axes[axis])return;
+  const start=selected,row=Math.floor(start/4),col=start%4,path=[];let r=row,c=col;
+  do {r=(r+dr+4)%4;c=(c+dc+4)%4;const next=r*4+c;if(next===start){note('Hathor needs an empty space in that line.');render();return}path.push(next)} while(p().grid[path[path.length-1]]);
+  const moved=p().grid[start];for(let k=path.length-1;k>0;k--)p().grid[path[k]]=p().grid[path[k-1]];p().grid[path[0]]=moved;p().grid[start]=null;
+  axes[axis]=true;state.hathorAxes=axes;selected=null;mode=axes.vertical&&axes.horizontal?null:'hathor';note(`${p().name} makes Hathor's ${axis} cascading push.${mode?' Now make the other axis push.':''}`);render();
+}
+// Builder follows its printed sequence: spend the token, select the papyrus
+// from hand, build it on a card, resolve it, then fill an empty space facedown.
+function useBoardToken(kind){
+  const player=p();if(state.phase!==0||!player.tokens[kind])return;
+  if(kind==='remnant'){mode='remnantChoose';render();return}
+  if(kind==='move'){selected=null;mode='moveToken';note('Movement token: select a grid card, then any empty grid space.');render();return}
+  if(kind==='builder'){if(player.playedRound===state.round){note('Only one papyrus may be played during each Play phase.');render();return}selected=null;mode='builderChooseCard';note('Builder: select the papyrus in your hand that you want to build onto a grid card.');render();}
+}
+const builderHandClick=handClick;
+handClick=function(i){if(mode==='builderChooseCard'){selected=i;mode='builderPlace';note('Builder: now select the occupied grid card to build on.');render();return}builderHandClick(i)};
+const correctedBuilderCellClick=cellClick;
+cellClick=function(i){
+  const player=p();
+  if(mode==='moveToken'){
+    if(selected===null){
+      if(!player.grid[i]){note('Select a grid card to move.');render();return}
+      selected=i;note('Movement token: now select any empty grid space.');render();return;
+    }
+    if(player.grid[i]){note('Movement token: the destination must be empty.');render();return}
+    player.grid[i]=player.grid[selected];player.grid[selected]=null;
+    player.tokens.move--;selected=null;mode=null;
+    note(`${player.name} spends a Movement token to move the whole stack.`);render();return;
+  }
+  if(mode==='sunMove'){
+    if(selected===null){
+      if(!player.grid[i]){note('Select a grid card to move.');render();return}
+      selected=i;note('Sun reward: now select any empty grid space.');render();return;
+    }
+    if(player.grid[i]){note('Sun reward: the destination must be empty.');render();return}
+    player.grid[i]=player.grid[selected];player.grid[selected]=null;
+    selected=null;mode=null;
+    note(`${player.name} moves a card with the Sun reward.`);render();return;
+  }
+  if(mode==='builderPlace'){
+    if(!player.grid[i]){note('Builder needs an occupied grid card.');render();return}
+    const top=player.hand.splice(selected,1)[0],bottom=player.grid[i];selected=null;
+    const placedColour=top.color;
+    // Keep both colour tags on the resulting stack, but only the newly placed
+    // card is eligible for its one-time black-remnant check.
+    top.under=bottom;top.colourTags=[...new Set([...(top.colourTags||[top.color]),...(bottom.colourTags||[bottom.color])])];top.oasisColor=top.oasisColor||bottom.oasisColor;top.tokenGlyph=top.tokenGlyph||bottom.tokenGlyph;top.tokenData=top.tokenData||bottom.tokenData;top.scale=top.scale||bottom.scale;player.grid[i]=top;player.playedRound=state.round;
+    scorePrintedAbility(top,i);const matches=matchingBlackRemnants(i,placedColour),improvement=matches.length?matchingImprovement(i):null;if(matches.length){if(improvement){resolveImprovement(improvement);note(`${player.name} builds a papyrus and automatically resolves its matching improvement. Now place the face-down card.`)}else{state.pendingRemnant={matches,position:i};note(`${player.name} builds a papyrus and matches a black remnant. Resolve its bonus, then place the face-down card.`)}}else note(`${player.name} builds a papyrus and resolves its printed ability. Now place the top deck card face down in an empty space.`);
+    state.pendingBuilderBlind=true;if(improvement===5)state.resumeBuilderBlind=true;else mode='builderBlind';render();return;
+  }
+  if(mode==='builderBlind'){
+    if(player.grid[i]){note('The top deck card must be placed face down in an empty grid space.');render();return}
+    refillDeckIfEmpty();if(!state.deck.length)return;const blind=state.deck.shift();blind.facedown=true;player.grid[i]=blind;player.tokens.builder--;state.pendingBuilderBlind=false;mode=null;note(`${player.name} places the required face-down papyrus and discards the Builder token.`);render();return;
+  }
+  return correctedBuilderCellClick(i);
+};
+const correctedBuilderRenderPlay=renderAutomaticPlayActions;
+renderAutomaticPlayActions=function(){if(mode==='builderChooseCard'){$('actions').innerHTML='<span class="bonus-note">Builder: select a papyrus from your hand.</span>';return}if(mode==='builderPlace'){$('actions').innerHTML='<span class="bonus-note">Builder: select an occupied grid card.</span>';return}if(mode==='builderBlind'){$('actions').innerHTML='<span class="bonus-note">Builder: place the top deck card face down in an empty space.</span>';return}if(mode==='moveToken'){$('actions').innerHTML='<span class="bonus-note">Movement token: select a card, then any empty grid space. The complete stack moves together.</span>';return}correctedBuilderRenderPlay()};
+// --- Heuristic evaluator AI ---------------------------------------------
+// Replaces the earlier "first legal option" bot with move scoring, distinct
+// per-player personalities, and God usage. Extra hand cards are free God
+// fuel (only one papyrus is played per Play phase), and any token left
+// unspent still counts as a Supply point at game end, so the bot leans on
+// Gods heavily rather than trying to spend every token it gets.
+function withTempPlacement(player,position,card,fn){
+  const prev=player.grid[position];player.grid[position]=card;
+  try{return fn()}finally{player.grid[position]=prev}
+}
+function legalEmptyPositions(player){const out=[];player.grid.forEach((c,i)=>{if(!c)out.push(i)});return out}
+function lineIndicesFor(position){const row=Math.floor(position/4),col=position%4;return {row:[0,1,2,3].map(c=>row*4+c),col:[0,1,2,3].map(r=>r*4+col)}}
+const ALL_LINES=[0,1,2,3].map(r=>[0,1,2,3].map(c=>r*4+c)).concat([0,1,2,3].map(c=>[0,1,2,3].map(r=>r*4+c)));
+function openObjective(o){return o.claims.length<4&&!o.claims.some(c=>c.player===state.turn)}
+function objectiveLineScore(player,line,objective){
+  const glyphs=line.map(i=>{const c=player.grid[i];return c&&!c.facedown?(c.tokenGlyph||c.glyph):null});
+  if(objective.pattern){
+    if(objective.pattern[0]==='same'){const nonWild=glyphs.filter(g=>g&&g!=='wild'),uniq=new Set(nonWild);if(uniq.size>1)return 0;return glyphs.filter(g=>g!==null).length}
+    let ok=0;for(let slot=0;slot<4;slot++){const g=glyphs[slot];if(g===null)continue;if(g==='wild'||g===objective.pattern[slot])ok++;else return 0}
+    return ok;
+  }
+  let ok=0;for(const g of glyphs){if(g===null)continue;if(g==='wild'||g===objective.glyph)ok++;else return 0}
+  return ok;
+}
+function objectiveProgressValue(player,position){
+  const {row,col}=lineIndicesFor(position);let best=0;
+  [row,col].forEach(line=>{state.objectives.forEach(o=>{if(!openObjective(o))return;const s=objectiveLineScore(player,line,o);if(s>best)best=s})});
+  return best;
+}
+// Whole-board objective potential, used to judge rearrangements (Bastet,
+// Maat, Sun moves) where several lines change at once.
+function boardObjectiveValue(player){
+  return ALL_LINES.reduce((sum,line)=>{let best=0;state.objectives.forEach(o=>{if(!openObjective(o))return;best=Math.max(best,objectiveLineScore(player,line,o))});return sum+(best>=4?16:best*1.7)},0);
+}
+function aiWeights(profile){
+  if(profile==='objectives')return {printed:0.6,remnant:1,objective:3.2};
+  if(profile==='cards')return {printed:1.8,remnant:1.8,objective:1.4};
+  return {printed:1.1,remnant:1.2,objective:2.2};
+}
+// Axis commitment: every row/column runs through one diagonal starter card,
+// so 6 of the 8 lines already have a fixed required glyph (the starter's own)
+// — objectiveLineScore already zeroes those out on a mismatch, so the greedy
+// evaluator naturally respects that anchor. The one starter dealt as the wild
+// Aten card anchors nothing, so its row and column are free to aim at ANY
+// glyph — but a purely per-move greedy evaluator can't tell that a random
+// early card there is any better or worse than another, so it can seed those
+// two lines with inconsistent glyphs. While the line is still mostly empty,
+// nudge toward whichever glyph is best supported by hand + the shared pool;
+// once 2+ real cards are down, the actual objective-progress signal already
+// knows what that line is going for, so this backs off and stops steering.
+const GLYPHS=['ankh','man','eye','boat','bird','urn'];
+function deckGlyphAbundance(){
+  if(state._glyphAbundanceRound===state.round&&state._glyphAbundanceCache)return state._glyphAbundanceCache;
+  const freq={};
+  [].concat(state.deck||[],state.market||[],state.discardPile||[]).forEach(c=>{const g=c&&c.glyph;if(g&&g!=='wild'&&g!=='none')freq[g]=(freq[g]||0)+1});
+  state._glyphAbundanceCache=freq;state._glyphAbundanceRound=state.round;
+  return freq;
+}
+function bestSupportedGlyph(player){
+  const abundance=deckGlyphAbundance(),handFreq={};
+  (player.hand||[]).forEach(c=>{if(c.glyph&&c.glyph!=='wild')handFreq[c.glyph]=(handFreq[c.glyph]||0)+1});
+  return GLYPHS.reduce((best,g)=>{const score=(handFreq[g]||0)*4+(abundance[g]||0);return score>best.score?{g,score}:best},{g:GLYPHS[0],score:-1}).g;
+}
+function axisTargetBonus(player,card,position){
+  const atenPos=player.grid.findIndex(c=>c&&c.file==='Aten.jpg');
+  if(atenPos<0)return 0;
+  const arow=Math.floor(atenPos/4),acol=atenPos%4,posRow=Math.floor(position/4),posCol=position%4;
+  if(posRow!==arow&&posCol!==acol)return 0;
+  const {row,col}=lineIndicesFor(position);
+  const rowFilled=row.filter(i=>player.grid[i]&&!player.grid[i].facedown).length;
+  const colFilled=col.filter(i=>player.grid[i]&&!player.grid[i].facedown).length;
+  const glyph=card.tokenGlyph||card.glyph,target=bestSupportedGlyph(player);
+  let bonus=0;
+  if(posRow===arow&&rowFilled<=1&&glyph===target)bonus+=3;
+  if(posCol===acol&&colFilled<=1&&glyph===target)bonus+=3;
+  return bonus;
+}
+// Scale tokens score 2 at game end when the mirrored card shares their colour.
+function scaleMirrorBonus(player,card,position){
+  const row=Math.floor(position/4),col=position%4,mirror=player.grid[row*4+(3-col)];
+  return mirror&&mirror.scale&&!mirror.facedown&&card.color&&mirror.color===card.color?2:0;
+}
+// An Activate card re-triggers a grid papyrus of its target colour, so it is
+// worth the best printed ability it can currently re-score.
+function activateValue(player,card,position){
+  const target=activateTarget(card.file);if(!target)return 0;let best=0;
+  player.grid.forEach((c,i)=>{if(!c||i===position||c.color!==target)return;const v=computePrintedAbilityPoints(player,c,i).points;if(v>best)best=v});
+  return best;
+}
+function lineBestProgress(player,line){let best=0;state.objectives.forEach(o=>{if(!openObjective(o))return;const s=objectiveLineScore(player,line,o);if(s>best)best=s});return best}
+function evaluatePlacement(player,card,position){
+  const {row,col}=lineIndicesFor(position),before=[row,col].map(line=>lineBestProgress(player,line));
+  return withTempPlacement(player,position,card,()=>{
+    const ability=computePrintedAbilityPoints(player,card,position);
+    ability.points+=activateValue(player,card,position);
+    const remnantMatches=matchingBlackRemnants(position,card.color).length;
+    const objective=objectiveProgressValue(player,position);
+    const w=aiWeights(player.aiProfile);
+    const clusterAlign=[...row,...col].filter(i=>i!==position&&player.grid[i]&&!player.grid[i].facedown&&card.color&&player.grid[i].color===card.color).length;
+    const axis=axisTargetBonus(player,card,position);
+    // The progress term only rewards the best line through this cell, so
+    // separately charge for spoiling a line that was already well along.
+    const spoiled=[row,col].reduce((sum,line,k)=>{const after=lineBestProgress(player,line);return sum+(after<before[k]?before[k]*before[k]:0)},0);
+    return w.printed*ability.points+w.remnant*remnantMatches*2+w.objective*(objective>=4?16:objective*1.7)+(ability.grantsDraw?1.5:0)+clusterAlign*0.7+axis*w.objective*1.2+scaleMirrorBonus(player,card,position)-0.5*spoiled*w.objective;
+  });
+}
+// Lookahead: the fast 1-ply evaluator prunes candidates, then the top few
+// are re-scored by a deterministic rollout that greedily places the REST of
+// the currently known hand (no random future draws — the hand is already
+// known, so this is real information, not a guess), rewarding a move that
+// sets up its held cards well over one that only looks good in isolation.
+const LOOKAHEAD_CANDIDATES=8,LOOKAHEAD_HORIZON=4;
+function simulateRollout(player,candidate){
+  const simGrid=player.grid.slice(),fake={grid:simGrid,aiProfile:player.aiProfile,name:player.name,hand:player.hand};
+  let value=evaluatePlacement(fake,candidate.card,candidate.position);
+  simGrid[candidate.position]=candidate.card;
+  let hand=player.hand.filter((_,i)=>i!==candidate.handIndex),discount=1;
+  const steps=Math.min(hand.length,LOOKAHEAD_HORIZON-1);
+  for(let r=0;r<steps;r++){
+    const positions=[];simGrid.forEach((c,i)=>{if(!c)positions.push(i)});
+    if(!positions.length)break;
+    let bestIdx=-1,bestPos=-1,bestVal=-Infinity;
+    hand.forEach((card,hi)=>{positions.forEach(pos=>{const v=evaluatePlacement(fake,card,pos);if(v>bestVal){bestVal=v;bestIdx=hi;bestPos=pos}})});
+    if(bestIdx<0)break;
+    simGrid[bestPos]=hand[bestIdx];hand=hand.filter((_,i)=>i!==bestIdx);
+    discount*=0.9;value+=bestVal*discount;
+  }
+  return value;
+}
+function bestPlayMove(player){
+  const positions=legalEmptyPositions(player);if(!positions.length||!player.hand.length)return null;
+  const candidates=[];
+  player.hand.forEach((card,handIndex)=>{positions.forEach(position=>{candidates.push({handIndex,position,card,fast:evaluatePlacement(player,card,position)})})});
+  if(!candidates.length)return null;
+  candidates.sort((a,b)=>b.fast-a.fast);
+  const shortlist=candidates.slice(0,LOOKAHEAD_CANDIDATES);
+  let best=shortlist[0],bestVal=-Infinity;
+  shortlist.forEach(cand=>{const value=simulateRollout(player,cand);if(value>bestVal){bestVal=value;best=cand}});
+  return {handIndex:best.handIndex,position:best.position,value:bestVal};
+}
+function worstHandCardIndex(player){
+  const positions=legalEmptyPositions(player);let worstIdx=0,worstVal=Infinity;
+  player.hand.forEach((card,i)=>{let bestForCard=0;positions.forEach(position=>{const v=evaluatePlacement(player,card,position);if(v>bestForCard)bestForCard=v});if(bestForCard<worstVal){worstVal=bestForCard;worstIdx=i}});
+  return worstIdx;
+}
+function worstGridCellIndex(player){
+  let worst=-1,worstVal=Infinity;
+  player.grid.forEach((c,i)=>{if(!c||c.facedown)return;const val=objectiveProgressValue(player,i)+matchingBlackRemnants(i,c.color).length*2;if(val<worstVal){worstVal=val;worst=i}});
+  return worst;
+}
+const sunValue={Amun1:1,Amun2:3,Amun3:2,Amun4:1,Amun5:0.5};
+function bestMarketPick(player,{avoidOwnAnubis=false}={}){
+  const positions=legalEmptyPositions(player);
+  let best=null;
+  state.market.forEach((card,index)=>{
+    if(!card)return;
+    if(avoidOwnAnubis&&card.anubisOwner!==undefined&&card.anubisOwner!==state.turn)return;
+    let bestForCard=0;positions.forEach(position=>{const v=evaluatePlacement(player,card,position);if(v>bestForCard)bestForCard=v});
+    if(card.sun)bestForCard+=sunValue[card.sun.id]||0;
+    if(card.anubisOwner!==undefined&&card.anubisOwner!==state.turn)bestForCard-=2;
+    if(!best||bestForCard>best.value)best={index,value:bestForCard};
+  });
+  return best;
+}
+function bestGlyphTokenPlacement(player,{free=false,only=null}={}){
+  // A single mismatched card anywhere in a line zeroes that line's objective
+  // progress (see objectiveLineScore), so tokens are most valuable UNBLOCKING
+  // an otherwise-good line, not only finishing an already-full one — a
+  // finish-only rule almost never fires since it needs the line completely
+  // full first. Spend when it completes a line outright, or clearly unblocks
+  // one worth pursuing.
+  const tokens=player.glyphTokens||[];let best=null;
+  tokens.forEach((token,tokenIndex)=>{
+    if(only&&!only(token))return;
+    player.grid.forEach((card,cellIndex)=>{
+      if(!card||card.facedown)return;
+      const tags=card.colourTags||[card.color];if(!free&&!tags.includes(token.color))return;
+      if((card.tokenGlyph||card.glyph)===token.glyph)return;
+      const before=objectiveProgressValue(player,cellIndex);
+      const prevGlyph=card.tokenGlyph;card.tokenGlyph=token.glyph;
+      const after=objectiveProgressValue(player,cellIndex);
+      card.tokenGlyph=prevGlyph;
+      const delta=after-before;
+      if(delta<=0)return;
+      if(after<4){
+        // Not an outright finish: only worth spending if the line is at most
+        // one card away from complete, so the token isn't gambled on a line
+        // that may never fill with the right glyphs.
+        const {row,col}=lineIndicesFor(cellIndex);
+        const emptyInBestLine=Math.min(...[row,col].map(line=>line.filter(i=>!player.grid[i]).length));
+        if(emptyInBestLine>1)return;
+      }
+      if(!best||after>best.after||(after===best.after&&delta>best.delta))best={tokenIndex,cellIndex,after,delta};
+    });
+  });
+  return best;
+}
+function bestClaimableObjective(player){
+  let best=-1,bestPoints=-1,rewards=[15,12,10,8];
+  state.objectives.forEach((o,i)=>{if(!openObjective(o)||!matchingObjectiveLine(player,o))return;const pts=rewards[o.claims.length];if(pts>bestPoints){bestPoints=pts;best=i}});
+  return best;
+}
+function bestScribeFor(player){
+  const ids=freeScribeIds();if(!ids.length)return null;
+  if(state.options?.advancedScribes)return ids.reduce((best,id)=>{const v=advancedScribeScore({...player,scribes:[id]});return !best||v>best.v?{id,v}:best},null).id;
+  const preferred=player.aiProfile==='cards'?3:player.aiProfile==='objectives'?2:1;
+  return ids.includes(preferred)?preferred:ids[0];
+}
+// Rearrangements: copy the grid, apply the move, and compare board potential.
+function colourClusterAt(grid,start,colour){
+  const seen=new Set([start]),pending=[start];
+  while(pending.length){const pos=pending.pop(),r=Math.floor(pos/4),c=pos%4;[[r-1,c],[r+1,c],[r,c-1],[r,c+1]].forEach(([y,x])=>{const n=y*4+x,card=grid[n];if(y>=0&&y<4&&x>=0&&x<4&&!seen.has(n)&&card&&!card.facedown&&(card.colourTags||[card.color]).some(t=>t===colour||t==='Purple')){seen.add(n);pending.push(n)}})}
+  return seen.size;
+}
+// Best card move as a gain over the current board. With Bastet the moved
+// card's colour may also earn an Oasis, scored at end by its colour cluster,
+// which keeps growing as the board fills.
+function bestRelocation(player,grantsOasis){
+  const base=boardObjectiveValue(player),fill=player.grid.filter(Boolean).length,growth=2*(16-fill)/12;
+  let best=null;
+  player.grid.forEach((card,from)=>{
+    if(!card||(grantsOasis&&card.facedown))return;
+    player.grid.forEach((other,to)=>{
+      if(other)return;
+      const g=player.grid.slice();g[to]=card;g[from]=null;
+      let v=boardObjectiveValue({grid:g})-base;
+      if(grantsOasis&&card.color&&card.color!=='Purple'&&!(player.oases||[]).some(o=>o.color===card.color))v+=colourClusterAt(g,to,card.color)+growth;
+      if(!best||v>best.v)best={from,to,v};
+    });
+  });
+  return best;
+}
+function bestSwapGain(player,withScale){
+  const base=boardObjectiveValue(player),occupied=player.grid.map((c,i)=>c?i:null).filter(i=>i!==null);let best=0;
+  for(let a=0;a<occupied.length;a++)for(let b=a+1;b<occupied.length;b++){
+    const i=occupied[a],j=occupied[b],g=player.grid.slice();g[i]=player.grid[j];g[j]=player.grid[i];
+    let v=boardObjectiveValue({grid:g})-base;
+    if(withScale)[i,j].forEach(pos=>{const c=g[pos],m=g[Math.floor(pos/4)*4+(3-pos%4)];if(c&&m&&!c.facedown&&!m.facedown&&c.color&&m.color===c.color)v+=2});
+    if(v>best)best=v;
+  }
+  return best;
+}
+function remnantLineEmpty(player,r){const line=(r.edge==='top'||r.edge==='bottom')?[0,1,2,3].map(x=>x*4+r.slot):[0,1,2,3].map(x=>r.slot*4+x);return line.filter(i=>!player.grid[i]).length}
+function remnantLineColour(player,r,colour){const line=(r.edge==='top'||r.edge==='bottom')?[0,1,2,3].map(x=>x*4+r.slot):[0,1,2,3].map(x=>r.slot*4+x);return line.filter(i=>{const c=player.grid[i];return c&&!c.facedown&&(c.colourTags||[c.color]).includes(colour)}).length}
+// Keep enough papyri to choose from: discarding every round left the AI
+// playing whatever it had just drawn by mid-game.
+const AI_GOD_MIN_HAND=4;
+// Rough worth of each God right now, in points. Unspent tokens and extra
+// hand cards are each an end-game point, which is most of what Ra,
+// Tawaret, Aten and the remnant Gods give; Bastet and Maat depend on the board.
+function godValue(player,name){
+  const best=bestMarketPick(player),drawValue=1+Math.max(0,best?best.value:0)*0.25;
+  switch(name){
+    case 'Isis':return 2+Math.max(0,(bestGlyphTokenPlacement(player,{free:true})||{delta:0}).delta)*2;
+    case 'Aten':return 2.5;
+    case 'Ra':return 1+drawValue+1.5;
+    case 'Tawaret':return 1+drawValue+0.5;
+    case 'Bastet':{const move=bestRelocation(player,true);return move?Math.max(0,move.v):0}
+    case 'Maat':return bestSwapGain(player,true);
+    case 'Seshat':{const placed=(player.remnants||[]).filter(r=>r.improvement).length,open=(player.remnants||[]).some(r=>r.face==='D'&&!r.sobek&&!r.improvement&&remnantLineEmpty(player,r)>0);return 1+(placed<2&&open?2.5:0)}
+    case 'Thoth':return 2.5;
+  }
+  return 0;
+}
+function chooseGodForAI(player,names=state.options.gods||[]){
+  let best=null;
+  names.forEach(name=>{const v=godValue(player,name);if(!best||v>best.v)best={name,v}});
+  return best?best.name:null;
+}
+function aiHandleMode(player){
+  switch(mode){
+    case 'activate':{
+      let target=-1,bestPts=-1;
+      player.grid.forEach((c,i)=>{if(!c||i===selected||c.color!==state.activateTarget)return;const pts=computePrintedAbilityPoints(player,c,i).points;if(pts>bestPts){bestPts=pts;target=i}});
+      if(target>=0)cellClick(target);else{mode=null;selected=null;state.activateTarget=null;render()}return;
+    }
+    case 'glyphReplace':{
+      const token=state.pendingGlyph||{},plan=state._aiGlyphTarget;state._aiGlyphTarget=null;
+      const allowed=i=>{const card=player.grid[i];if(!card)return false;const tags=card.colourTags||[card.color];return state.isisFreePlace||token.free||tags.includes(token.color)};
+      let target=plan!=null&&allowed(plan)?plan:-1,bestVal=-Infinity;
+      if(target<0)player.grid.forEach((card,i)=>{
+        if(!card||card.facedown||!allowed(i))return;
+        const prevGlyph=card.tokenGlyph;card.tokenGlyph=token.glyph;const val=objectiveProgressValue(player,i);card.tokenGlyph=prevGlyph;
+        if(val>bestVal){bestVal=val;target=i}
+      });
+      if(target>=0)cellClick(target);else{mode=null;state.pendingGlyph=null;state.isisFreePlace=false;render()}
+      return;
+    }
+    case 'isisPick':{
+      const chosen=state.isisChosen||[],pool=(state.glyphPool||[]).filter(t=>!state.tokenPickFree||!chosen.some(x=>x.glyph===t.glyph||x.color===t.color));
+      if(!pool.length){mode=null;render();return}
+      let best=pool[0],bestScore=-Infinity;
+      pool.forEach(t=>{
+        const colourCount=player.grid.filter(c=>c&&!c.facedown&&(c.colourTags||[c.color]).includes(t.color)).length;
+        const glyphCount=player.grid.filter(c=>c&&!c.facedown&&(c.tokenGlyph||c.glyph)===t.glyph).length;
+        let unblock=0;player.grid.forEach((c,i)=>{if(!c||c.facedown||!(c.colourTags||[c.color]).includes(t.color)||(c.tokenGlyph||c.glyph)===t.glyph)return;const before=objectiveProgressValue(player,i),prev=c.tokenGlyph;c.tokenGlyph=t.glyph;const gain=objectiveProgressValue(player,i)-before;c.tokenGlyph=prev;if(gain>unblock)unblock=gain});
+        const score=(player.aiProfile==='objectives'?colourCount*2-glyphCount:colourCount*2+glyphCount)+unblock*3;
+        if(score>bestScore){bestScore=score;best=t}
+      });
+      chooseIsisToken(best.glyph,best.color);
+      return;
+    }
+    case 'isisReady':{
+      // Isis lets one of the newly chosen tokens go on any papyrus right away.
+      const fresh=state.isisChosen||[],placement=state.isisFreePlace?bestGlyphTokenPlacement(player,{free:true,only:t=>fresh.some(x=>x.glyph===t.glyph&&x.color===t.color)}):null;
+      if(placement){state._aiGlyphTarget=placement.cellIndex;selectGlyphToken(placement.tokenIndex);return}
+      mode=null;state.isisFreePlace=false;render();return;
+    }
+    case 'sobekReplaceRemnant':{const idx=player.remnants.findIndex(r=>r.face==='E'&&!r.sobek);if(idx>=0)remnantClick(idx);else{mode=null;render()}return}
+    case 'move':case 'sunMove':{
+      if(selected===null){
+        const plan=bestRelocation(player,mode==='move');
+        if(!plan){mode=null;render();return}
+        state._aiMove=plan;cellClick(plan.from);return;
+      }
+      const plan=state._aiMove;state._aiMove=null;
+      let to=plan&&plan.from===selected&&!player.grid[plan.to]?plan.to:player.grid.findIndex(c=>!c);
+      if(to>=0)cellClick(to);else{mode=null;selected=null;render()}
+      return;
+    }
+    case 'maatSwap':{
+      if(selected===null){
+        const occupied=player.grid.map((c,i)=>c?i:null).filter(i=>i!==null);
+        let bestPair=null,bestVal=-Infinity;
+        for(let a=0;a<occupied.length;a++)for(let b=a+1;b<occupied.length;b++){
+          const i=occupied[a],j=occupied[b],g=player.grid.slice();g[i]=player.grid[j];g[j]=player.grid[i];
+          let val=boardObjectiveValue({grid:g});
+          if(state.maatScale)[i,j].forEach(pos=>{const c=g[pos],m=g[Math.floor(pos/4)*4+(3-pos%4)];if(c&&m&&!c.facedown&&!m.facedown&&c.color&&m.color===c.color)val+=2});
+          if(val>bestVal){bestVal=val;bestPair=[i,j]}
+        }
+        if(!bestPair){mode=null;render();return}
+        state._aiMaatPair=bestPair;cellClick(bestPair[0]);return;
+      }
+      const pair=state._aiMaatPair||[],target=pair.find(i=>i!==selected);
+      if(target!=null&&player.grid[target])cellClick(target);
+      else{const other=player.grid.findIndex((c,i)=>c&&i!==selected);if(other>=0)cellClick(other);else{mode=null;selected=null;render()}}
+      return;
+    }
+    case 'swapGrid':{const idx=worstGridCellIndex(player);if(idx>=0)cellClick(idx);else{mode=null;state.tawaretExtra=false;render()}return}
+    case 'swapMarket':{const best=bestMarketPick(player);if(best)marketClick(best.index);else{mode=null;selected=null;state.tawaretExtra=false;render()}return}
+    case 'anubisMark':{const best=bestMarketPick(player,{avoidOwnAnubis:true});if(best)marketClick(best.index);else{mode=null;render()}return}
+    case 'raDraw':{
+      const best=bestMarketPick(player);
+      if(best&&best.value>=2)marketClick(best.index);
+      else if(anyDeckCards())raDrawDeck();
+      else if(best)marketClick(best.index);
+      else{mode=null;render()}
+      return;
+    }
+    case 'seshatChooseImprovement':{const offer=state.improvementOffer||[],pick=offer[Math.floor(Math.random()*offer.length)];if(pick!=null)chooseImprovement(pick);else{mode=null;render()}return}
+    case 'seshatPlaceImprovement':{
+      let idx=-1,bestEmpty=-1;
+      player.remnants.forEach((r,i)=>{if(r.face!=='D'||r.sobek||r.improvement)return;const empty=remnantLineEmpty(player,r);if(empty>bestEmpty){bestEmpty=empty;idx=i}});
+      if(idx>=0)remnantClick(idx);else{mode=null;if(state.pendingImprovement){state.improvementStacks[state.pendingImprovement]++;refillImprovementOffer()}state.pendingImprovement=null;render()}return;
+    }
+    case 'thothChooseColour':{
+      const supply=state.thothSupply||{};let pick=null,bestCount=-1;
+      colors.forEach(colour=>{if(!supply[colour])return;const n=player.grid.filter(c=>c&&!c.facedown&&(c.colourTags||[c.color]).includes(colour)).length;if(n>bestCount){bestCount=n;pick=colour}});
+      if(pick)chooseThothColour(pick);else{mode=null;render()}return;
+    }
+    case 'thothPlaceColour':{
+      const colour=state.pendingThothColour;let idx=-1,bestCount=-1;
+      player.remnants.forEach((r,i)=>{if(r.face!=='E'||r.sobek||r.thoth)return;const n=remnantLineColour(player,r,colour);if(n>bestCount){bestCount=n;idx=i}});
+      if(idx>=0)remnantClick(idx);else{mode=null;state.pendingThothColour=null;render()}return;
+    }
+    case 'sunFlip':{
+      // A black remnant whose line is already full can never trigger again,
+      // so it is better as white tags; a white remnant on an open line can
+      // become a future match bonus.
+      let idx=-1,bestVal=-Infinity;
+      player.remnants.forEach((r,i)=>{if(r.sobek||r.improvement)return;const empty=remnantLineEmpty(player,r),v=r.face==='D'?(empty===0?3:0.5-empty*0.25):(empty>=2?empty*0.5:0);if(v>bestVal){bestVal=v;idx=i}});
+      if(idx>=0)remnantClick(idx);else{mode=null;render()}return;
+    }
+    case 'extraDraw':{
+      const best=state.phase===3?bestMarketPick(player):null;
+      if(best&&best.value>=2)marketClick(best.index);
+      else if(anyDeckCards())drawDeck();
+      else if(best)marketClick(best.index);
+      else{mode=null;render()}
+      return;
+    }
+    default: mode=null;selected=null;render();return;
+  }
+}
+function aiTakeAction(){
+  const player=p();if(!player.isAI||state.reveal)return;
+  if(state.pendingObjective){
+    // A Scribe (+5 at game end) outscored every God activation in testing.
+    const scribe=bestScribeFor(player);
+    if(scribe!=null)chooseScribe(scribe);else chooseObjectiveGod(chooseGodForAI(player,freeObjectiveGods()));
+    return;
+  }
+  if(state.pendingRemnant){
+    const position=state.pendingRemnant.position,row=Math.floor(position/4),col=position%4,improvement=(player.remnants||[]).find(r=>r.face==='D'&&r.improvement&&((r.edge==='top'||r.edge==='bottom')?r.slot===col:r.slot===row));
+    if(improvement)resolveImprovement(improvement.improvement);else resolveRemnantBonus('points');
+    return;
+  }
+  if(mode){aiHandleMode(player);return}
+  if(state.phase===0){
+    if(player.playedRound!==state.round){
+      const placement=(player.glyphTokens&&player.glyphTokens.length)?bestGlyphTokenPlacement(player):null;
+      if(placement){state._aiGlyphTarget=placement.cellIndex;selectGlyphToken(placement.tokenIndex);return}
+      const move=bestPlayMove(player);
+      if(move){selected=move.handIndex;cellClick(move.position);return}
+      player.playedRound=state.round; // no hand card or no empty space: nothing can be played, don't stall
+    }
+    nextPhase();return;
+  }
+  if(state.phase===1){
+    if(player.godRound!==state.round&&player.hand.length>=AI_GOD_MIN_HAND){
+      const idx=worstHandCardIndex(player),god=chooseGodForAI(player);
+      if(god){handClick(idx);useGod(god);return}
+    }
+    nextPhase();return;
+  }
+  if(state.phase===2){
+    const idx=bestClaimableObjective(player);
+    if(idx>=0){claimObjective(idx);return}
+    nextPhase();return;
+  }
+  if(state.phase===3){
+    if(player.drawnRound===state.round){
+      if(player.tokens.draw>0&&(anyDeckCards()||state.market.some(c=>c))){extraDraw();return}
+      finishDraw();return;
+    }
+    const best=bestMarketPick(player);
+    if(best&&best.value>=2)marketClick(best.index);
+    else if(anyDeckCards())drawDeck();
+    else if(best)marketClick(best.index);
+    else{player.drawnRound=state.round;render()} // deck and market both exhausted: nothing to draw, don't stall
+    return;
+  }
+}
+$('fourthGod').onchange=()=>{$('remnantGodRow').hidden=!$('fourthGod').checked};
+$('randomGods').onclick=randomGods;
+$('firstGame').onclick=firstGame;
+$('start').onclick=begin;
+// Mobile tabs: show one column at a time; a dot marks another tab that is waiting for a tap.
+(function(){
+  const tabs=document.querySelector('.mobile-tabs'),tabButtons=[...tabs.querySelectorAll('button')],actions=$('actions');
+  new ResizeObserver(()=>document.documentElement.style.setProperty('--actions-h',`${actions.offsetHeight}px`)).observe(actions);
+  const needs={
+    board:()=>!!document.querySelector('#grid .cell.target,.remnant.target'),
+    market:()=>(state.phase===3&&p().drawnRound!==state.round)||['raDraw','extraDraw','swapMarket','anubisMark'].includes(mode),
+    objectives:()=>state.phase===2&&!state.pendingObjective&&!!document.querySelector('#objectives button:not(:disabled)'),
+    gods:()=>state.phase===1&&p().godRound!==state.round&&!mode&&!state.pendingObjective
+  };
+  const flagTabs=()=>tabButtons.forEach(button=>{const tab=button.dataset.tab;button.classList.toggle('attention',!!state&&!p().isAI&&!state.reveal&&tab!==document.body.dataset.tab&&needs[tab]())});
+  const showTab=name=>{document.body.dataset.tab=name;tabButtons.forEach(button=>button.classList.toggle('active',button.dataset.tab===name));window.scrollTo(0,0);flagTabs()};
+  tabs.onclick=event=>{const button=event.target.closest('button[data-tab]');if(button)showTab(button.dataset.tab)};
+  // A new player's turn starts on their board.
+  let lastTurn=null;const tabRender=render;render=function(){tabRender();if(!state)return;if(state.turn!==lastTurn){lastTurn=state.turn;showTab('board')}else flagTabs()};
+})();
+</script></body></html>

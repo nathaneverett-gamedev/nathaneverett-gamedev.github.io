@@ -36,3 +36,14 @@ body[data-tab="board"] [data-mtab]:not([data-mtab="board"]),body[data-tab="objec
 
 /* Touch screens: tap a Priest or objective card to see it enlarged (replaces hover zoom) */
 .card-zoom{position:fixed;inset:0;z-index:30;display:grid;place-items:center;background:#000c;padding:16px}.card-zoom[hidden]{display:none}.card-zoom img{max-width:100%;max-height:85vh;border-radius:10px;box-shadow:0 8px 28px #000}
+
+/* Minimisable game popups: collapse to a bar so the board stays visible */
+.modal-card{position:relative}
+.modal-toggle{position:absolute;top:6px;right:6px;padding:3px 8px;font-size:12px}
+.modal-card:has(.modal-toggle) h2{padding:0 70px}
+.modal.minimised{background:transparent;place-items:end center;padding-bottom:12px}
+.modal.minimised .modal-card>:not(h2):not(.modal-toggle){display:none}
+.modal.minimised .modal-card{display:flex;align-items:center;gap:10px;width:auto;max-width:90vw;padding:8px 10px 8px 14px;box-shadow:0 3px 12px #000a}
+.modal.minimised .modal-card h2{padding:0;font-size:16px;margin:0}
+.modal.minimised .modal-toggle{position:static}
+body.modal-minimised .mobile-tabs{z-index:6}

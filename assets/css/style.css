@@ -164,6 +164,13 @@ h1, h2, h3, h4 {
 }
 .hero p { max-width: 760px; color: #cfd4dc; }
 .hero .cta { margin-top: 1.4em; color: var(--muted); font-style: italic; }
+.hero .note {
+  margin-top: 1.2em;
+  padding-left: 12px;
+  border-left: 3px solid var(--accent);
+  color: var(--muted);
+  font-size: .95rem;
+}
 
 /* ---------- Sections ---------- */
 
@@ -225,6 +232,11 @@ h1, h2, h3, h4 {
   height: 100%;
   object-fit: cover;
 }
+/* Wide logos: show the whole logo on its own background colour (set --c1/--c2 to match) */
+.card-media > img.contain {
+  object-fit: contain;
+  padding: 0 4% 18%;
+}
 .card-media .card-title {
   position: absolute;
   inset: auto 0 0 0;
@@ -279,6 +291,7 @@ h1, h2, h3, h4 {
 .older-item h3 { font-size: 1.2rem; margin-bottom: .3em; }
 .older-item p { margin: .2em 0; color: var(--muted); font-size: .95rem; }
 .older-item strong { color: var(--text); }
+.older-item .video { margin: 0 0 14px; }
 
 /* ---------- Project detail pages ---------- */
 
@@ -374,7 +387,18 @@ h1, h2, h3, h4 {
 .figure { margin: 1.2em 0; }
 .figure img { width: 100%; border-radius: var(--radius); border: 1px solid var(--line); }
 .figure figcaption { margin-top: 8px; color: var(--muted); font-size: .9rem; font-style: italic; }
+.game-logo { display: block; max-width: min(100%, 320px); height: auto; margin: .6em 0 1em; }
 .video { aspect-ratio: 16 / 9; width: 100%; border: 0; border-radius: var(--radius); margin: 1em 0; }
+.yt { display: block; position: relative; overflow: hidden; background: #000; }
+.yt img { width: 100%; height: 100%; object-fit: cover; opacity: .85; transition: opacity .2s; }
+.yt:hover img, .yt:focus-visible img { opacity: 1; }
+.yt::after {
+  content: "";
+  position: absolute; top: 50%; left: 50%;
+  width: 68px; height: 48px; margin: -24px 0 0 -34px;
+  border-radius: 12px;
+  background: var(--accent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M8 5v14l11-7z'/%3E%3C/svg%3E") center / 28px no-repeat;
+}
 .gallery { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); margin: 1em 0; }
 .gallery img { border-radius: var(--radius); border: 1px solid var(--line); }
 
@@ -393,6 +417,7 @@ h1, h2, h3, h4 {
 .btn:hover { filter: brightness(1.12); color: #fff; }
 .btn.ghost { background: transparent; border: 1px solid var(--line); color: var(--text); }
 .btn.ghost:hover { border-color: var(--accent); }
+.btn.disabled { opacity: .5; cursor: default; pointer-events: none; }
 .btn-row { display: flex; gap: 12px; flex-wrap: wrap; margin: 1.2em 0; }
 .btn-row.stack { flex-direction: column; margin-bottom: 0; }
 .btn-row.stack .btn { text-align: center; }
