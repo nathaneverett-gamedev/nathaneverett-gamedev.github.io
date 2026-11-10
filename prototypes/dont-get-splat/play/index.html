@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Don't Get Splat — Playtest</title>
+<title>Don't Get Splat — Online</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -126,6 +126,17 @@
   #card-preview{position:fixed;pointer-events:none;z-index:999;display:none;
     filter:drop-shadow(0 14px 30px rgba(0,0,0,.65));}
   #card-preview img{display:block;width:190px;border-radius:12px;}
+
+  .net-panel{margin:28px auto 0;max-width:560px;background:var(--panel2);border-radius:14px;padding:16px 18px;text-align:left;}
+  .net-panel p{margin:0 0 12px;font-size:.85rem;color:var(--sub);}
+  .net-input{font:inherit;font-weight:700;background:var(--panel);color:var(--ink);border:2px solid transparent;border-radius:8px;padding:8px 10px;}
+  .net-input:focus{border-color:var(--accent);outline:none;}
+  .net-code{font-family:'Fredoka';font-size:2rem;font-weight:700;letter-spacing:.25em;color:var(--accent);}
+  .net-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0;}
+  .net-seat{background:var(--panel);border-radius:8px;padding:6px 12px;font-weight:700;}
+  .net-status{font-size:.85rem;margin-top:8px;}
+  .net-away{color:var(--accent);}
+  .opt-btn[disabled]{opacity:.5;cursor:default;}
 </style>
 </head>
 <body>
@@ -1094,7 +1105,9 @@ function initGame(numAI, aiTypeChoices){
 }
 
 /* ============================= MODAL / TARGETING ============================= */
-function chooseOption(title, options){
+function chooseOption(title, options, player){
+  if(player && !player.isHuman) return Promise.resolve(netFallbackOption(options));
+  if(player && player.remote) return netAsk(player, {kind:'option', title, options});
   return new Promise(resolve=>{
     modalResolver = resolve;
     state.modal = {title, options};
@@ -1117,11 +1130,13 @@ async function chooseTarget(player, title, options){
     await delay(320);
     return options[Math.floor(Math.random()*options.length)].value;
   }
-  return await chooseOption(title, options);
+  return await chooseOption(title, options, player);
 }
 // kind: 'play', 'keep' or 'mud' — sets the confirm popup's wording. A Mud
 // pick can also be skipped ("Play normally"), which resolves with -1.
-function waitForPoolPick(promptText, eligibleCards, kind){
+function waitForPoolPick(promptText, eligibleCards, kind, player){
+  if(player && !player.isHuman) return Promise.resolve(kind==='mud' ? -1 : eligibleCards[0].uid);
+  if(player && player.remote) return netAsk(player, {kind:'pick', prompt:promptText, pickKind:kind||'play', uids:eligibleCards.map(c=>c.uid)});
   return new Promise(resolve=>{
     state.pickPrompt = promptText;
     state.pickKind = kind || 'play';
@@ -1551,21 +1566,12 @@ function resolveCardForPlacement(card, underCard){
 async function resolvePlay(player, card){
   let mudPlayAny=false, mudUseUnder=false, mudFaceDown=false;
 
-  if(player.isHuman){
-    // Loop so multiple Mud cards can be chained onto the same play.
-    // Mud cards sit in the hand bar and are tapped + confirmed like any card.
-    while(player.mudHand.length>0){
-      state.statusText = `Playing ${cardShortLabel(card)} — use a Mud card first, or play normally.`;
-      const mudUid = await waitForPoolPick(`Use a Mud card before playing ${cardShortLabel(card)}?`, player.mudHand, 'mud');
-      const idx = player.mudHand.findIndex(m=>m.uid===mudUid);
-      if(idx===-1) break;
-      const mud = player.mudHand.splice(idx,1)[0];
-      const res = await applyMud(player, mud);
-      if(res.mudPlayAny) mudPlayAny=true;
-      if(res.mudUseUnder) mudUseUnder=true;
-      if(res.mudFaceDown) mudFaceDown=true;
-    }
-  } else {
+  if(player._mudFlags){
+    // Humans already chose and used their Mud during the simultaneous draft
+    // (see humanMud) — only its effect on this placement is left.
+    ({mudPlayAny, mudUseUnder, mudFaceDown} = player._mudFlags);
+    player._mudFlags = null;
+  } else if(!player.isHuman){
     // Each AI spends exactly the Mud card(s) its simulation planned for this
     // play (up to two, chained in order) — which Mud cards it considers
     // depends on its personality.
@@ -1785,40 +1791,66 @@ async function draftTurn(turnNum){
     throw e;
   }
 }
+// A human's Mud for this turn, chosen during the simultaneous draft right
+// after their play and keep picks. Every Mud effect only touches the player's
+// own stacks, and gifts wait until everyone has placed, so using it now plays
+// out the same as using it just before the card is placed.
+async function humanMud(player, card){
+  const flags = {mudPlayAny:false, mudUseUnder:false, mudFaceDown:false};
+  // Loop so multiple Mud cards can be chained onto the same play.
+  // Mud cards sit in the hand bar and are tapped + confirmed like any card.
+  while(player.mudHand.length>0 && player.isHuman){
+    if(!player.remote){ state.statusText = `Playing ${cardShortLabel(card)} — use a Mud card first, or play normally.`; render(); }
+    const mudUid = await waitForPoolPick(`Use a Mud card before playing ${cardShortLabel(card)}?`, player.mudHand, 'mud', player);
+    const idx = player.mudHand.findIndex(m=>m.uid===mudUid);
+    if(idx===-1) break;
+    const mud = player.mudHand.splice(idx,1)[0];
+    const res = await applyMud(player, mud);
+    if(res.mudPlayAny) flags.mudPlayAny=true;
+    if(res.mudUseUnder) flags.mudUseUnder=true;
+    if(res.mudFaceDown) flags.mudFaceDown=true;
+  }
+  return flags;
+}
+async function humanDraft(human, turnNum, isLastTurn){
+  const humanPool = [...human.hand];
+  if(human.stored) humanPool.push(human.stored);
+  const here = !human.remote;
+  if(humanPool.length===0){
+    // Card pool is exhausted (deck + discard both ran dry) — nothing to draft this turn.
+    human._playCard = null;
+    human.stored = null;
+    human._passHand = [];
+    return;
+  }
+  if(here) state.statusText = `Turn ${turnNum} of ${TURNS_PER_ROUND} — choose a card to play.`;
+  const playUid = await waitForPoolPick('Choose a card to play', humanPool, 'play', human);
+  const playCard = humanPool.find(c=>c.uid===playUid);
+  let afterPlayPool = humanPool.filter(c=>c!==playCard);
+
+  let storeCard = null;
+  if(!isLastTurn && afterPlayPool.length>0){
+    if(here){ state.statusText = 'Choose a card to keep in storage for later.'; render(); }
+    const storeUid = await waitForPoolPick('Choose a card to keep in storage', afterPlayPool, 'keep', human);
+    storeCard = afterPlayPool.find(c=>c.uid===storeUid);
+  }
+  const mudFlags = await humanMud(human, playCard);
+  if(here) state.statusText = '';
+  if(!human.isHuman) return;   // an AI took this seat over mid-pick: the AI drafts it below
+  human._playCard = playCard;
+  human._mudFlags = mudFlags;
+  human.stored = storeCard;
+  human._passHand = afterPlayPool.filter(c=>c!==storeCard);
+}
 async function draftTurnInner(turnNum){
   const isLastTurn = turnNum === TURNS_PER_ROUND;
   state.turn = turnNum;
   state.phase = 'drafting';
   render();
 
-  const human = state.players[0];
-  const humanPool = [...human.hand];
-  if(human.stored) humanPool.push(human.stored);
-
-  if(!human.isHuman){
-    // Simulator games: seat 0 is an AI too, handled with the others below.
-  } else if(humanPool.length===0){
-    // Card pool is exhausted (deck + discard both ran dry) — nothing to draft this turn.
-    human._playCard = null;
-    human.stored = null;
-    human._passHand = [];
-  } else {
-    state.statusText = `Turn ${turnNum} of ${TURNS_PER_ROUND} — choose a card to play.`;
-    const playUid = await waitForPoolPick('Choose a card to play', humanPool);
-    const playCard = humanPool.find(c=>c.uid===playUid);
-    let afterPlayPool = humanPool.filter(c=>c!==playCard);
-
-    let storeCard = null;
-    if(!isLastTurn && afterPlayPool.length>0){
-      state.statusText = 'Choose a card to keep in storage for later.';
-      render();
-      const storeUid = await waitForPoolPick('Choose a card to keep in storage', afterPlayPool, 'keep');
-      storeCard = afterPlayPool.find(c=>c.uid===storeUid);
-    }
-    human._playCard = playCard;
-    human.stored = storeCard;
-    human._passHand = afterPlayPool.filter(c=>c!==storeCard);
-  }
+  // Every human seat — the player at this device and any online friends —
+  // drafts at the same time; the reveal waits until all of them have picked.
+  await Promise.all(state.players.filter(p=>p.isHuman).map(p=>humanDraft(p, turnNum, isLastTurn)));
 
   // AI players: drafting heuristic depends on their assigned personality
   // (see aiDraftPick / AI PERSONALITIES above).
@@ -1977,7 +2009,10 @@ async function startGame(numAI, aiTypeChoices){
   state.phase = 'final';
   render();
 }
-function restartGame(){ location.reload(); }
+function restartGame(){
+  if(net && net.role==='host'){ netHostRestart(); return; }
+  location.reload();
+}
 
 /* ============================= SIMULATOR =============================
    Plays AI-only games (every seat a random personality) with delays, logging
@@ -2204,6 +2239,389 @@ function simResultsHtml(){
   </div>`;
 }
 
+/* ============================= ONLINE PLAY =============================
+   Browser-to-browser over PeerJS (WebRTC). PeerJS's free public service only
+   introduces the browsers; after that they talk directly, so the website
+   needs no server of its own. The HOST's browser runs the real game — the
+   AIs, the deck, every rule. Whenever a decision belongs to a friend's seat
+   (a card pick, a stack, a rearrange) the host asks that friend's browser
+   and waits for the answer, checking it is one of the choices offered.
+   After every change the host sends each friend a picture of the table with
+   everything that friend shouldn't see taken out: other players' hands,
+   stored cards and Mud cards, and the real values of face-down cards. */
+const PEERJS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js';
+const NET_ID_PREFIX = 'dontgetsplat-';
+const NET_MAX_PLAYERS = 5;
+/* fingerprint of this file's code: host and friends must run the very same version */
+const NET_BUILD = (()=>{
+  const s = document.currentScript ? document.currentScript.textContent : '';
+  let h = 5381;
+  for(let i=0;i<s.length;i++) h = (Math.imul(h, 33) ^ s.charCodeAt(i))>>>0;
+  return h.toString(36);
+})();
+let net = null;
+/*   host:  {role:'host', code, peer, status, guests:[{conn, open, seat, playerId, name}], seatGuest:{seat:guest},
+             asks:{seat:{id, ask, resolve, player}}, askSeq, numAI, started}
+     guest: {role:'guest', code, peer, conn, status, mySeat, ask, answered, lobby} */
+
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function netCleanName(s, fallback){
+  s = String(s||'').replace(/[^\p{L}\p{N} _.'-]/gu,'').replace(/\s+/g,' ').trim().slice(0,16);
+  return s || fallback;
+}
+/* remembered between visits: your name, the last room code, and a lasting id so a friend */
+/* who drops out gets their own seat back on rejoining */
+const netPrefs = (()=>{ try { return JSON.parse(localStorage.getItem('dgs-online')) || {}; } catch(e){ return {}; } })();
+function netSavePrefs(){ try { localStorage.setItem('dgs-online', JSON.stringify(netPrefs)); } catch(e){} }
+function netNewCode(){
+  const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';   // no 0/O or 1/I to misread
+  let c = '';
+  for(let i=0;i<5;i++) c += A[Math.floor(Math.random()*A.length)];
+  return c;
+}
+function netPlayerId(){
+  if(!netPrefs.id){ netPrefs.id = netNewCode()+netNewCode(); netSavePrefs(); }
+  return netPrefs.id;
+}
+function netLoadPeerJs(){
+  if(window.Peer) return Promise.resolve();
+  return new Promise((resolve, reject)=>{
+    const s = document.createElement('script');
+    s.src = PEERJS_URL;
+    s.onload = ()=>resolve();
+    s.onerror = ()=>reject(new Error('Couldn\'t load the online-play library — check your internet connection.'));
+    document.head.appendChild(s);
+  });
+}
+function netErrorText(err){
+  const type = err && err.type;
+  if(type==='peer-unavailable') return 'No game found with that code — check it with the host.';
+  if(type==='unavailable-id') return 'That room code is already in use — go back and host again for a new one.';
+  if(type==='network' || type==='server-error' || type==='socket-error' || type==='socket-closed') return 'Can\'t reach the online-play service — check your internet connection.';
+  if(type==='browser-incompatible') return 'This browser doesn\'t support online play — try Chrome, Edge, Firefox or Safari.';
+  return 'Connection problem: '+((err && (err.message || type)) || err);
+}
+function netLeave(){
+  if(net && net.peer){ try { net.peer.destroy(); } catch(e){} }
+  net = null;
+}
+/* which seat this browser shows as "you" */
+function viewSeat(){ return net && net.role==='guest' && net.mySeat!=null ? net.mySeat : 0; }
+function netSeatAway(seat){
+  if(!net) return false;
+  if(net.role==='guest') return !!(state.players[seat] && state.players[seat].away);
+  const g = net.seatGuest[seat];
+  return !g || !g.open;
+}
+window.addEventListener('beforeunload', e=>{
+  if(net && net.role==='host' && net.started && state.phase!=='final'){ e.preventDefault(); e.returnValue = ''; }
+});
+
+/* --- host side --- */
+async function netHost(){
+  netLeave();
+  const me = net = {role:'host', code:netNewCode(), peer:null, status:'Opening a room…', guests:[], seatGuest:{}, asks:{}, askSeq:0, numAI:0, started:false};
+  render();
+  try { await netLoadPeerJs(); } catch(e){ me.status = e.message; render(); return; }
+  if(net!==me) return;
+  const peer = me.peer = new Peer(NET_ID_PREFIX+me.code);
+  peer.on('open', ()=>{ me.status = 'open'; render(); });
+  peer.on('error', err=>{ if(err && err.type==='peer-unavailable') return; me.status = netErrorText(err); render(); });
+  // keep the room code registered if the link to the introduction service blips, so friends can still rejoin
+  peer.on('disconnected', ()=>{ if(net===me && !peer.destroyed){ try { peer.reconnect(); } catch(e){} } });
+  peer.on('connection', conn=>{
+    const g = {conn, open:false, seat:null, playerId:null, name:''};
+    me.guests.push(g);
+    conn.on('open', ()=>{ g.open = true; });
+    conn.on('data', msg=>{ if(net===me) netHostReceive(g, msg); });
+    conn.on('close', ()=>{
+      g.open = false;
+      if(net!==me) return;
+      if(!me.started) me.guests = me.guests.filter(x=>x!==g);
+      render();
+    });
+  });
+}
+function netLobbyFriends(){ return net.guests.filter(g=>g.open && g.playerId); }
+function netHostReceive(g, msg){
+  if(!msg || typeof msg!=='object') return;
+  if(msg.t==='hello'){
+    if(msg.build!==NET_BUILD){ g.conn.send({t:'version'}); return; }
+    g.open = true;
+    g.playerId = String(msg.id||'');
+    g.name = netCleanName(msg.name, 'Friend');
+    if(net.started) netHostReadmit(g);
+    else if(netLobbyFriends().length > NET_MAX_PLAYERS-1){ g.playerId = null; g.conn.send({t:'full'}); }
+    render();
+    return;
+  }
+  if(msg.t==='ans'){
+    const a = g.seat!==null && net.asks[g.seat];
+    if(!a || a.id!==msg.id) return;   // stale or doubled-up click
+    const ok = a.ask.kind==='pick'
+      ? (a.ask.uids.includes(msg.value) || (a.ask.pickKind==='mud' && msg.value===-1))
+      : a.ask.options.some(o=>o.value===msg.value);
+    if(!ok) return;
+    delete net.asks[g.seat];
+    a.resolve(msg.value);
+    render();
+  }
+}
+/* a friend reconnected mid-game: give them back their own seat, or else any friend seat whose player has gone */
+function netHostReadmit(g){
+  const away = state.players.filter(p=>p.remote && netSeatAway(p.id));
+  const p = away.find(p=>net.seatGuest[p.id] && net.seatGuest[p.id].playerId===g.playerId) || away[0];
+  if(!p){ g.conn.send({t:'full'}); return; }
+  const old = net.seatGuest[p.id];
+  if(old && old!==g) old.seat = null;
+  net.seatGuest[p.id] = g;
+  g.seat = p.id;
+  netSendSnap(g);
+}
+async function netHostStart(){
+  const friends = netLobbyFriends().slice(0, NET_MAX_PLAYERS-1);
+  const numAI = Math.min(net.numAI, NET_MAX_PLAYERS-1-friends.length);
+  if(friends.length+numAI < 1) return;
+  net.started = true;
+  net.seatGuest = {}; net.asks = {};
+  net.guests.forEach(g=>{ g.seat = null; });
+  initGame(friends.length+numAI, Array(friends.length+numAI).fill('random'));
+  const ps = state.players;
+  const used = new Set();
+  const unique = name=>{ let n = name, k = 2; while(used.has(n.toLowerCase())) n = name+' '+(k++); used.add(n.toLowerCase()); return n; };
+  ps[0].name = unique(netCleanName(netPrefs.name, 'Host'));
+  friends.forEach((g,i)=>{
+    const p = ps[i+1];
+    p.isHuman = true; p.remote = true; p.aiType = null;
+    p.name = unique(g.name);
+    g.seat = p.id; net.seatGuest[p.id] = g;
+  });
+  ps.slice(friends.length+1).forEach((p,i)=>{ p.name = unique('AI '+(i+1)); });
+  net.guests.forEach(g=>{ if(g.open && g.playerId && g.seat===null) g.conn.send({t:'full'}); });
+  render();
+  for(let i=0;i<3;i++){ await playRound(); }
+  applyMudPenalties();
+  state.phase = 'final';
+  render();
+}
+/* "Play again" sends everyone back to the room with the same code */
+function netHostRestart(){
+  net.started = false;
+  net.asks = {}; net.seatGuest = {};
+  net.guests = net.guests.filter(g=>g.open);
+  net.guests.forEach(g=>{ g.seat = null; });
+  state.phase = 'intro';
+  state.introOnline = true;
+  state.log = [];
+  render();
+}
+/* ask a friend's browser for a decision; resolves with their answer */
+function netAsk(player, ask){
+  return new Promise(resolve=>{
+    ask.id = ++net.askSeq;
+    net.asks[player.id] = {id:ask.id, ask, resolve, player};
+    render();
+  });
+}
+function netFallbackOption(options){ return options[Math.floor(Math.random()*options.length)].value; }
+/* a friend has gone for good: an AI plays their seat from here on */
+function onNetTakeOver(seat){
+  const p = state.players[seat];
+  if(!p || !p.remote || !netSeatAway(seat)) return;
+  p.isHuman = false; p.remote = false;
+  p.aiType = AI_TYPES[Math.floor(Math.random()*AI_TYPES.length)];
+  log(`${p.name} left — an AI plays their seat from now on.`);
+  p.name += ' (AI)';
+  const g = net.seatGuest[seat];
+  if(g) g.seat = null;
+  delete net.seatGuest[seat];
+  const a = net.asks[seat];
+  if(a){
+    delete net.asks[seat];
+    a.resolve(a.ask.kind==='pick' ? (a.ask.pickKind==='mud' ? -1 : a.ask.uids[0]) : netFallbackOption(a.ask.options));
+  }
+  render();
+}
+/* friends get a fresh picture of the table shortly after every change */
+let netBroadcastTimer = null;
+function netScheduleBroadcast(){
+  if(netBroadcastTimer) return;
+  netBroadcastTimer = setTimeout(()=>{ netBroadcastTimer = null; netBroadcast(); }, 60);
+}
+function netBroadcast(){
+  if(!net || net.role!=='host') return;
+  if(!net.started){
+    const msg = {t:'lobby', names:[netCleanName(netPrefs.name, 'Host'), ...netLobbyFriends().map(g=>g.name)], ai:net.numAI};
+    netLobbyFriends().forEach(g=>g.conn.send(msg));
+    return;
+  }
+  net.guests.forEach(g=>{ if(g.open && g.seat!==null) netSendSnap(g); });
+}
+function netSendSnap(g){ g.conn.send({t:'snap', s:netSnapshot(g.seat), seat:g.seat}); }
+function netHideCard(c){ return c.isFaceDown ? {uid:c.uid, isFaceDown:true, value:0} : c; }
+/* the table as the player in this seat is allowed to see it */
+function netSnapshot(seat){
+  const players = state.players.map(p=>{
+    const mine = p.id===seat;
+    const stacks = {};
+    COLORS.forEach(c=>{ stacks[c] = p.stacks[c].map(netHideCard); });
+    return {id:p.id, name:p.name, isHuman:p.isHuman, remote:!!p.remote, aiType:null, total:p.total, mudPenalty:p.mudPenalty||0,
+      away: !!p.remote && netSeatAway(p.id), stacks,
+      hand: mine ? p.hand : p.hand.map(()=>({uid:0})),
+      stored: mine ? p.stored : null,
+      mudHand: mine ? p.mudHand : p.mudHand.map(()=>({uid:0}))};
+  });
+  const a = net.asks[seat];
+  const localBusy = !!(state.pickResolve || modalResolver);
+  const waiting = [...(localBusy ? [state.players[0].name] : []),
+    ...Object.values(net.asks).filter(x=>x.player.id!==seat).map(x=>x.player.name)];
+  return {phase:state.phase, round:state.round, turn:state.turn, players, log:state.log.slice(0,30),
+    roundScoreCard:state.roundScoreCard, roundScoreCard2:state.roundScoreCard2,
+    passDirection:state.passDirection, passDirectionBase:state.passDirectionBase, giveBoth:state.giveBoth, newLineup:state.newLineup,
+    statusText: a ? '' : waiting.length ? `Waiting for ${waiting.join(', ')}…` : localBusy ? '' : (state.statusText||''),
+    lastSummary:(state.lastSummary||[]).map(r=>({player:{name:r.player.name}, base:r.base, bonus:r.bonus, total:r.total, notes:r.notes})),
+    ask: a ? a.ask : null};
+}
+
+/* --- guest side --- */
+async function netJoin(){
+  netLeave();
+  const code = String(netPrefs.code||'').trim().toUpperCase();
+  const me = net = {role:'guest', code, peer:null, conn:null, status:'Connecting…', mySeat:null, ask:null, answered:0, lobby:null};
+  if(code.length!==5){ me.status = 'Type the host\'s 5-letter room code first.'; render(); return; }
+  render();
+  try { await netLoadPeerJs(); } catch(e){ me.status = e.message; render(); return; }
+  if(net!==me) return;
+  const peer = me.peer = new Peer();
+  peer.on('error', err=>{ me.status = netErrorText(err); render(); });
+  peer.on('open', ()=>{
+    const conn = me.conn = peer.connect(NET_ID_PREFIX+code, {reliable:true, serialization:'json'});
+    conn.on('open', ()=>{
+      me.status = 'connected';
+      conn.send({t:'hello', id:netPlayerId(), name:netPrefs.name||'', build:NET_BUILD});
+      render();
+    });
+    conn.on('data', msg=>{ if(net===me) netGuestReceive(msg); });
+    conn.on('close', ()=>{ if(net!==me) return; me.status = 'lost'; render(); });
+  });
+}
+function netSendToHost(msg){ if(net && net.conn && net.conn.open) net.conn.send(msg); }
+function netGuestReceive(msg){
+  if(!msg || typeof msg!=='object') return;
+  if(msg.t==='lobby'){
+    net.lobby = msg;
+    if(state.phase!=='intro'){ state = {phase:'intro', introOnline:true, players:[], log:[]}; net.mySeat = null; net.ask = null; }
+    render();
+  } else if(msg.t==='full'){
+    net.status = 'That game has no free seat for you.'; render();
+  } else if(msg.t==='version'){
+    net.status = 'Your page is a different version from the host\'s — both of you reload the page and try again.'; render();
+  } else if(msg.t==='snap'){
+    const zoom = state.cardZoom;
+    state = Object.assign({}, msg.s, {introOnline:false, cardZoom:zoom, modal:null, pickResolve:null, pickableUids:[], pickPrompt:'', continueResolve:null});
+    net.mySeat = msg.seat;
+    net.ask = msg.s.ask && msg.s.ask.id>net.answered ? msg.s.ask : null;
+    netGuestShowAsk();
+    render();
+  }
+}
+/* put the host's question on screen, wired so the usual card taps and buttons answer it */
+function netGuestShowAsk(){
+  modalResolver = null;
+  const a = net.ask;
+  if(!a) return;
+  const send = v=>{
+    if(v==='__UNDO__' || net.ask!==a) return;
+    net.answered = a.id; net.ask = null;
+    netSendToHost({t:'ans', id:a.id, value:v});
+    render();
+  };
+  if(a.kind==='pick'){
+    state.pickPrompt = a.prompt; state.pickKind = a.pickKind; state.pickableUids = a.uids; state.pickResolve = send;
+  } else {
+    state.modal = {title:a.title, options:a.options}; modalResolver = send;
+  }
+}
+
+/* --- screens --- */
+function netStatusText(){
+  if(net && net.role==='guest') return net.ask ? (net.ask.kind==='pick' ? net.ask.prompt : net.ask.title) : (state.statusText||'');
+  const waiting = net && net.role==='host' ? Object.values(net.asks).map(a=>a.player.name) : [];
+  if(waiting.length && !(state.pickResolve || modalResolver)) return `Waiting for ${waiting.join(', ')}…`;
+  return state.statusText||'';
+}
+function netChipHtml(){
+  if(!net) return '';
+  if(net.role==='host'){
+    const away = state.players.filter(p=>p.remote && netSeatAway(p.id));
+    return `<div class="roundpill">🌐 Room ${net.code}</div>` + away.map(p=>
+      `<div class="roundpill"><span class="net-away">${escHtml(p.name)} disconnected</span>
+        <button class="opt" style="margin:0 0 0 8px;padding:4px 10px;" onclick="onNetTakeOver(${p.id})">Let an AI play</button></div>`).join('');
+  }
+  if(net.conn && net.conn.open) return `<div class="roundpill">🌐 Online</div>`;
+  return `<div class="roundpill"><span class="net-away">Disconnected</span>
+    <button class="opt" style="margin:0 0 0 8px;padding:4px 10px;" onclick="netJoin()">Rejoin</button></div>`;
+}
+function netSetupHtml(){
+  const nameInput = `<input id="netName" class="net-input" maxlength="16" placeholder="Your name" value="${escHtml(netPrefs.name||'')}" oninput="onNetName(this.value)"/>`;
+  let body;
+  if(!net){
+    body = `
+      <p>Each player opens this page on their own device. One person hosts and gets a room code; everyone else joins with it.</p>
+      <div class="net-row"><b>Your name</b> ${nameInput}</div>
+      <div class="net-row"><button class="opt-btn" onclick="netHost()">Host a game</button></div>
+      <div class="net-row"><b>Room code</b>
+        <input id="netCode" class="net-input" maxlength="5" autocomplete="off" spellcheck="false" style="width:7em;letter-spacing:.2em;text-transform:uppercase;"
+          value="${escHtml(netPrefs.code||'')}" oninput="onNetCode(this.value)" onkeydown="if(event.key==='Enter') netJoin()"/>
+        <button class="opt-btn" onclick="netJoin()">Join</button></div>`;
+  } else if(net.role==='host'){
+    if(net.status!=='open'){
+      body = `<p class="net-status">${escHtml(net.status)}</p>`;
+    } else {
+      const friends = netLobbyFriends().slice(0, NET_MAX_PLAYERS-1);
+      const maxAI = NET_MAX_PLAYERS-1-friends.length;
+      if(net.numAI>maxAI) net.numAI = maxAI;
+      const total = 1+friends.length+net.numAI;
+      body = `
+        <div>Room code — send this to your friends</div>
+        <div class="net-code">${net.code}</div>
+        <p>They open this page, choose 🌐 Play online, and type the code.</p>
+        <div class="net-row"><b>Your name</b> ${nameInput}</div>
+        <div class="net-row"><b>Players</b>
+          <span class="net-seat">${escHtml(netCleanName(netPrefs.name,'Host'))} (you)</span>
+          ${friends.map(g=>`<span class="net-seat">🌐 ${escHtml(g.name)}</span>`).join('')}
+          ${friends.length===0 ? '<span class="status">waiting for friends to join…</span>' : ''}</div>
+        <div class="net-row"><b>AI opponents</b>
+          ${[...Array(maxAI+1).keys()].map(n=>`<button class="opt" style="margin:0;padding:6px 12px;${n===net.numAI?'background:var(--accent);color:#222;':''}" onclick="onNetAI(${n})">${n}</button>`).join('')}</div>
+        <div class="net-row"><button class="opt-btn" onclick="netHostStart()" ${total<2?'disabled':''}>Start game<small>${total} player${total>1?'s':''}</small></button></div>`;
+    }
+  } else {
+    let msg = net.status;
+    if(net.status==='connected') msg = net.lobby
+      ? `In the room: ${net.lobby.names.join(', ')}${net.lobby.ai ? ` + ${net.lobby.ai} AI` : ''}. Waiting for ${net.lobby.names[0]} to start the game…`
+      : 'Connected — waiting for the host…';
+    if(net.status==='lost') msg = 'Lost the connection to the host.';
+    body = `<div>Room <b>${escHtml(net.code)}</b></div><p class="net-status">${escHtml(msg)}</p>
+      ${net.status==='lost' ? `<div class="net-row"><button class="opt-btn" onclick="netJoin()">Try again</button></div>` : ''}`;
+  }
+  return `<div class="hero">
+    <h1 class="brand">🎨 Don't Get Splat</h1>
+    <div class="net-panel">
+      <div class="ai-setup-label">🌐 Play online</div>
+      ${body}
+      <div class="net-row" style="margin-top:14px;"><button class="opt" style="margin:0;" onclick="onNetBack()">⟵ Back</button></div>
+    </div>
+  </div>`;
+}
+function onNetOpen(){ state.introOnline = true; render(); }
+function onNetBack(){ netLeave(); state.introOnline = false; render(); }
+function onNetName(v){
+  netPrefs.name = netCleanName(v, ''); netSavePrefs();
+  if(net && net.role==='host'){ netScheduleBroadcast(); const s = document.querySelector('.net-seat'); if(s) s.textContent = netCleanName(netPrefs.name,'Host')+' (you)'; }
+}
+function onNetCode(v){ netPrefs.code = String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,''); netSavePrefs(); }
+function onNetAI(n){ net.numAI = n; render(); }
+
 /* ============================= INTRO SETUP ============================= */
 function onIntroPickCount(n){
   if(!TEST_BUILD){ startGame(n, Array(n).fill('random')); return; }
@@ -2316,10 +2734,12 @@ function stackHtml(player, color){
   return html;
 }
 function playerHtml(p){
-  let html = `<div class="player ${p.isHuman?'human':''}">`;
-  html += `<div class="phead"><span class="pname">${p.name}${p.isHuman?' (you)':TEST_BUILD?` — ${AI_TYPE_LABELS[p.aiType]}`:''}</span><span class="ptotal">${p.total} pts</span></div>`;
+  const mine = p.id===viewSeat();
+  const tag = mine ? ' (you)' : p.remote ? (netSeatAway(p.id) ? ' <span class="net-away">(disconnected)</span>' : ' 🌐') : !p.isHuman ? ' 🤖' : '';
+  let html = `<div class="player ${mine?'human':''}">`;
+  html += `<div class="phead"><span class="pname">${escHtml(p.name)}${tag}</span><span class="ptotal">${p.total} pts</span></div>`;
   html += `<div class="stacks">` + COLORS.map(c=>stackHtml(p,c)).join('') + `</div>`;
-  if(p.isHuman){
+  if(mine){
     html += `<div class="mudrow">Mud: ${p.mudHand.length}/${MUD_HAND_LIMIT} (in your hand below)</div>`;
   } else {
     html += `<div class="mudrow">Hand: ${p.hand.length} · Mud: ${p.mudHand.length}/${MUD_HAND_LIMIT}</div>`;
@@ -2344,18 +2764,27 @@ function passTokenLinesHtml(){
   const n = state.players.length;
   const right = state.passDirection==='right';
   const nameOf = i => state.players[i] ? state.players[i].name : '';
-  const draftTo = right ? (n-1)%n : 1%n;
+  const v = viewSeat();
+  const draftTo = right ? (v-1+n)%n : (v+1)%n;
   const give = state.giveBoth
     ? `Give abilities: ↔ both neighbours`
-    : `Give abilities: ${right?'→ right':'← left'} (to ${nameOf(passNeighbourOf(0))})`;
+    : `Give abilities: ${right?'→ right':'← left'} (to ${nameOf(passNeighbourOf(v))})`;
   const draft = `Draft pass: ${right?'← left':'→ right'} (to ${nameOf(draftTo)})`;
   return `${give}<br>${draft}`;
 }
 function render(){
   if(state.simMode) return;
+  if(net && net.role==='host') netScheduleBroadcast();
   const app = document.getElementById('app');
   let html = '';
 
+  if(state.phase==='intro' && state.introOnline){
+    const f = document.activeElement, fid = f && f.id, sel = fid && f.selectionStart;
+    app.innerHTML = netSetupHtml();
+    const g = fid && document.getElementById(fid);
+    if(g){ g.focus(); try { g.setSelectionRange(sel, sel); } catch(e){} }
+    return;
+  }
   if(state.phase==='intro'){
     if(state.introNumAI==null){
       html += `
@@ -2364,6 +2793,9 @@ function render(){
         <p>A paintball drafting prototype. Draft cards, build your colour stacks, and try to end each round with the lowest score. Choose how many AI opponents to play against.</p>
         <div class="opt-row">
           ${[1,2,3,4].map(n=>`<button class="opt-btn" onclick="onIntroPickCount(${n})">${n} AI opponent${n>1?'s':''}<small>${n+1} players total</small></button>`).join('')}
+        </div>
+        <div class="opt-row" style="margin-top:14px;">
+          <button class="opt-btn" onclick="onNetOpen()">🌐 Play online with friends<small>Host a room or join one with a code</small></button>
         </div>
         ${TEST_BUILD ? `<div class="sim-panel">
           <div class="ai-setup-label">AI simulator</div>
@@ -2435,7 +2867,8 @@ function render(){
     <div class="roundpill">Round ${state.round} / 3</div>
     ${passTokenHtml}
     ${scorecardsHtml}
-    <div class="status">${state.statusText||''}</div>
+    <div class="status">${escHtml(netStatusText())}</div>
+    ${netChipHtml()}
   </div>`;
 
   // log
@@ -2444,7 +2877,7 @@ function render(){
   if(state.phase==='roundSummary'){
     const rows = state.lastSummary.map(r=>`
       <tr>
-        <td>${r.player.name}</td>
+        <td>${escHtml(r.player.name)}</td>
         <td>${r.base}</td>
         <td>${r.bonus>=0?'+':''}${r.bonus}</td>
         <td><strong>${r.total}</strong></td>
@@ -2453,15 +2886,19 @@ function render(){
     html += `<div class="summary">
       <h3>Round ${state.round} results</h3>
       <table><tr><th>Player</th><th>Base</th><th>Bonus</th><th>Round total</th><th>Notes</th></tr>${rows}</table>
-      <button class="continue-btn" onclick="onContinueClick()">${state.round<3? 'Continue to next round' : 'See final results'}</button>
+      ${net && net.role==='guest'
+        ? `<p class="status">Waiting for ${escHtml(state.players[0].name)} to continue…</p>`
+        : `<button class="continue-btn" onclick="onContinueClick()">${state.round<3? 'Continue to next round' : 'See final results'}</button>`}
     </div>`;
   }
 
   if(state.phase==='final'){
     const sorted = [...state.players].sort((a,b)=>a.total-b.total);
     html += `<div class="final"><h2>Final Results</h2>` +
-      sorted.map((p,i)=>`<div class="rank ${i===0?'win':''}"><div class="n">${i===0?'🏆 ':''}${p.name}</div><div class="t">${p.total} pts</div>${p.mudPenalty? `<div style="font-size:.7rem;color:var(--sub);margin-top:4px;">(incl. -${p.mudPenalty} for ${p.mudHand.length} unused Mud)</div>` : ''}</div>`).join('') +
-      `<div><button class="restart-btn" onclick="restartGame()">Play again</button></div></div>`;
+      sorted.map((p,i)=>`<div class="rank ${i===0?'win':''}"><div class="n">${i===0?'🏆 ':''}${escHtml(p.name)}</div><div class="t">${p.total} pts</div>${p.mudPenalty? `<div style="font-size:.7rem;color:var(--sub);margin-top:4px;">(incl. -${p.mudPenalty} for ${p.mudHand.length} unused Mud)</div>` : ''}</div>`).join('') +
+      (net && net.role==='guest'
+        ? `<p class="status">Waiting for ${escHtml(state.players[0].name)} to start another game…</p></div>`
+        : `<div><button class="restart-btn" onclick="restartGame()">Play again</button></div></div>`);
   }
 
   // boards
@@ -2471,12 +2908,12 @@ function render(){
 
   // hand bar (human) + stored card slot
   if(state.phase!=='final'){
-    const human = state.players[0];
+    const human = state.players[viewSeat()];
     const pickable = state.pickableUids || [];
     const clickable = !!state.pickResolve;
     let hb = `<div class="handbar">`;
     hb += `<span class="tag">${clickable? state.pickPrompt : 'Your hand'}:</span>`;
-    if(clickable) hb += `<button class="opt" style="margin-right:8px;" onclick="onBackClick()">↩ Back</button>`;
+    if(clickable && !net) hb += `<button class="opt" style="margin-right:8px;" onclick="onBackClick()">↩ Back</button>`;
     if(clickable && state.pickKind==='mud') hb += `<button class="opt" style="margin-right:8px;" onclick="onPoolSkip()">Play normally ▶</button>`;
     if(human.hand.length===0 && !human.stored && human.mudHand.length===0) hb += `<span class="tag">empty</span>`;
 
@@ -2512,7 +2949,7 @@ function render(){
   if(state.modal){
     let m = `<div class="overlay"><div class="modal"><h3>${state.modal.title}</h3>`;
     state.modal.options.forEach((o,i)=>{ m += `<button class="opt" onclick="onModalChoiceIndex(${i})">${o.label}</button>`; });
-    m += `<button class="opt" style="opacity:.8;" onclick="onBackClick()">↩ Back</button>`;
+    if(!net) m += `<button class="opt" style="opacity:.8;" onclick="onBackClick()">↩ Back</button>`;
     m += `</div></div>`;
     app.insertAdjacentHTML('beforeend', m);
   }

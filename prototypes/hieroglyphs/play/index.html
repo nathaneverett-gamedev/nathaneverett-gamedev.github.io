@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Hieroglyphs — Hotseat</title>
+<title>Hieroglyphs</title>
 <style>
 :root{--ink:#281d15;--paper:#eee1bc;--gold:#d7a947;--blue:#466998;--red:#a84f37;--green:#628d57;--yellow:#b88832;--shadow:0 4px 13px #150d0873}*{box-sizing:border-box}body{margin:0;background:#292117 radial-gradient(ellipse at top,#615032,#17130f);color:#f8eac6;font:14px 'Libre Baskerville',serif;min-height:100vh}button{font:inherit;cursor:pointer;color:inherit}.app{max-width:1580px;margin:auto;padding:18px}.topbar{display:flex;align-items:center;gap:18px;border-bottom:1px solid #b99850;padding-bottom:14px}.brand{font:700 28px Cinzel,serif;letter-spacing:3px;color:#f4d27c;text-shadow:1px 2px #2a190d}.sub{color:#d5bf91;font-size:12px}.status{margin-left:auto;text-align:right}.turn{font:700 17px Cinzel,serif}.phase{color:#f3cf70;margin-top:4px}.layout{display:grid;grid-template-columns:260px minmax(560px,1fr) 295px;gap:16px;margin-top:16px}.panel{background:#393024e8;border:1px solid #8e7340;border-radius:8px;box-shadow:var(--shadow);padding:12px}.panel h2{font:700 14px Cinzel,serif;letter-spacing:1px;color:#f1ce77;margin:0 0 10px}.market{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.card{width:100%;aspect-ratio:484/744;object-fit:cover;border-radius:5px;box-shadow:1px 2px 5px #100a05;display:block;background:#645}.market .card{cursor:pointer}.card.selected,.market .card.selected{outline:4px solid #ffe177;transform:translateY(-3px)}.deck{margin-top:12px;display:flex;gap:9px;align-items:center}.deckback{height:80px;width:52px;border:2px solid #d6ae59;border-radius:5px;background:repeating-linear-gradient(45deg,#765526,#765526 5px,#c69b47 5px,#c69b47 8px)}.tiny{font-size:11px;color:#d7c49b;line-height:1.5}.main{min-width:0}.board-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.score{color:#f7d874;font:700 19px Cinzel}.grid{background:#1d1812;padding:8px;border:5px solid #806535;border-radius:6px;display:grid;grid-template-columns:repeat(4,1fr);gap:7px;max-width:480px;margin:auto}.cell{position:relative;aspect-ratio:484/744;border:1px dashed #917a4b;border-radius:4px;background:#453829;cursor:pointer}.cell .card{height:100%}.cell.target{box-shadow:inset 0 0 0 4px #ffe177;background:#766039}.cell .token{position:absolute;right:3px;bottom:3px}.token{border-radius:50%;font:700 10px Cinzel;background:#d4a73c;color:#33210d;border:1px solid #ffe99a;padding:4px 5px}.hand-wrap{margin-top:15px}.hand{display:flex;gap:7px;overflow-x:auto;padding:5px}.hand .card{width:78px;flex:0 0 78px;cursor:pointer}.actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}.action{border:1px solid #b58a38;border-radius:4px;background:linear-gradient(#72552a,#493418);padding:8px 10px}.action:hover:not(:disabled){background:#94713b}.action:disabled{opacity:.4;cursor:not-allowed}.god{display:grid;grid-template-columns:76px 1fr;gap:8px;margin:9px 0;padding:7px;background:#2b241b;border-radius:5px;border:1px solid #6f5a34}.god img{width:76px;height:117px;object-fit:cover;border-radius:3px}.god button{font:700 13px Cinzel;background:none;border:0;color:#f4d177;text-align:left;padding:0}.god p{font-size:10px;margin:5px 0;color:#cdbd98;line-height:1.45}.objectives{margin-top:13px}.objective{border:1px solid #886b36;background:#30281e;border-radius:4px;padding:8px;margin:6px 0;font-size:11px}.objective .dots{float:right;color:#f4ce6d}.claimed{opacity:.48;text-decoration:line-through}.log{height:155px;overflow:auto;font-size:11px;line-height:1.5;color:#ddcfb0;background:#251e17;padding:8px;border-radius:4px}.players{display:flex;gap:5px;flex-wrap:wrap}.player-chip{border:1px solid #8e7549;background:#282117;padding:5px 7px;border-radius:3px;font-size:11px}.active{border-color:#ffe17c;color:#ffe17c}.setup{position:fixed;inset:0;background:#1c1712ee;display:flex;align-items:center;justify-content:center;z-index:4}.setupbox{max-width:510px;padding:28px;background:#423522;border:1px solid #c39b4c;border-radius:9px;text-align:center;box-shadow:0 10px 35px #000}.setup h1{font:700 35px Cinzel;color:#f3ce77;margin:0}.setup p{line-height:1.6;color:#e2d1a7}.setup label{display:block;margin:18px}.setup select{background:#eee1bc;color:#302316;padding:8px;margin-left:8px;font:inherit}.start{font:700 16px Cinzel;background:#b88832;border:0;border-radius:4px;padding:11px 22px;color:#25190d}.help{font-size:11px;line-height:1.55;color:#d9c49a;border-top:1px solid #705a35;margin-top:12px;padding-top:11px}@media(max-width:1050px){.layout{grid-template-columns:220px 1fr}.right{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:14px}.right .panel{margin:0}}@media(max-width:680px){.app{padding:8px}.layout{grid-template-columns:1fr}.left{order:2}.right{order:3;display:block}.right .panel{margin-bottom:10px}.topbar{gap:8px}.brand{font-size:21px}.sub{display:none}.grid{gap:3px;padding:4px;border-width:3px}.hand .card{width:61px;flex-basis:61px}}
 .remnants{position:absolute;inset:0;pointer-events:none}.remnant{position:absolute;width:54px;aspect-ratio:1;pointer-events:auto;border:0;background:transparent;padding:0;filter:drop-shadow(1px 2px 2px #160e08)}.remnant img{width:100%;height:100%;display:block}.remnant.top{top:-59px}.remnant.left{left:-59px}.remnant.top.r0{left:0}.remnant.top.r1{left:calc(25% - 1px)}.remnant.top.r2{left:calc(50% - 2px)}.remnant.top.r3{left:calc(75% - 3px)}.remnant.left.r0{top:0}.remnant.left.r1{top:calc(25% - 1px)}.remnant.left.r2{top:calc(50% - 2px)}.remnant.left.r3{top:calc(75% - 3px)}.remnant:hover{filter:drop-shadow(0 0 5px #ffe17c)}@media(max-width:680px){.remnant{width:37px}.remnant.top{top:-41px}.remnant.left{left:-41px}.grid{margin-top:45px!important;margin-left:43px!important}}
@@ -19,6 +19,8 @@
 .layout{margin-top:10px}.layout>aside,.layout>main{order:0!important}
 body[data-tab="board"] [data-mtab]:not([data-mtab="board"]),body[data-tab="market"] [data-mtab]:not([data-mtab="market"]),body[data-tab="objectives"] [data-mtab]:not([data-mtab="objectives"]),body[data-tab="gods"] [data-mtab]:not([data-mtab="gods"]){display:none!important}#actions{position:fixed;left:0;right:0;bottom:0;z-index:5;margin:0;max-height:45vh;overflow:auto;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:#211a12;border-top:1px solid #b99850;box-shadow:0 -3px 10px #000a}#actions:empty{display:none}
 body{padding-bottom:var(--actions-h,0px)}}
+/* Online play */
+.setupbox [hidden]{display:none!important}.net-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0}.net-input{background:#eee1bc;color:#302316;padding:7px 8px;font:inherit;border:0;border-radius:3px;width:11em}.net-code-input{width:6.5em;letter-spacing:3px;text-transform:uppercase}.net-code{font:700 32px Cinzel,serif;letter-spacing:7px;color:#f3ce77;margin:4px 0}.net-seat{border:1px solid #8e7549;background:#282117;padding:4px 8px;border-radius:3px;font-size:12px}.net-on{background:#d7a947!important;color:#281d15}.start:disabled{opacity:.45;cursor:not-allowed}.net-chip{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-left:auto}.net-chip:empty{display:none}.net-chip:not(:empty)+.status{margin-left:0}.net-pill{border:1px solid #8e7549;background:#282117;padding:4px 8px;border-radius:3px;font-size:11px}.net-pill .action{padding:3px 7px;margin-left:5px}.net-away{color:#ffb38a}body[data-net-wait] .mobile-tabs button.attention::after{display:none}
 </style>
 </head>
 <body data-tab="board"><div class="app">
@@ -27,7 +29,7 @@ body{padding-bottom:var(--actions-h,0px)}}
 <main class="main" data-mtab="board"><section class="panel"><div class="board-title"><h2 id="boardname">Player board</h2><span id="score" class="score">0 pts</span></div><div id="grid" class="grid"></div><div class="hand-wrap"><h2>Hand — select a papyrus, then an empty grid space</h2><div id="hand" class="hand"></div></div><div id="actions" class="actions"></div></section></main>
 <aside class="mid" data-mtab="objectives"><section class="panel objectives"><h2>Objectives</h2><div id="objectives"></div><div class="tiny">In the Objective phase, select a completed line on your board, then claim an available objective.</div></section></aside>
 <aside class="right" data-mtab="gods"><section class="panel"><h2>Gods</h2><div id="gods"></div><div class="help">In the Manipulate phase, discard one selected hand card to invoke a God. Isis gives glyph tokens; Bastet moves one card into an empty space and grants an Oasis; Tawaret swaps a grid card with a market card, then draws a card and gains a Refresh token.</div></section></aside></div></div>
-<div id="turnReveal" class="turn-reveal" hidden></div><div id="setup" class="setup"><div class="setupbox"><h1>Hieroglyphs</h1><p>Set the table, then pass the device around as each scribe takes their turn.</p><label>Number of scribes <select id="playersCount"><option value="2">2 players</option><option value="3">3 players</option><option value="4">4 players</option></select></label><div class="setup-section"><b>Modules</b><label><input id="fourthGod" type="checkbox"> Use fourth God — remnant Gods</label><label><input id="purpleCards" type="checkbox"> Use Purple cards</label><label><input id="activateCards" type="checkbox"> Use Activate cards</label><label><input id="advancedScribes" type="checkbox"> Use advanced Scribes</label><label><input id="shuffleStarters" type="checkbox"> Shuffle unused starter cards into the deck</label></div><div class="setup-section"><b>God selection</b><label class="god-row">Glyph <select id="godGlyph"><option value="Isis">Isis</option><option value="Aten">Aten</option></select></label><label class="god-row">Market <select id="godMarket"><option value="Tawaret">Tawaret</option><option value="Ra">Ra</option></select></label><label class="god-row">Movement <select id="godMove"><option value="Bastet">Bastet</option><option value="Maat">Maat</option></select></label><label id="remnantGodRow" class="god-row" hidden>Remnant <select id="godRemnant"><option value="Seshat">Seshat</option><option value="Thoth">Thoth</option></select></label><button class="action" id="randomGods" type="button">Randomize Gods</button></div><div class="setup-buttons"><button class="action" id="firstGame" type="button">Play first game</button><button class="start" id="start">Start custom game</button></div><p class="tiny">First game: Isis, Tawaret, Bastet; all modules off; standard 5-point Scribes.</p></div></div>
+<div id="turnReveal" class="turn-reveal" hidden></div><div id="setup" class="setup"><div class="setupbox"><h1>Hieroglyphs</h1><p>Set the table, then pass the device around as each scribe takes their turn.</p><div id="netPanel" class="setup-section"></div><label>Number of scribes <select id="playersCount"><option value="2">2 players</option><option value="3">3 players</option><option value="4">4 players</option></select></label><div class="setup-section"><b>Modules</b><label><input id="fourthGod" type="checkbox"> Use fourth God — remnant Gods</label><label><input id="purpleCards" type="checkbox"> Use Purple cards</label><label><input id="activateCards" type="checkbox"> Use Activate cards</label><label><input id="advancedScribes" type="checkbox"> Use advanced Scribes</label><label><input id="shuffleStarters" type="checkbox"> Shuffle unused starter cards into the deck</label></div><div class="setup-section"><b>God selection</b><label class="god-row">Glyph <select id="godGlyph"><option value="Isis">Isis</option><option value="Aten">Aten</option></select></label><label class="god-row">Market <select id="godMarket"><option value="Tawaret">Tawaret</option><option value="Ra">Ra</option></select></label><label class="god-row">Movement <select id="godMove"><option value="Bastet">Bastet</option><option value="Maat">Maat</option></select></label><label id="remnantGodRow" class="god-row" hidden>Remnant <select id="godRemnant"><option value="Seshat">Seshat</option><option value="Thoth">Thoth</option></select></label><button class="action" id="randomGods" type="button">Randomize Gods</button></div><div class="setup-buttons"><button class="action" id="firstGame" type="button">Play first game</button><button class="start" id="start">Start custom game</button></div><p class="tiny">First game: Isis, Tawaret, Bastet; all modules off; standard 5-point Scribes.</p></div></div>
 <script>
 const A='papyrus/Current/', S='papyrus/starter/', G='Gods/', colors=['Blue','Green','Red','Gold'];
 const names=[]; for(let n=1;n<=16;n++)['','a','b'].forEach(x=>names.push(n+x+'.jpg')); for(let n=37;n<=40;n++)['','a'].forEach(x=>names.push(n+x+'.jpg')); 'abcdef'.split('').forEach(x=>names.push('41'+x+'.jpg')); for(let n=70;n<=73;n++)['','a','b'].forEach(x=>names.push(n+x+'.jpg'));
@@ -290,7 +292,7 @@ function renderManipulationActions(){
     actions.innerHTML='<button class="action" disabled>Select a card in your hand to discard</button><button class="action" onclick="nextPhase()">Skip Manipulate</button>';
     return;
   }
-  actions.innerHTML=state.options.gods.map(name=>`<button class="action" onclick="useGod('${name}')">Discard selected & invoke ${name}</button>`).join('')+'<button class="action" onclick="selected=null;render()">Choose another card</button>';
+  actions.innerHTML=state.options.gods.map(name=>`<button class="action" onclick="useGod('${name}')">Discard selected & invoke ${name}</button>`).join('')+'<button class="action" onclick="cancelSelection()">Choose another card</button>';
 }
 function handClick(i){
   if(state.phase===0&&p().playedRound===state.round)return noteRender('Only one papyrus may be played during each Play phase.');
@@ -471,11 +473,11 @@ function renderManipulationActions(){
   if(mode==='thothChooseColour'){const supply=state.thothSupply||{},letters={Blue:'B',Green:'G',Red:'R',Gold:'Y'};actions.innerHTML='<span class="bonus-note">Thoth: choose a colour token to add to an eligible white remnant (one token per remnant).</span>'+colors.map(colour=>`<button class="glyph-pick" onclick="chooseThothColour('${colour}')" ${supply[colour]?'':'disabled'} title="${colour} Thoth token (${supply[colour]||0} left)"><img src="Gods/God things/Thoth${letters[colour]}.png" alt="${colour} Thoth token"></button>`).join('');return}
   if(mode==='isisPick'){const chosen=state.isisChosen||[],available=(state.glyphPool||[]).filter(t=>!state.tokenPickFree||!chosen.some(x=>x.glyph===t.glyph||x.color===t.color));actions.innerHTML=`<span class="bonus-note">${state.tokenPickFree?'Choose 2 available tokens, each different in colour and hieroglyph.':'Choose 1 available hieroglyph token.'}</span>`+available.map(t=>`<button class="glyph-pick" onclick="chooseIsisToken('${t.glyph}','${t.color}')" title="${t.color} ${t.glyph}"><img src="${glyphTokenImage(t)}" alt="${t.color} ${t.glyph}"></button>`).join('');return}
   if(mode==='sobekReplaceRemnant'){actions.innerHTML='<span class="bonus-note">Sobek: select a remnant around the board to replace it with the Sobek marker.</span>';return}
-  if(mode==='isisReady'){actions.innerHTML='<span class="bonus-note">Isis: optionally place one newly gained token on any coloured papyrus.</span><button class="action" onclick="note(\'Select a pictured glyph token in your supply.\');render()">Place one anywhere</button><button class="action" onclick="mode=null;state.isisFreePlace=false;render()">Keep tokens</button>';return}
+  if(mode==='isisReady'){actions.innerHTML='<span class="bonus-note">Isis: optionally place one newly gained token on any coloured papyrus.</span><button class="action" onclick="note(\'Select a pictured glyph token in your supply.\');render()">Place one anywhere</button><button class="action" onclick="keepIsisTokens()">Keep tokens</button>';return}
   if(state.phase!==1)return;
   if(p().godRound===state.round){actions.innerHTML='<span class="bonus-note">God ability already used this round.</span><button class="action" onclick="nextPhase()">Finish Manipulate</button>';return}
   if(selected===null){actions.innerHTML='<button class="action" disabled>Select a card in your hand to discard</button><button class="action" onclick="nextPhase()">Skip Manipulate</button>';return}
-  actions.innerHTML=state.options.gods.map(name=>`<button class="action" onclick="useGod('${name}')">Discard selected & invoke ${name}</button>`).join('')+'<button class="action" onclick="selected=null;render()">Choose another card</button>';
+  actions.innerHTML=state.options.gods.map(name=>`<button class="action" onclick="useGod('${name}')">Discard selected & invoke ${name}</button>`).join('')+'<button class="action" onclick="cancelSelection()">Choose another card</button>';
 }
 function startGodAbility(name){
   const g=name.toLowerCase(),player=p();
@@ -549,7 +551,7 @@ renderSupply=function(){boardTokenRenderSupply();const tray=document.querySelect
 };
 const boardTokenRenderPlay=renderAutomaticPlayActions;
 renderAutomaticPlayActions=function(){
-  if(mode==='remnantChoose'){$('actions').innerHTML='<span class="bonus-note">Remnant token: choose whether to flip a remnant or move one to an empty board edge.</span><button class="action" onclick="mode=\'remnantFlip\';render()">Flip a remnant</button><button class="action" onclick="mode=\'remnantMoveFrom\';render()">Move a remnant</button><button class="action" onclick="mode=null;render()">Cancel</button>';return}
+  if(mode==='remnantChoose'){$('actions').innerHTML='<span class="bonus-note">Remnant token: choose whether to flip a remnant or move one to an empty board edge.</span><button class="action" onclick="chooseRemnantAction(\'remnantFlip\')">Flip a remnant</button><button class="action" onclick="chooseRemnantAction(\'remnantMoveFrom\')">Move a remnant</button><button class="action" onclick="chooseRemnantAction(null)">Cancel</button>';return}
   if(mode==='remnantFlip'){$('actions').innerHTML='<span class="bonus-note">Select a remnant to flip between its white tags and black bonus side.</span>';return}
   if(mode==='remnantMoveFrom'){$('actions').innerHTML='<span class="bonus-note">Select the remnant you want to move.</span>';return}
   if(mode==='remnantMoveTo'){const occupied=(edge,slot)=>(p().remnants||[]).some(r=>r.edge===edge&&r.slot===slot),spots=['top','right','bottom','left'].flatMap(edge=>[0,1,2,3].filter(slot=>!occupied(edge,slot)).map(slot=>`<button class="action" onclick="moveRemnantTo('${edge}',${slot})">${edge} ${slot+1}</button>`));$('actions').innerHTML='<span class="bonus-note">Choose an empty remnant position.</span>'+spots.join('');return}
@@ -1103,4 +1105,276 @@ $('start').onclick=begin;
   // A new player's turn starts on their board.
   let lastTurn=null;const tabRender=render;render=function(){tabRender();if(!state)return;if(state.turn!==lastTurn){lastTurn=state.turn;showTab('board')}else flagTabs()};
 })();
+/* ============================= ONLINE PLAY =============================
+   Browser-to-browser over PeerJS (WebRTC), the same scheme as Don't Get Splat.
+   PeerJS's free public service only introduces the browsers; after that they
+   talk directly, so the page needs no server of its own. The HOST's browser
+   runs the real game — the deck, the AIs, every rule. Only one scribe acts at
+   a time, so a friend's browser simply forwards its clicks (cellClick,
+   useGod, …) to the host, which runs them only while it is that friend's
+   turn. After every change the host sends each friend the table with what
+   they shouldn't see taken out: other players' hands, the deck order and the
+   face of face-down papyri. */
+const PEERJS_URL='https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js',NET_ID_PREFIX='hieroglyphs-',NET_MAX_PLAYERS=4;
+/* fingerprint of this file's code: host and friends must run the very same version */
+const NET_BUILD=(()=>{const s=document.currentScript?document.currentScript.textContent:'';let h=5381;for(let i=0;i<s.length;i++)h=(Math.imul(h,33)^s.charCodeAt(i))>>>0;return h.toString(36)})();
+let net=null;
+/*   host:  {role:'host', code, peer, status, guests:[{conn, open, seat, playerId, name}], seatGuest:{seat:guest}, numAI, started}
+     guest: {role:'guest', code, peer, conn, status, mySeat, lobby} */
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function netCleanName(s,fallback){s=String(s||'').replace(/[^\p{L}\p{N} _.'-]/gu,'').replace(/\s+/g,' ').trim().slice(0,16);return s||fallback}
+// Remembered between visits: your name, the last room code, and a lasting id so a
+// friend who drops out gets their own seat back on rejoining.
+const netPrefs=(()=>{try{return JSON.parse(localStorage.getItem('hieroglyphs-online'))||{}}catch(e){return {}}})();
+function netSavePrefs(){try{localStorage.setItem('hieroglyphs-online',JSON.stringify(netPrefs))}catch(e){}}
+function netNewCode(){const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let c='';for(let i=0;i<5;i++)c+=A[Math.floor(Math.random()*A.length)];return c} // no 0/O or 1/I to misread
+function netPlayerId(){if(!netPrefs.id){netPrefs.id=netNewCode()+netNewCode();netSavePrefs()}return netPrefs.id}
+function netLoadPeerJs(){
+  if(window.Peer)return Promise.resolve();
+  return new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=PEERJS_URL;s.onload=()=>resolve();s.onerror=()=>reject(new Error('Couldn\'t load the online-play library — check your internet connection.'));document.head.appendChild(s)});
+}
+function netErrorText(err){
+  const type=err&&err.type;
+  if(type==='peer-unavailable')return 'No game found with that code — check it with the host.';
+  if(type==='unavailable-id')return 'That room code is already in use — leave and host again for a new one.';
+  if(type==='network'||type==='server-error'||type==='socket-error'||type==='socket-closed')return 'Can\'t reach the online-play service — check your internet connection.';
+  if(type==='browser-incompatible')return 'This browser doesn\'t support online play — try Chrome, Edge, Firefox or Safari.';
+  return 'Connection problem: '+((err&&(err.message||type))||err);
+}
+function netLeave(){if(net&&net.peer){try{net.peer.destroy()}catch(e){}}net=null}
+/* which seat this browser plays */
+function viewSeat(){return net&&net.role==='guest'&&net.mySeat!=null?net.mySeat:0}
+function netInGame(){return !!net&&!!state&&(net.role==='host'?net.started:net.mySeat!=null)}
+function netSeatAway(seat){if(!net||!state)return false;if(net.role==='guest')return !!(state.players[seat]&&state.players[seat].away);const g=net.seatGuest[seat];return !g||!g.open}
+function netRefresh(){netRenderSetup();if(state)render();else netRenderChip()}
+window.addEventListener('beforeunload',e=>{if(net&&net.role==='host'&&net.started&&state&&!state.over){e.preventDefault();e.returnValue=''}});
+
+/* --- clicks: run here, or forward to the host --- */
+// Named handlers for the buttons that used to change mode/selection inline, so they can be forwarded too.
+function cancelSelection(){selected=null;render()}
+function keepIsisTokens(){if(mode!=='isisReady')return;mode=null;state.isisFreePlace=false;render()}
+function chooseRemnantAction(next){if(mode!=='remnantChoose'||![null,'remnantFlip','remnantMoveFrom'].includes(next))return;mode=next;render()}
+const NET_ACTIONS=['handClick','cellClick','marketClick','useGod','nextPhase','endTurn','drawDeck','refreshMarket','extraDraw','finishDraw','raDrawDeck','claimObjective','chooseLine','chooseScribe','chooseObjectiveGod','resolveRemnantBonus','resolveImprovement','chooseIsisToken','selectGlyphToken','chooseImprovement','chooseThothColour','remnantClick','moveRemnantTo','useBoardToken','pushHathor','cancelSelection','keepIsisTokens','chooseRemnantAction'];
+// netDepth > 0 while a game action is already running, so the handlers' calls to one another
+// pass straight through; netActor is the friend's seat while the host runs a forwarded click.
+let netDepth=0,netActor=null,netAITimer=null;
+function netAllowed(){
+  if(!net||net.role!=='host'||!net.started)return true;
+  const actor=netActor===null?0:netActor,player=state&&state.players[state.turn];
+  return !!player&&!state.over&&!state.reveal&&state.turn===actor&&!player.isAI;
+}
+NET_ACTIONS.forEach(name=>{const base=window[name];window[name]=function(...args){
+  if(netDepth)return base(...args);
+  if(net&&net.role==='guest'){if(netInGame()&&state.turn===net.mySeat&&!state.over)netSendToHost({t:'act',fn:name,args});return}
+  if(!netAllowed())return;
+  netDepth++;try{return base(...args)}finally{netDepth--;if(!netDepth)netAfterAction()}
+}});
+const netBaseAI=aiTakeAction;
+aiTakeAction=function(){netDepth++;try{netBaseAI()}finally{netDepth--;if(!netDepth)netAfterAction()}};
+function netAfterAction(){if(net&&net.role==='host'){netScheduleBroadcast();netKickAI()}}
+// Online, every scribe has their own screen: no pass-the-device reveal, so the host drives the AIs itself.
+function netKickAI(){
+  if(!net||net.role!=='host'||!net.started||!state||state.over||state.reveal||!p().isAI||netAITimer)return;
+  netAITimer=setTimeout(()=>{netAITimer=null;if(net&&net.started&&state&&!state.over&&p().isAI)aiTakeAction()},350);
+}
+const netBaseAdvance=advancePhaseTurn;
+advancePhaseTurn=function(){netBaseAdvance();if(netInGame()&&state.reveal&&!state.over){state.reveal=false;render()}};
+const netBaseFinish=finish;
+finish=function(){netBaseFinish();state.over=true;state.reveal=false;render()};
+function netPlayAgain(){if(net&&net.role==='host')netHostRestart();else location.reload()}
+
+/* --- host side --- */
+async function netHost(){
+  netLeave();
+  const me=net={role:'host',code:netNewCode(),peer:null,status:'Opening a room…',guests:[],seatGuest:{},numAI:0,started:false};
+  netRefresh();
+  try{await netLoadPeerJs()}catch(e){me.status=e.message;netRefresh();return}
+  if(net!==me)return;
+  const peer=me.peer=new Peer(NET_ID_PREFIX+me.code);
+  peer.on('open',()=>{me.status='open';netRefresh()});
+  peer.on('error',err=>{if(err&&err.type==='peer-unavailable')return;me.status=netErrorText(err);netRefresh()});
+  // keep the room code registered if the link to the introduction service blips, so friends can still rejoin
+  peer.on('disconnected',()=>{if(net===me&&!peer.destroyed){try{peer.reconnect()}catch(e){}}});
+  peer.on('connection',conn=>{
+    const g={conn,open:false,seat:null,playerId:null,name:''};me.guests.push(g);
+    conn.on('open',()=>{g.open=true});
+    conn.on('data',msg=>{if(net===me)netHostReceive(g,msg)});
+    conn.on('close',()=>{g.open=false;if(net!==me)return;if(!me.started)me.guests=me.guests.filter(x=>x!==g);netRefresh();netBroadcast()});
+  });
+}
+function netLobbyFriends(){return net.guests.filter(g=>g.open&&g.playerId)}
+// Forwarded clicks carry only small whole numbers and plain words — nothing that could become markup.
+function netCleanArgs(args){return Array.isArray(args)&&args.length<=3&&args.every(a=>a===null||typeof a==='boolean'||(Number.isInteger(a)&&Math.abs(a)<100)||(typeof a==='string'&&/^[A-Za-z0-9 _-]{0,24}$/.test(a)))}
+function netHostReceive(g,msg){
+  if(!msg||typeof msg!=='object')return;
+  if(msg.t==='hello'){
+    if(msg.build!==NET_BUILD){g.conn.send({t:'version'});return}
+    g.open=true;g.playerId=String(msg.id||'').slice(0,20);g.name=netCleanName(msg.name,'Scribe');
+    if(net.started)netHostReadmit(g);
+    else if(netLobbyFriends().length>NET_MAX_PLAYERS-1){g.playerId=null;g.conn.send({t:'full'})}
+    netRefresh();netBroadcast();return;
+  }
+  if(msg.t==='act'){
+    if(g.seat===null||!NET_ACTIONS.includes(msg.fn)||!netCleanArgs(msg.args))return;
+    netActor=g.seat;try{window[msg.fn](...msg.args)}catch(e){console.error(e)}finally{netActor=null}
+  }
+}
+/* a friend reconnected mid-game: give them back their own seat, or else any friend seat whose player has gone */
+function netHostReadmit(g){
+  const away=state.players.map((pl,i)=>i).filter(i=>state.players[i].remote&&netSeatAway(i));
+  const seat=away.find(i=>net.seatGuest[i]&&net.seatGuest[i].playerId===g.playerId)??away[0];
+  if(seat===undefined){g.conn.send({t:'full'});return}
+  const old=net.seatGuest[seat];if(old&&old!==g)old.seat=null;
+  net.seatGuest[seat]=g;g.seat=seat;netSendSnap(g);
+}
+function netHostStart(){
+  const friends=netLobbyFriends().slice(0,NET_MAX_PLAYERS-1),numAI=Math.min(net.numAI,NET_MAX_PLAYERS-1-friends.length),count=1+friends.length+numAI;
+  if(count<2)return;
+  net.started=true;net.seatGuest={};net.guests.forEach(g=>{g.seat=null});
+  // begin() reads the setup form: the host's Module and God choices, plus these two.
+  $('playersCount').value=String(count);$('aiOpponents').checked=true;
+  selected=null;mode=null;selectedLine=null;
+  begin();
+  const used=new Set(),unique=name=>{let n=name,k=2;while(used.has(n.toLowerCase()))n=name+' '+(k++);used.add(n.toLowerCase());return n};
+  state.players[0].name=unique(netCleanName(netPrefs.name,'Host'));
+  friends.forEach((g,i)=>{const pl=state.players[i+1];pl.isAI=false;pl.aiProfile=null;pl.remote=true;pl.name=unique(g.name);g.seat=i+1;net.seatGuest[i+1]=g});
+  state.players.slice(1+friends.length).forEach((pl,i)=>{pl.name=unique('AI '+(i+1))});
+  note(`Online game: ${state.players.map(pl=>pl.name).join(', ')}. ${state.players[0].name} begins.`);
+  net.guests.forEach(g=>{if(g.open&&g.playerId&&g.seat===null)g.conn.send({t:'full'})});
+  render();netBroadcast();
+}
+/* "New game" sends everyone back to the room with the same code */
+function netHostRestart(){
+  net.started=false;net.seatGuest={};net.guests=net.guests.filter(g=>g.open);net.guests.forEach(g=>{g.seat=null});
+  clearTimeout(netAITimer);netAITimer=null;
+  $('setup').style.display='';netRefresh();netBroadcast();
+}
+/* a friend has gone for good: an AI plays their seat from here on */
+function onNetTakeOver(seat){
+  const pl=state.players[seat];if(!pl||!pl.remote||!netSeatAway(seat))return;
+  pl.remote=false;pl.isAI=true;pl.aiProfile='balanced';
+  note(`${pl.name} left — an AI plays their seat from now on.`);pl.name+=' (AI)';
+  const g=net.seatGuest[seat];if(g)g.seat=null;delete net.seatGuest[seat];
+  render();netAfterAction();
+}
+/* friends get a fresh picture of the table shortly after every change */
+let netBroadcastTimer=null;
+function netScheduleBroadcast(){if(netBroadcastTimer)return;netBroadcastTimer=setTimeout(()=>{netBroadcastTimer=null;netBroadcast()},60)}
+function netBroadcast(){
+  if(!net||net.role!=='host')return;
+  if(!net.started){const msg={t:'lobby',names:[netCleanName(netPrefs.name,'Host'),...netLobbyFriends().map(g=>g.name)],ai:net.numAI};netLobbyFriends().forEach(g=>g.conn.send(msg));return}
+  net.guests.forEach(g=>{if(g.open&&g.seat!==null)netSendSnap(g)});
+}
+function netSendSnap(g){g.conn.send({t:'snap',s:netSnapshot(g.seat),seat:g.seat})}
+function netHideCard(c){if(!c)return c;if(c.facedown)return {facedown:true,src:''};return c.under?{...c,under:netHideCard(c.under)}:c}
+/* the table as the player in this seat is allowed to see it */
+function netSnapshot(seat){
+  const s={...state,deck:state.deck.map(()=>({})),sunPool:state.sunPool&&state.sunPool.map(()=>({})),log:state.log.slice(0,80),
+    players:state.players.map((pl,i)=>({...pl,away:!!pl.remote&&netSeatAway(i),grid:pl.grid.map(netHideCard),hand:i===seat?pl.hand:pl.hand.map(()=>({facedown:true,src:''}))}))};
+  Object.keys(s).forEach(k=>{if(k[0]==='_')delete s[k]}); // AI scratch values, including a tally of the deck
+  return {state:s,selected,mode,selectedLine};
+}
+
+/* --- guest side --- */
+async function netJoin(){
+  const rejoinSeat=net&&net.role==='guest'?net.mySeat:null;
+  netLeave();
+  const code=String(netPrefs.code||'').trim().toUpperCase();
+  const me=net={role:'guest',code,peer:null,conn:null,status:'Connecting…',mySeat:rejoinSeat,lobby:null};
+  if(code.length!==5){me.status='Type the host\'s 5-letter room code first.';netRefresh();return}
+  netRefresh();
+  try{await netLoadPeerJs()}catch(e){me.status=e.message;netRefresh();return}
+  if(net!==me)return;
+  const peer=me.peer=new Peer();
+  peer.on('error',err=>{me.status=netErrorText(err);netRefresh()});
+  peer.on('open',()=>{
+    const conn=me.conn=peer.connect(NET_ID_PREFIX+code,{reliable:true,serialization:'json'});
+    conn.on('open',()=>{me.status='connected';conn.send({t:'hello',id:netPlayerId(),name:netPrefs.name||'',build:NET_BUILD});netRefresh()});
+    conn.on('data',msg=>{if(net===me)netGuestReceive(msg)});
+    conn.on('close',()=>{if(net!==me)return;me.status='lost';netRefresh()});
+  });
+}
+function netSendToHost(msg){if(net&&net.conn&&net.conn.open)net.conn.send(msg)}
+function netGuestReceive(msg){
+  if(!msg||typeof msg!=='object')return;
+  if(msg.t==='lobby'){
+    net.lobby=msg;
+    if(net.mySeat!=null){net.mySeat=null;state=null;selected=null;mode=null;selectedLine=null}
+    $('setup').style.display='';netRefresh();
+  }else if(msg.t==='full'){net.status='That game has no free seat for you.';netRefresh()}
+  else if(msg.t==='version'){net.status='Your page is a different version from the host\'s — both of you reload the page and try again.';netRefresh()}
+  else if(msg.t==='snap'){
+    state=msg.s.state;selected=msg.s.selected;mode=msg.s.mode;selectedLine=msg.s.selectedLine;
+    net.mySeat=msg.seat;net.lobby=null;$('setup').style.display='none';render();
+  }
+}
+
+/* --- screens --- */
+function netRenderChip(){
+  const chip=$('netChip');if(!chip)return;let html='';
+  if(net&&net.role==='host'&&net.started&&state)html=`<span class="net-pill">🌐 Room ${net.code}</span>`+state.players.map((pl,i)=>pl.remote&&netSeatAway(i)?`<span class="net-pill"><span class="net-away">${escHtml(pl.name)} disconnected</span><button class="action" onclick="onNetTakeOver(${i})">Let an AI play</button></span>`:'').join('');
+  else if(net&&net.role==='guest'&&net.mySeat!=null){
+    const why=['lost','Connecting…','connected'].includes(net.status)?'':` — ${escHtml(net.status)}`;
+    html=net.conn&&net.conn.open?'<span class="net-pill">🌐 Online</span>':`<span class="net-pill"><span class="net-away">Disconnected${why}</span><button class="action" onclick="netJoin()">Rejoin</button></span>`;
+  }
+  chip.innerHTML=html;
+}
+function netSetupHtml(){
+  const nameInput=`<input id="netName" class="net-input" maxlength="16" placeholder="Your name" value="${escHtml(netPrefs.name||'')}" oninput="onNetName(this.value)">`,back='<button class="action" onclick="onNetBack()">Leave online play</button>';
+  if(!net)return `<b>Play online</b><p class="tiny">Each scribe opens this page on their own device. One person hosts and gets a room code; everyone else joins with it.</p>
+    <div class="net-row">Your name ${nameInput}</div>
+    <div class="net-row"><button class="action" onclick="netHost()">Host a game</button><span class="tiny">or join</span><input id="netCode" class="net-input net-code-input" maxlength="5" autocomplete="off" spellcheck="false" placeholder="CODE" value="${escHtml(netPrefs.code||'')}" oninput="onNetCode(this.value)" onkeydown="if(event.key==='Enter')netJoin()"><button class="action" onclick="netJoin()">Join</button></div>`;
+  if(net.role==='host'){
+    if(net.status!=='open')return `<b>Play online</b><p class="tiny">${escHtml(net.status)}</p><div class="net-row">${back}</div>`;
+    const friends=netLobbyFriends().slice(0,NET_MAX_PLAYERS-1),maxAI=NET_MAX_PLAYERS-1-friends.length;if(net.numAI>maxAI)net.numAI=maxAI;
+    const total=1+friends.length+net.numAI;
+    return `<b>Play online — hosting</b><div class="tiny" style="margin-top:8px">Room code — send this to your friends:</div><div class="net-code">${net.code}</div><p class="tiny">They open this page, type the code under Play online and press Join. Choose the Modules and Gods below, then start.</p>
+      <div class="net-row">Your name ${nameInput}</div>
+      <div class="net-row">Scribes <span class="net-seat" id="netHostSeat">${escHtml(netCleanName(netPrefs.name,'Host'))} (you)</span>${friends.map(g=>`<span class="net-seat">🌐 ${escHtml(g.name)}</span>`).join('')}${friends.length?'':'<span class="tiny">waiting for friends to join…</span>'}</div>
+      <div class="net-row">AI opponents ${[...Array(maxAI+1).keys()].map(n=>`<button class="action${n===net.numAI?' net-on':''}" onclick="onNetAI(${n})">${n}</button>`).join('')}</div>
+      <div class="net-row"><button class="start" onclick="netHostStart()" ${total<2?'disabled':''}>Start online game · ${total} scribe${total>1?'s':''}</button>${back}</div>`;
+  }
+  let msg=net.status;
+  if(net.status==='connected')msg=net.lobby?`In the room: ${net.lobby.names.join(', ')}${net.lobby.ai?` + ${net.lobby.ai} AI`:''}. Waiting for ${net.lobby.names[0]} to start the game…`:'Connected — waiting for the host…';
+  if(net.status==='lost')msg='Lost the connection to the host.';
+  return `<b>Play online</b><div style="margin-top:8px">Room <b>${escHtml(net.code)}</b></div><p class="tiny">${escHtml(msg)}</p><div class="net-row">${net.status==='lost'?'<button class="action" onclick="netJoin()">Try again</button>':''}${back}</div>`;
+}
+// Online, the host's lobby sets the number of scribes; a friend only sees the online panel.
+function netApplySetupVisibility(){
+  const box=document.querySelector('.setupbox'),role=net&&net.role,hostOnly=[box.querySelector(':scope>p'),$('playersCount').parentElement,aiChoice,box.querySelector('.setup-buttons'),box.querySelector(':scope>p.tiny')];
+  [...box.children].forEach(el=>{if(el.tagName!=='H1'&&el.id!=='netPanel')el.hidden=role==='guest'});
+  if(role!=='guest')hostOnly.forEach(el=>{el.hidden=role==='host'});
+}
+function netRenderSetup(){
+  const panel=$('netPanel');if(!panel)return;
+  const f=document.activeElement,fid=f&&panel.contains(f)&&f.id,sel=fid&&f.selectionStart;
+  panel.innerHTML=netSetupHtml();
+  const g=fid&&$(fid);if(g){g.focus();try{g.setSelectionRange(sel,sel)}catch(e){}}
+  netApplySetupVisibility();
+}
+function onNetBack(){netLeave();netRefresh()}
+function onNetName(v){netPrefs.name=netCleanName(v,'');netSavePrefs();if(net&&net.role==='host'){const s=$('netHostSeat');if(s)s.textContent=netCleanName(netPrefs.name,'Host')+' (you)';netScheduleBroadcast()}}
+function onNetCode(v){netPrefs.code=String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'');netSavePrefs()}
+function onNetAI(n){net.numAI=n;netRefresh();netBroadcast()}
+// Each screen shows its own scribe's hand, and only that scribe's turn gets live action buttons.
+const netHandTitle=document.querySelector('.hand-wrap h2').textContent,netBaseRender=render;
+render=function(){
+  netBaseRender();netRenderChip();
+  if(!state||!state.players||!state.players.length)return;
+  const player=p(),online=netInGame(),mine=!online||state.turn===viewSeat();
+  document.body.toggleAttribute('data-net-wait',online&&!mine);
+  if(mine&&!player.isAI)document.querySelector('.hand-wrap h2').textContent=netHandTitle;
+  if(online&&!mine){
+    document.querySelector('.hand-wrap h2').textContent=`${player.name}'s hand is hidden`;
+    $('hand').innerHTML='<div class="tiny">Other scribes\' cards are concealed. Their board and Supply tokens remain visible.</div>';
+    if(!player.isAI&&!state.over)$('actions').innerHTML=`<span class="bonus-note">${player.remote&&netSeatAway(state.turn)?`${player.name} is disconnected — waiting for them to rejoin…`:`Waiting for ${player.name}…`}</span>`;
+  }else if(online&&!state.over)$('turn').textContent=`${(player.color||'Gold').toUpperCase()} — YOUR TURN`;
+  if(state.over){
+    const winner=[...state.players].sort((a,b)=>b.score-a.score)[0];
+    $('turn').textContent=`${winner.name} wins with ${winner.score} pts`;$('phase').textContent='Game complete';
+    $('actions').innerHTML=net&&net.role==='guest'?`<span class="bonus-note">Waiting for ${state.players[0].name} to start another game…</span>`:'<button class="action" onclick="netPlayAgain()">New game</button>';
+  }
+};
+(function(){const chip=document.createElement('div');chip.id='netChip';chip.className='net-chip';document.querySelector('.topbar .status').before(chip)})();
+netRenderSetup();
 </script></body></html>

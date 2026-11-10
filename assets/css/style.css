@@ -235,7 +235,8 @@ h1, h2, h3, h4 {
 /* Wide logos: show the whole logo on its own background colour (set --c1/--c2 to match) */
 .card-media > img.contain {
   object-fit: contain;
-  padding: 0 4% 18%;
+  /* Equal padding keeps the logo centred in the whole card; the title bar overlays the bottom, as with cover images */
+  padding: 6% 10%;
 }
 .card-media .card-title {
   position: absolute;
