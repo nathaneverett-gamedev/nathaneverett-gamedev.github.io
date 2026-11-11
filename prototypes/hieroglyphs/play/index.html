@@ -29,7 +29,7 @@ body{padding-bottom:var(--actions-h,0px)}}
 <main class="main" data-mtab="board"><section class="panel"><div class="board-title"><h2 id="boardname">Player board</h2><span id="score" class="score">0 pts</span></div><div id="grid" class="grid"></div><div class="hand-wrap"><h2>Hand — select a papyrus, then an empty grid space</h2><div id="hand" class="hand"></div></div><div id="actions" class="actions"></div></section></main>
 <aside class="mid" data-mtab="objectives"><section class="panel objectives"><h2>Objectives</h2><div id="objectives"></div><div class="tiny">In the Objective phase, select a completed line on your board, then claim an available objective.</div></section></aside>
 <aside class="right" data-mtab="gods"><section class="panel"><h2>Gods</h2><div id="gods"></div><div class="help">In the Manipulate phase, discard one selected hand card to invoke a God. Isis gives glyph tokens; Bastet moves one card into an empty space and grants an Oasis; Tawaret swaps a grid card with a market card, then draws a card and gains a Refresh token.</div></section></aside></div></div>
-<div id="turnReveal" class="turn-reveal" hidden></div><div id="setup" class="setup"><div class="setupbox"><h1>Hieroglyphs</h1><p>Set the table, then pass the device around as each scribe takes their turn.</p><div id="netPanel" class="setup-section"></div><label>Number of scribes <select id="playersCount"><option value="2">2 players</option><option value="3">3 players</option><option value="4">4 players</option></select></label><div class="setup-section"><b>Modules</b><label><input id="fourthGod" type="checkbox"> Use fourth God — remnant Gods</label><label><input id="purpleCards" type="checkbox"> Use Purple cards</label><label><input id="activateCards" type="checkbox"> Use Activate cards</label><label><input id="advancedScribes" type="checkbox"> Use advanced Scribes</label><label><input id="shuffleStarters" type="checkbox"> Shuffle unused starter cards into the deck</label></div><div class="setup-section"><b>God selection</b><label class="god-row">Glyph <select id="godGlyph"><option value="Isis">Isis</option><option value="Aten">Aten</option></select></label><label class="god-row">Market <select id="godMarket"><option value="Tawaret">Tawaret</option><option value="Ra">Ra</option></select></label><label class="god-row">Movement <select id="godMove"><option value="Bastet">Bastet</option><option value="Maat">Maat</option></select></label><label id="remnantGodRow" class="god-row" hidden>Remnant <select id="godRemnant"><option value="Seshat">Seshat</option><option value="Thoth">Thoth</option></select></label><button class="action" id="randomGods" type="button">Randomize Gods</button></div><div class="setup-buttons"><button class="action" id="firstGame" type="button">Play first game</button><button class="start" id="start">Start custom game</button></div><p class="tiny">First game: Isis, Tawaret, Bastet; all modules off; standard 5-point Scribes.</p></div></div>
+<div id="turnReveal" class="turn-reveal" hidden></div><div id="setup" class="setup"><div class="setupbox"><h1>Hieroglyphs</h1><p>Set the table, then pass the device around as each scribe takes their turn.</p><div id="netPanel" class="setup-section"></div><label>Number of scribes <select id="playersCount"><option value="2">2 players</option><option value="3">3 players</option><option value="4">4 players</option></select></label><div class="setup-section"><b>Modules</b><label><input id="fourthGod" type="checkbox"> Use fourth God — remnant Gods</label><label><input id="purpleCards" type="checkbox"> Use Purple cards</label><label><input id="activateCards" type="checkbox"> Use Activate cards</label><label><input id="advancedScribes" type="checkbox"> Use advanced Scribes</label></div><div class="setup-section"><b>God selection</b><label class="god-row">Glyph <select id="godGlyph"><option value="Isis">Isis</option><option value="Aten">Aten</option></select></label><label class="god-row">Market <select id="godMarket"><option value="Tawaret">Tawaret</option><option value="Ra">Ra</option></select></label><label class="god-row">Movement <select id="godMove"><option value="Bastet">Bastet</option><option value="Maat">Maat</option></select></label><label id="remnantGodRow" class="god-row" hidden>Remnant <select id="godRemnant"><option value="Seshat">Seshat</option><option value="Thoth">Thoth</option></select></label><button class="action" id="randomGods" type="button">Randomize Gods</button></div><div class="setup-buttons"><button class="action" id="firstGame" type="button">Play first game</button><button class="start" id="start">Start custom game</button></div><p class="tiny">First game: Isis, Tawaret, Bastet; all modules off; standard 5-point Scribes.</p></div></div>
 <script>
 const A='papyrus/Current/', S='papyrus/starter/', G='Gods/', colors=['Blue','Green','Red','Gold'];
 const names=[]; for(let n=1;n<=16;n++)['','a','b'].forEach(x=>names.push(n+x+'.jpg')); for(let n=37;n<=40;n++)['','a'].forEach(x=>names.push(n+x+'.jpg')); 'abcdef'.split('').forEach(x=>names.push('41'+x+'.jpg')); for(let n=70;n<=73;n++)['','a','b'].forEach(x=>names.push(n+x+'.jpg'));
@@ -101,8 +101,12 @@ function cellClick(i){
     if(!player.grid[i])return;
     if(selected===null){selected=i;note('Select the second card to swap.');render();return}
     if(selected===i)return;[player.grid[selected],player.grid[i]]=[player.grid[i],player.grid[selected]];note(`${player.name} swaps two cards with Maat.`);
-    if(state.maatScale){[selected,i].forEach(pos=>{if(player.grid[pos])player.grid[pos].scale=true});state.maatScale=false;note(`${player.name} places a Scale token on each swapped papyrus.`)}
+    if(state.maatScale){state.maatScale=false;state.maatScaleChoices=[selected,i];selected=null;mode='maatScale';note('Choose one of the swapped cards to receive the Scale token.');render();return}
     selected=null;mode=null;render();return;
+  }
+  if(mode==='maatScale'){
+    if(!(state.maatScaleChoices||[]).includes(i)||!player.grid[i])return;
+    player.grid[i].scale=true;state.maatScaleChoices=null;mode=null;note(`${player.name} places a Scale token on a swapped papyrus.`);render();return;
   }
   if(mode==='hathor'){
     if(selected===null){if(!player.grid[i])return;selected=i;note('Select an empty space in the same row or column to push toward.');render();return}
@@ -165,7 +169,7 @@ function scaleScore(player){
   player.grid.forEach((card,index)=>{
     if(!card||!card.scale||card.facedown)return;
     const row=Math.floor(index/4),col=index%4,mirror=player.grid[row*4+(3-col)];
-    if(mirror&&!mirror.facedown&&mirror.color===card.color)score+=2;
+    if(mirror&&!mirror.facedown&&mirror.color===card.color)score+=3;
   });
   return score;
 }
@@ -181,7 +185,7 @@ function advancedScribeScore(player){
     });
     return largest;
   };
-  return (player.scribes||[]).reduce((total,scribe)=>total+(scribe===1?7*Math.min(...['ankh','man','eye','boat','bird','urn'].map(glyph=>glyphs.filter(value=>value===glyph).length)):scribe===2?2*largestGlyphCluster():scribe===3?cardTokens+remnantTokens:scribe===4?player.hand.length:0),0);
+  return (player.scribes||[]).reduce((total,scribe)=>total+(scribe===1?5*Math.min(...['ankh','man','eye','boat','bird','urn'].map(glyph=>glyphs.filter(value=>value===glyph).length)):scribe===2?largestGlyphCluster():scribe===3?cardTokens+remnantTokens:scribe===4?player.hand.length:0),0);
 }
 function endGameScore(player){
   const supplyTokens=Object.entries(player.tokens||{}).filter(([type])=>type!=='oasis').reduce((total,[,amount])=>total+amount,0);
@@ -213,6 +217,7 @@ function applyGridTargets(){
   else if(mode==='builderBlind')valid=i=>!player.grid[i];
   else if(mode==='moveToken'||mode==='move'||mode==='sunMove')valid=i=>selected===null?!!player.grid[i]:!player.grid[i];
   else if(mode==='maatSwap')valid=i=>selected===null?!!player.grid[i]:!!player.grid[i]&&i!==selected;
+  else if(mode==='maatScale')valid=i=>(state.maatScaleChoices||[]).includes(i)&&!!player.grid[i];
   else if(mode==='hathor'||mode==='swapGrid'||mode==='sunOasis'||mode==='activate')valid=i=>!!player.grid[i];
   else if(mode==='glyphReplace'){const token=state.pendingGlyph;valid=i=>{const card=player.grid[i],tags=card?.colourTags||[card?.color];return !!card&&!card.facedown&&(state.isisFreePlace||token?.free||tags.includes(token?.color))}}
   cells.forEach((cell,i)=>{if(valid(i))cell.classList.add('target')});
@@ -223,7 +228,7 @@ function renderMarketMarkers(){
   const cubeColours={Blue:'#365f9e',Green:'#557f43',Red:'#a44632',Gold:'#b88225'};
   [...$('market').children].forEach((spot,index)=>{const c=state.market[index];spot.style.position='relative';if(c&&c.sun){const sun=document.createElement('img');sun.className='sun-chip';sun.src=`Gods/God things/${c.sun.file}`;sun.alt='Sun reward';sun.title=sunRewardText(c.sun);spot.append(sun)}if(c&&c.anubisOwner!==undefined){const owner=state.players[c.anubisOwner],mark=document.createElement('span');mark.className='anubis-cube';mark.style.background=cubeColours[owner?.color]||'#777';mark.title=`${owner?.name||'Player'}'s Anubis marker`;spot.append(mark)}})
 }
-function renderConfiguredGods(){const art={Isis:'IsisF.jpg',Aten:'AtenA.jpg',Sobek:'Sobek.jpg',Ra:'RaA.jpg',Anubis:'AnubisA.jpg',Tawaret:'TawaretA.jpg',Bastet:'BastetA.jpg',Hathor:'Hathor.jpg',Maat:'MaatA.jpg',Ptah:'Ptah.jpg',Seshat:'SeshatA.jpg',Thoth:'ThothA.jpg'},text={Isis:'Gain hieroglyph tokens.',Aten:'Gain a hieroglyph token and Aten card.',Sobek:'Gain a hieroglyph token and remnant bonus.',Ra:'Influence the market.',Anubis:'Mark a market card.',Tawaret:'Exchange a grid card and market card, draw a card, and gain a Refresh token.',Bastet:'Move a card and place an Oasis.',Hathor:'Push cards vertically and horizontally.',Maat:'Swap two grid cards and place a Scale token on each.',Ptah:'Gain remnant and builder tokens.',Seshat:'Improve a remnant.',Thoth:'Gain a Remnant token and add a colour token to a white remnant.'};$('gods').innerHTML=state.options.gods.map(name=>`<div class="god"><img src="${G}${art[name]}"><div><button onclick="useGod('${name}')">${name}</button><p>${text[name]}</p></div></div>`).join('')}
+function renderConfiguredGods(){const art={Isis:'IsisF.jpg',Aten:'AtenA.jpg',Sobek:'Sobek.jpg',Ra:'RaA.jpg',Anubis:'AnubisA.jpg',Tawaret:'TawaretA.jpg',Bastet:'BastetA.jpg',Hathor:'Hathor.jpg',Maat:'MaatA.jpg',Ptah:'Ptah.jpg',Seshat:'SeshatA.jpg',Thoth:'ThothA.jpg'},text={Isis:'Gain hieroglyph tokens.',Aten:'Gain a hieroglyph token and Aten card.',Sobek:'Gain a hieroglyph token and remnant bonus.',Ra:'Influence the market.',Anubis:'Mark a market card.',Tawaret:'Exchange a grid card and market card, draw a card, and gain a Refresh token.',Bastet:'Move a card and place an Oasis.',Hathor:'Push cards vertically and horizontally.',Maat:'Swap two grid cards and place a Scale token on one of them.',Ptah:'Gain remnant and builder tokens.',Seshat:'Improve a remnant.',Thoth:'Gain a Remnant token and add a colour token to a white remnant.'};$('gods').innerHTML=state.options.gods.map(name=>`<div class="god"><img src="${G}${art[name]}"><div><button onclick="useGod('${name}')">${name}</button><p>${text[name]}</p></div></div>`).join('')}
 function renderTurnIdentity(){const player=p(),palette={Blue:'#365f9e',Green:'#557f43',Red:'#a44632',Gold:'#b88225'},colour=player.color||'Gold';$('turn').textContent=`${colour.toUpperCase()} — ${player.name.toUpperCase()}’S TURN`;$('phase').textContent=`${phaseName().toUpperCase()} PHASE · ROUND ${state.round} OF 12`;document.documentElement.style.setProperty('--turn-col',palette[colour]);const reveal=$('turnReveal');reveal.hidden=!state.reveal;if(state.reveal)reveal.innerHTML=`<h1>${player.name}</h1><p>${phaseName()} phase · Round ${state.round}</p><button onclick="dismissReveal()">Begin turn</button>`}
 function dismissReveal(){state.reveal=false;$('turnReveal').hidden=true;render();if(p().isAI)setTimeout(runAIUntilHuman,120)}
 function scribeCount(){return 6-(state.options.gods||[]).length}
@@ -233,7 +238,7 @@ function renderObjectiveAttachments(){state.objectives.filter(o=>o.under).forEac
 function renderObjectiveReward(){if(!state.pendingObjective)return;const o=state.pendingObjective,gods=freeObjectiveGods().map(name=>`<button class="action" onclick="chooseObjectiveGod('${name}')">${name}</button>`).join(''),scribes=freeScribeIds().map(n=>`<button class="action" onclick="chooseScribe(${n})">Scribe ${n}</button>`).join('');$('actions').innerHTML=`<span class="bonus-note">${o.name} is claimed for ${o.points} points. Choose a God or Scribe to place it under; every later claimer of this objective receives the same bonus.</span>${gods}${scribes}`}
 function renderTokenGlyphs(player=p(),cells=$('grid').querySelectorAll('.cell')){player.grid.forEach((c,i)=>{if(c&&c.tokenGlyph){const token=c.tokenData,el=document.createElement(token?'img':'span');if(token){el.className='glyph-chip';el.src=glyphTokenImage(token);el.alt=`${token.glyph} token`}else{el.className='token';el.textContent=c.tokenGlyph}cells[i].append(el)}})}
 function renderOases(player=p(),cells=$('grid').querySelectorAll('.cell')){player.grid.forEach((card,index)=>{if(card&&card.oasisColor){const image=document.createElement('img'),suffix={Blue:'B',Green:'G',Red:'R',Gold:'Y'}[card.oasisColor];image.className='oasis-chip';image.src=`Gods/God things/Hieroglyphs/Oasis${suffix}.jpg`;image.alt=`${card.oasisColor} Oasis`;cells[index].append(image)}})}
-function renderScales(player=p(),cells=$('grid').querySelectorAll('.cell')){player.grid.forEach((card,index)=>{if(card&&card.scale){const image=document.createElement('img');image.className='scale-chip';image.src='Gods/God things/scales.png';image.alt='Scale token';image.title="Scale: scores 2 points if the card mirrored across the grid's vertical centre line shares this card's colour";cells[index].append(image)}})}
+function renderScales(player=p(),cells=$('grid').querySelectorAll('.cell')){player.grid.forEach((card,index)=>{if(card&&card.scale){const image=document.createElement('img');image.className='scale-chip';image.src='Gods/God things/scales.png';image.alt='Scale token';image.title="Scale: scores 3 points if the card mirrored across the grid's vertical centre line shares this card's colour";cells[index].append(image)}})}
 function renderAutomaticPlayActions(){
   if(state.phase!==0||state.pendingRemnant)return;
   if(mode==='glyphChoose'||mode==='isisPick')return;
@@ -360,7 +365,7 @@ function useGod(g){
   if(g==='anubis'){mode='anubisMark';note('Select a market card to mark with Anubis.');render();return}
   if(g==='bastet'){mode='move';note('Select a card to move, then an empty destination.');render();return}
   if(g==='hathor'){mode='hathor';note('Select a card to push. Then select an empty space in its row or column.');render();return}
-  if(g==='maat'){state.maatScale=true;mode='maatSwap';note('Select the first card to swap, then the second card. Each swapped card gets a Scale token.');render();return}
+  if(g==='maat'){state.maatScale=true;mode='maatSwap';note('Select the first card to swap, then the second card. Then place a Scale token on one of them.');render();return}
   if(g==='ptah'){p().tokens.remnant=(p().tokens.remnant||0)+1;p().tokens.builder=(p().tokens.builder||0)+1;note(`${p().name} invokes Ptah: gains a Remnant and Builder token.`);render();return}
   if(g==='seshat'){p().tokens.remnant=(p().tokens.remnant||0)+1;p().tokens.improvement=(p().tokens.improvement||0)+1;note(`${p().name} invokes Seshat: gains a Remnant and Improvement token.`);render();return}
   if(g==='thoth'){p().tokens.remnant=(p().tokens.remnant||0)+1;p().tokens.colour=(p().tokens.colour||0)+1;note(`${p().name} invokes Thoth: gains a Remnant and Colour token.`);render();return}
@@ -405,9 +410,9 @@ function freeScribeIds(){return scribeIds().filter(id=>!state.objectives.some(o=
 function freeObjectiveGods(){return state.options.gods.filter(name=>!state.objectives.some(o=>o.under&&o.under.type==='god'&&o.under.name===name))}
 function chooseScribe(number){if(!state.pendingObjective)return noteRender('Scribes are selected when claiming an objective.');const objective=state.objectives[state.pendingObjective.index];if(!objective.under){if(!freeScribeIds().includes(number))return noteRender(`Scribe ${number} already holds an objective.`);objective.under={type:'scribe',id:number}}else if(objective.under.type!=='scribe'||objective.under.id!==number)return noteRender('This objective already has its bonus.');p().scribes.push(number);note(`${p().name} gains Scribe ${number} scoring (+5 points at game end).`);state.pendingObjective=null;advancePhaseTurn()}
 function chooseObjectiveGod(name){if(!state.pendingObjective)return;const objective=state.objectives[state.pendingObjective.index];if(state.pendingObjective.first)objective.under={type:'god',name};state.pendingObjective=null;state.freeGod=true;if(name==='Isis'){state.isisPicks=2;state.isisChosen=[];mode='isisPick';note(`${p().name} receives Isis's free activation and chooses two tokens.`);render();return}if(name==='Bastet'){mode='move';note(`${p().name} receives Bastet's free activation. Select a card, then an empty destination.`);render();return}mode='swapGrid';note(`${p().name} receives Tawaret's free activation. Select a grid card, then a market card.`);render()}
-function setupOptions(){return {objectiveSet:$('objectiveSet').value,aiOpponents:$('aiOpponents').checked,fourthGod:$('fourthGod').checked,purple:$('purpleCards').checked,activate:$('activateCards').checked,advancedScribes:$('advancedScribes').checked,shuffleStarters:$('shuffleStarters').checked,gods:[$('godGlyph').value,$('godMarket').value,$('godMove').value].concat($('fourthGod').checked?[$('godRemnant').value]:[])}}
+function setupOptions(){return {objectiveSet:$('objectiveSet').value,aiOpponents:$('aiOpponents').checked,fourthGod:$('fourthGod').checked,purple:$('purpleCards').checked,activate:$('activateCards').checked,advancedScribes:$('advancedScribes').checked,gods:[$('godGlyph').value,$('godMarket').value,$('godMove').value].concat($('fourthGod').checked?[$('godRemnant').value]:[])}}
 function randomGods(){const pick=id=>{const select=$(id);select.selectedIndex=Math.floor(Math.random()*select.options.length)};pick('godGlyph');pick('godMarket');pick('godMove');if($('fourthGod').checked)pick('godRemnant')}
-function firstGame(){['fourthGod','purpleCards','activateCards','advancedScribes','shuffleStarters'].forEach(id=>$(id).checked=false);$('aiOpponents').checked=true;$('objectiveSet').value='A';$('godGlyph').value='Isis';$('godMarket').value='Tawaret';$('godMove').value='Bastet';$('remnantGodRow').hidden=true;begin()}
+function firstGame(){['fourthGod','purpleCards','activateCards','advancedScribes'].forEach(id=>$(id).checked=false);$('aiOpponents').checked=true;$('objectiveSet').value='A';$('godGlyph').value='Isis';$('godMarket').value='Tawaret';$('godMove').value='Bastet';$('remnantGodRow').hidden=true;begin()}
 function begin(){
   const options=setupOptions(),count=+$('playersCount').value,deck=shuffle(names.filter(x=>(options.purple||!x.startsWith('41'))&&(options.activate||!/^([3][7-9]|40)/.test(x)))).map(x=>card(x)),glyphPool=['ankh','man','eye','boat','bird','urn'].flatMap(glyph=>['Blue','Green','Red','Gold'].map(color=>({glyph,color})));
   state={options,glyphPool,remnants:initialiseRemnants(),improvementStacks:{7:6,8:6},improvementOffer:[],thothSupply:{Blue:4,Green:4,Red:4,Gold:4},scribePool:options.advancedScribes?shuffle([1,2,3,4]).slice(0,6-options.gods.length):null,players:[],deck,discardPile:[],market:[],round:1,turn:0,phase:0,first:0,phaseMoves:0,log:[],objectives:shuffle(['Three matching hieroglyphs','Four matching hieroglyphs','A vertical inscription','A horizontal inscription','A line using a token','A line of unique glyphs']).map((label,i)=>({label,points:8-i%3*2,claimed:false}))};
@@ -415,8 +420,8 @@ function begin(){
   const aiProfiles=['cards','objectives','balanced'];
   for(let i=0;i<count;i++){const sc=makeStarters(),isAI=options.aiOpponents&&i>0;state.players.push({name:i===0?'Player 1':'AI '+i,color:colors[i],isAI,aiProfile:isAI?aiProfiles[(i-1)%aiProfiles.length]:null,score:0,objectivePoints:0,hand:deck.splice(0,6),grid:[sc[0],null,null,null,null,sc[1],null,null,null,null,sc[2],null,null,null,null,sc[3]],remnants:initialiseRemnants(),tokens:{glyph:0,oasis:0,draw:0,refresh:0},glyphTokens:[],oases:[],scribes:[],claimed:[]})}
   state.market=deck.splice(0,4);
-  if(options.shuffleStarters){
-    // 4.jpg is the blank starter template, not a playable card.
+  // Unused starters always join the deck. 4.jpg is the blank starter template, not a playable card.
+  {
     const dealt=new Set(state.players.flatMap(player=>player.grid.filter(c=>c&&c.starter).map(c=>c.file))),extra=starter.filter(file=>file!=='4.jpg'&&!dealt.has(file)).map(file=>card(file,true));
     state.deck=shuffle(deck.concat(extra));
     note(`${extra.length} unused starter cards are shuffled into the papyrus deck.`);
@@ -488,7 +493,7 @@ function startGodAbility(name){
   else if(g==='anubis'){mode='anubisMark';note('Select a market card to mark with Anubis.');}
   else if(g==='bastet'){mode='move';note('Select a card to move, then an empty destination.');}
   else if(g==='hathor'){mode='hathor';note('Select a card to push, then an empty space in its row or column.');}
-  else if(g==='maat'){state.maatScale=true;mode='maatSwap';note('Select two grid cards to swap. Each swapped card gets a Scale token.');}
+  else if(g==='maat'){state.maatScale=true;mode='maatSwap';note('Select two grid cards to swap, then place a Scale token on one of them.');}
   else if(g==='ptah'){player.tokens.remnant=(player.tokens.remnant||0)+1;player.tokens.builder=(player.tokens.builder||0)+1;note(`${player.name} gains a Remnant and Builder token.`);}
   else if(g==='seshat'){player.tokens.remnant=(player.tokens.remnant||0)+1;if((player.remnants||[]).filter(r=>r.improvement).length>=2){mode=null;note(`${player.name} gains a Remnant token. Their board already has the maximum two improvements.`)}else{mode='seshatChooseImprovement';note(`${player.name} gains a Remnant token and chooses an improvement for a black remnant.`)}}
   else if(g==='thoth'){player.tokens.remnant=(player.tokens.remnant||0)+1;mode='thothChooseColour';note(`${player.name} gains a Remnant token and chooses a Thoth colour token to add to a white remnant.`);}
@@ -729,10 +734,15 @@ function axisTargetBonus(player,card,position){
   if(posCol===acol&&colFilled<=1&&glyph===target)bonus+=3;
   return bonus;
 }
-// Scale tokens score 2 at game end when the mirrored card shares their colour.
+// Scale tokens score 3 at game end when the mirrored card shares their colour.
 function scaleMirrorBonus(player,card,position){
   const row=Math.floor(position/4),col=position%4,mirror=player.grid[row*4+(3-col)];
-  return mirror&&mirror.scale&&!mirror.facedown&&card.color&&mirror.color===card.color?2:0;
+  return mirror&&mirror.scale&&!mirror.facedown&&card.color&&mirror.color===card.color?3:0;
+}
+// Maat places one Scale on either swapped card; value the better of the two.
+function scaleChoiceValue(grid,pos){
+  const c=grid[pos],m=grid[Math.floor(pos/4)*4+(3-pos%4)];
+  return c&&m&&!c.scale&&!c.facedown&&!m.facedown&&c.color&&m.color===c.color?3:0;
 }
 // An Activate card re-triggers a grid papyrus of its target colour, so it is
 // worth the best printed ability it can currently re-score.
@@ -889,7 +899,7 @@ function bestSwapGain(player,withScale){
   for(let a=0;a<occupied.length;a++)for(let b=a+1;b<occupied.length;b++){
     const i=occupied[a],j=occupied[b],g=player.grid.slice();g[i]=player.grid[j];g[j]=player.grid[i];
     let v=boardObjectiveValue({grid:g})-base;
-    if(withScale)[i,j].forEach(pos=>{const c=g[pos],m=g[Math.floor(pos/4)*4+(3-pos%4)];if(c&&m&&!c.facedown&&!m.facedown&&c.color&&m.color===c.color)v+=2});
+    if(withScale)v+=Math.max(scaleChoiceValue(g,i),scaleChoiceValue(g,j));
     if(v>best)best=v;
   }
   return best;
@@ -979,7 +989,7 @@ function aiHandleMode(player){
         for(let a=0;a<occupied.length;a++)for(let b=a+1;b<occupied.length;b++){
           const i=occupied[a],j=occupied[b],g=player.grid.slice();g[i]=player.grid[j];g[j]=player.grid[i];
           let val=boardObjectiveValue({grid:g});
-          if(state.maatScale)[i,j].forEach(pos=>{const c=g[pos],m=g[Math.floor(pos/4)*4+(3-pos%4)];if(c&&m&&!c.facedown&&!m.facedown&&c.color&&m.color===c.color)val+=2});
+          if(state.maatScale)val+=Math.max(scaleChoiceValue(g,i),scaleChoiceValue(g,j));
           if(val>bestVal){bestVal=val;bestPair=[i,j]}
         }
         if(!bestPair){mode=null;render();return}
@@ -989,6 +999,13 @@ function aiHandleMode(player){
       if(target!=null&&player.grid[target])cellClick(target);
       else{const other=player.grid.findIndex((c,i)=>c&&i!==selected);if(other>=0)cellClick(other);else{mode=null;selected=null;render()}}
       return;
+    }
+    case 'maatScale':{
+      const choices=(state.maatScaleChoices||[]).filter(i=>player.grid[i]);
+      if(!choices.length){mode=null;state.maatScaleChoices=null;render();return}
+      // Prefer a scoring match; otherwise a card whose mirror is still empty may match later.
+      const empty=i=>!player.grid[Math.floor(i/4)*4+(3-i%4)];
+      cellClick(choices.reduce((best,i)=>scaleChoiceValue(player.grid,i)*10+(empty(i)?1:0)>scaleChoiceValue(player.grid,best)*10+(empty(best)?1:0)?i:best));return;
     }
     case 'swapGrid':{const idx=worstGridCellIndex(player);if(idx>=0)cellClick(idx);else{mode=null;state.tawaretExtra=false;render()}return}
     case 'swapMarket':{const best=bestMarketPick(player);if(best)marketClick(best.index);else{mode=null;selected=null;state.tawaretExtra=false;render()}return}
