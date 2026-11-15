@@ -54,10 +54,11 @@
   .stack{flex:1;min-width:0;background:var(--panel2);border-radius:8px;padding:5px;display:flex;flex-direction:column;align-items:center;}
   .stack .shead{font-size:.62rem;font-weight:800;text-transform:uppercase;color:var(--sub);margin-bottom:3px;}
   .pile{position:relative;}
-  .pilecard{position:absolute;left:0;border-radius:5px;box-shadow:0 2px 5px rgba(0,0,0,.5);display:block;}
+  .pilecard{position:absolute;left:0;line-height:0;border-radius:5px;box-shadow:0 2px 5px rgba(0,0,0,.5);display:block;}
   .pilecard.top{outline:2px solid var(--accent);}
   .cardwrap{position:relative;display:inline-block;flex-shrink:0;}
-  .artcard{position:relative;display:inline-block;}
+  .artcard{position:relative;display:block;line-height:0;}
+  .artcard img{width:100%;aspect-ratio:5/7;object-fit:cover;}
   .simplecard{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
     border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.5);border:2px dashed rgba(255,255,255,.55);}
   .simplecard-num{font-family:'Fredoka';font-weight:700;font-size:1.3rem;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5);}
@@ -79,7 +80,8 @@
   .log .entry{font-size:.82rem;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05);}
 
   .handbar{position:fixed;left:0;right:0;bottom:0;background:var(--panel);border-top:2px solid var(--panel2);
-    padding:10px 18px;display:flex;gap:10px;overflow-x:auto;align-items:center;}
+    padding:10px 18px;display:flex;gap:10px;overflow-x:auto;align-items:center;
+    z-index:40;isolation:isolate;box-shadow:0 -6px 16px rgba(0,0,0,.45);}
   .handbar .tag{color:var(--sub);font-size:.8rem;white-space:nowrap;}
   .handcard{width:76px;border-radius:8px;cursor:pointer;transition:.12s;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.5);}
   .handcard:hover{transform:translateY(-4px);}
@@ -1200,7 +1202,7 @@ function cardZoomHtml(){
   const kind = state.pickKind;
   const heading = kind==='keep' ? 'Keep this card in storage?' : kind==='mud' ? state.pickPrompt : 'Play this card?';
   const confirmLabel = kind==='keep' ? 'Keep' : kind==='mud' ? 'Use Mud' : 'Play';
-  const w = Math.max(120, Math.min(260, Math.round(window.innerWidth*0.62), Math.round((window.innerHeight-220)*180/245)));
+  const w = Math.max(120, Math.min(260, Math.round(window.innerWidth*0.62), Math.round((window.innerHeight-220)*500/700)));
   const text = isMud ? `Mud — ${c.t}` : c.isFaceDown ? 'Face down' : `${fmtVal(c.value)}${c.text ? ' — '+c.text : ''}`;
   const visual = isMud
     ? `<img src="${CARD_IMAGES.mud[c.key]}" style="width:${w}px;display:block;border-radius:5px;"/>`
@@ -2665,7 +2667,7 @@ function cardImageSrc(color, value, kind){
 function cardVisualHtml(c, widthPx, extraAttrs, noPreview){
   extraAttrs = extraAttrs || '';
   const hov = src => noPreview ? '' : `onmouseenter="showCardPreview(event,'${src}')" onmousemove="positionCardPreview(event)" onmouseleave="hideCardPreview()"`;
-  const h = Math.round(widthPx*245/180);
+  const h = Math.round(widthPx*700/500);
   if(c.isFaceDown){
     if(CARD_IMAGES.back){
       return `<div class="artcard" style="width:${widthPx}px;">
@@ -2704,7 +2706,7 @@ function showCardPreview(evt, src){
 function positionCardPreview(evt){
   const el = document.getElementById('card-preview');
   if(el.style.display==='none') return;
-  const w = 190, h = Math.round(w*245/180);
+  const w = 190, h = Math.round(w*700/500);
   let x = evt.clientX + 24;
   let y = evt.clientY - h - 24;
   if(y < 8) y = evt.clientY + 24;
@@ -2718,7 +2720,7 @@ function hideCardPreview(){
 function stackHtml(player, color){
   const s = player.stacks[color];
   const n = s.length;
-  const peek = 20, cardW = 66, cardH = Math.round(cardW*245/180);
+  const peek = 20, cardW = 66, cardH = Math.round(cardW*700/500);
   const pileHeight = cardH + Math.max(0,n-1)*peek;
   let html = `<div class="stack"><div class="shead" style="color:${COLOR_HEX[color]}">${COLOR_NAMES[color]}</div>`;
   html += `<div class="pile" style="height:${pileHeight}px;width:${cardW}px;">`;
