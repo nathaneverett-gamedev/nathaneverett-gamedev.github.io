@@ -331,14 +331,17 @@ const starterGlyphs={
   3:{a:'ankh',b:'scribe',c:'eye',d:'boat',e:'bird',f:'urn'},
   4:{a:'urn',b:'bird',c:'boat',d:'eye',e:'scribe',f:'ankh'}
 };
-function makeStarters(){
+// Each diagonal slot sits where the row and column remnants of one colour
+// cross, so that slot's starter must be that colour.
+function makeStarters(remnants){
   const used=new Set(),missing=1+Math.floor(Math.random()*4),slots=Array(4);
+  const slotOf=colour=>remnants.find(r=>r.edge==='top'&&r.color===colors[colour-1]).slot;
   [1,2,3,4].filter(colour=>colour!==missing).forEach(colour=>{
     const options=shuffle(Object.entries(starterGlyphs[colour]).filter(([,glyph])=>!used.has(glyph)));
     const [suffix,glyph]=options[0]; used.add(glyph);
-    slots[colour-1]=card(`${colour}${suffix}.jpg`,true);
+    slots[slotOf(colour)]=card(`${colour}${suffix}.jpg`,true);
   });
-  slots[missing-1]=card('Aten.jpg',true);return slots;
+  slots[slotOf(missing)]=card('Aten.jpg',true);return slots;
 }
 function chooseIsisToken(glyph,color){
   const player=p();player.glyphTokens.push({glyph,color});player.tokens.glyph++;state.isisChosen.push({glyph,color});state.isisPicks--;
@@ -418,7 +421,7 @@ function begin(){
   state={options,glyphPool,remnants:initialiseRemnants(),improvementStacks:{7:6,8:6},improvementOffer:[],thothSupply:{Blue:4,Green:4,Red:4,Gold:4},scribePool:options.advancedScribes?shuffle([1,2,3,4]).slice(0,6-options.gods.length):null,players:[],deck,discardPile:[],market:[],round:1,turn:0,phase:0,first:0,phaseMoves:0,log:[],objectives:shuffle(['Three matching hieroglyphs','Four matching hieroglyphs','A vertical inscription','A horizontal inscription','A line using a token','A line of unique glyphs']).map((label,i)=>({label,points:8-i%3*2,claimed:false}))};
   refillImprovementOffer();
   const aiProfiles=['cards','objectives','balanced'];
-  for(let i=0;i<count;i++){const sc=makeStarters(),isAI=options.aiOpponents&&i>0;state.players.push({name:i===0?'Player 1':'AI '+i,color:colors[i],isAI,aiProfile:isAI?aiProfiles[(i-1)%aiProfiles.length]:null,score:0,objectivePoints:0,hand:deck.splice(0,6),grid:[sc[0],null,null,null,null,sc[1],null,null,null,null,sc[2],null,null,null,null,sc[3]],remnants:initialiseRemnants(),tokens:{glyph:0,oasis:0,draw:0,refresh:0},glyphTokens:[],oases:[],scribes:[],claimed:[]})}
+  for(let i=0;i<count;i++){const remnants=initialiseRemnants(),sc=makeStarters(remnants),isAI=options.aiOpponents&&i>0;state.players.push({name:i===0?'Player 1':'AI '+i,color:colors[i],isAI,aiProfile:isAI?aiProfiles[(i-1)%aiProfiles.length]:null,score:0,objectivePoints:0,hand:deck.splice(0,6),grid:[sc[0],null,null,null,null,sc[1],null,null,null,null,sc[2],null,null,null,null,sc[3]],remnants,tokens:{glyph:0,oasis:0,draw:0,refresh:0},glyphTokens:[],oases:[],scribes:[],claimed:[]})}
   state.market=deck.splice(0,4);
   // Unused starters always join the deck. 4.jpg is the blank starter template, not a playable card.
   {
